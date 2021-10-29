@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.PriorityQueue;
 
 public class The_Matrix_Solver {
 	
@@ -171,6 +172,45 @@ public class The_Matrix_Solver {
 	}
 	
 	public static String solve(String grid, String strategy, boolean visualize) {
+		if (strategy=="btts")
+		{}
 		return "plan;deaths;kills;nodes";
+	}
+	
+	public static String generalSearch(SearchProblem problem, String strategy) {
+		Node node = new Node(problem.initialState, null, (byte)-1, (short)0, (short)0);
+		PriorityQueue<Node> pq = new PriorityQueue<Node>();
+	//	while(true) {
+			if(pq.isEmpty())
+				return "mnwb btts";
+			Node currentNode = pq.poll();
+			boolean isGoal = problem.goalTest(currentNode.state);
+			if(isGoal) {
+				return buildPath(currentNode);
+			}
+//			Node[] nodes = expand(currentNode);
+	//	}
+		return "btts";
+	}
+
+
+	private static Node[] expand(Node currentNode) {
+	    byte m,n;
+	    byte x =currentNode.state.neoX;
+	    byte y =currentNode.state.neoY;
+		//up, down, left, right, carry, drop, takePill, killR , killL , killU , killD	, and fly
+		//0    1      2     3     4      5        6      7         8
+//	 Node(State state, Node parent, byte operator, short depth, short pathCost) 
+//		State(byte neoX, byte neoY, short movedHostages, short currentlyCarriedHostages, short hostagesToAgents,
+//				short killedTransHostages, byte[] hostagesHealth, byte neoHealth) 
+		
+		
+		return null;
+	}
+
+
+	private static String buildPath(Node currentNode) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
