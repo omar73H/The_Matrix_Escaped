@@ -1,10 +1,24 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class The_Matrix_Solver {
 	
 	private static ArrayList<Integer> availableCells;
+	
+	public static byte m,n,c;
+	public static byte initNeoX, initNeoY, telephoneX, telephoneY;
+	public static byte hostagesCount;
+	public static String[] hostagesInformation;
+	
+	public static byte[] hostagesHealth;
+	
+	public static String[] pillsInformation;
+	
+	public static String[] padsInformation;
+	
+	public static String[] agentsInformation;
 	
 	public static void main(String[] args) {
 		System.out.println(genGrid());
@@ -12,9 +26,9 @@ public class The_Matrix_Solver {
 	
 	
 	private static String genGrid() {
-		int m = random(5,15);
-		int n = random(5,15);
-		int c = random(1,4);
+		m = (byte)random(5,15);
+		n = (byte)random(5,15);
+		c = (byte)random(1,4);
 		
 		//#########
 		System.out.println("Maximum to carry: "+c);
@@ -29,51 +43,57 @@ public class The_Matrix_Solver {
 		
 		//Position of Neo
 		int neoPos = randomCell();
-		int neoX = neoPos/n;
-		int neoY = neoPos%n;
+		initNeoX = (byte)(neoPos/n);
+		initNeoY = (byte)(neoPos%n);
 		
 		
 		//########
-		grid[neoX][neoY] = "N";
+		grid[initNeoX][initNeoY] = "N";
 		
 		//Position of the Telephone booth
 		int telephonePos = randomCell();
-		int telephoneX = telephonePos/n;
-		int telephoneY = telephonePos%n;
+		telephoneX = (byte)(telephonePos/n);
+		telephoneY = (byte)(telephonePos%n);
 		
 		//########
 		grid[telephoneX][telephoneY] = "T";
 		
 		//The number of hostages
-		int hostagesCount = random(3,10);
+		hostagesCount = (byte)random(3,10);
+		hostagesInformation = new String[hostagesCount];
+		hostagesHealth = new byte[hostagesCount];
+		
 		StringBuilder hostagesInfo = new StringBuilder();
 		//Positions of hostages;
 		for(int i=0;i<hostagesCount;i++)
 		{
 			int hostagePos = randomCell();
-			int hostageX = hostagePos/n;
-			int hostageY = hostagePos%n;
+			byte hostageX = (byte)(hostagePos/n);
+			byte hostageY = (byte)(hostagePos%n);
 			
 			
-			int hostageDamage = random(1,99);
+			byte hostageDamage = (byte)random(1,99);
 			//########
 			grid[hostageX][hostageY] = "H"+i+" "+hostageDamage;
 			
 			if(i>0)
 				hostagesInfo.append(",");
 			
-			hostagesInfo.append(hostageX+","+hostageY+","+hostageDamage);	
+			hostagesInfo.append(hostageX+","+hostageY+","+hostageDamage);
+			hostagesInformation[i] = hostageX+","+hostageY;
+			hostagesHealth[i] = hostageDamage;
 		}
-		
 		//The number of pills
-		int pillsCount = random(1,hostagesCount);
+		byte pillsCount = (byte)random(1,hostagesCount);
+		
+		pillsInformation = new String[pillsCount];
 		StringBuilder pillsInfo = new StringBuilder();
 		//Positions of pills;
 		for(int i=0;i<pillsCount;i++)
 		{
 			int pillPos = randomCell();
-			int pillX = pillPos/n;
-			int pillY = pillPos%n;
+			byte pillX = (byte)(pillPos/n);
+			byte pillY = (byte)(pillPos%n);
 			
 			//########
 			grid[pillX][pillY] = "P";
@@ -81,27 +101,30 @@ public class The_Matrix_Solver {
 			if(i>0)
 				pillsInfo.append(",");
 			
-			pillsInfo.append(pillX+","+pillY);	
+			pillsInfo.append(pillX+","+pillY);
+			pillsInformation[i]= pillX+","+pillY;
 		}
 		
 		//Pads
 		int maxPadsCount = availableCells.size()%2==0? (availableCells.size()-2)/2:(availableCells.size()-1)/2;
 		int padsCount = random(1,maxPadsCount);
 		
+		padsInformation = new String[padsCount];
+		
 		StringBuilder padsInfo = new StringBuilder();
 		//Positions of pads;
 		for(int i=0;i<padsCount;i++)
 		{
 			int startPadPos = randomCell();
-			int startPadX = startPadPos/n;
-			int startPadY = startPadPos%n;
+			byte startPadX = (byte)(startPadPos/n);
+			byte startPadY = (byte)(startPadPos%n);
 			
 			//########
 			grid[startPadX][startPadY] = "F"+i;
 			
 			int endPadPos = randomCell();
-			int endPadX = endPadPos/n;
-			int endPadY = endPadPos%n;
+			byte endPadX = (byte)(endPadPos/n);
+			byte endPadY = (byte)(endPadPos%n);
 			
 			//########
 			grid[endPadX][endPadY] = "D"+i;
@@ -112,11 +135,16 @@ public class The_Matrix_Solver {
 			padsInfo.append(startPadX+","+startPadY+","+endPadX+","+endPadY);
 			padsInfo.append(",");
 			padsInfo.append(endPadX+","+endPadY+","+startPadX+","+startPadY);
+			
+			padsInformation[i] = startPadX+","+startPadY+","+endPadX+","+endPadY;
+			
+			
 		}
 		
 		
 		//Agents
 		int agentsCount = random(1,availableCells.size());
+		agentsInformation = new String[agentsCount];
 		
 		StringBuilder agentsInfo = new StringBuilder();
 		//Positions of pads;
@@ -132,12 +160,13 @@ public class The_Matrix_Solver {
 			if(i>0)
 				agentsInfo.append(",");
 			
-			agentsInfo.append(agentX+","+agentY);	
+			agentsInfo.append(agentX+","+agentY);
+			agentsInformation[i] = agentX+","+agentY;
 		}
 		
 		StringBuilder gridInfo = new StringBuilder();
 		
-		gridInfo.append(m+","+n+";"+c+";"+neoX+","+neoY+";"+telephoneX+","+telephoneY
+		gridInfo.append(m+","+n+";"+c+";"+initNeoX+","+initNeoY+";"+telephoneX+","+telephoneY
 				+";");
 		gridInfo.append(agentsInfo);
 		gridInfo.append(";");
@@ -172,42 +201,69 @@ public class The_Matrix_Solver {
 	}
 	
 	public static String solve(String grid, String strategy, boolean visualize) {
-		if (strategy=="btts")
-		{}
+	
+		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0);
+		
+		SearchProblem X = new SearchProblem(hostagesCount, initState);
+		
+		String plan = generalSearch(X, strategy);
 		return "plan;deaths;kills;nodes";
 	}
 	
 	public static String generalSearch(SearchProblem problem, String strategy) {
 		Node node = new Node(problem.initialState, null, (byte)-1, (short)0, (short)0);
 		PriorityQueue<Node> pq = new PriorityQueue<Node>();
-	//	while(true) {
-			if(pq.isEmpty())
-				return "mnwb btts";
+		while(!pq.isEmpty()) 
+		{
 			Node currentNode = pq.poll();
 			boolean isGoal = problem.goalTest(currentNode.state);
-			if(isGoal) {
+			if(isGoal)
 				return buildPath(currentNode);
-			}
-//			Node[] nodes = expand(currentNode);
-	//	}
-		return "btts";
+			
+			LinkedList<Node> nodes = expand(currentNode);
+		}
+		return "failure";
 	}
 
 
-	private static Node[] expand(Node currentNode) {
-	    byte m,n;
-	    byte x =currentNode.state.neoX;
-	    byte y =currentNode.state.neoY;
+	private static LinkedList<Node> expand(Node currentNode) {
+
+	    byte neoX =currentNode.state.neoX;
+	    byte neoY =currentNode.state.neoY;
 		//up, down, left, right, carry, drop, takePill, killR , killL , killU , killD	, and fly
 		//0    1      2     3     4      5        6      7         8
-//	 Node(State state, Node parent, byte operator, short depth, short pathCost) 
-//		State(byte neoX, byte neoY, short movedHostages, short currentlyCarriedHostages, short hostagesToAgents,
-//				short killedTransHostages, byte[] hostagesHealth, byte neoHealth) 
 		
-		
+	    LinkedList<Node> expandedNodes = new LinkedList<Node>();
+	    
+	    // Try Up
+	    if(neoX-1 >= 0 && !agentAt((byte) (neoX-1),
+	    						  neoY,
+	    						  currentNode.state.hostagesHealth,
+	    						  currentNode.state.hostagesToAgents,
+	    						  currentNode.state.killedTransHostages,
+	    						  currentNode.state.killedNormalAgent0,
+	    						  currentNode.state.killedNormalAgent1,
+	    						  currentNode.state.killedNormalAgent2,
+	    						  currentNode.state.killedNormalAgent3))
+	    {
+//	    	if()
+	    }
+	    
+		 
 		return null;
 	}
-
+	
+	private static boolean agentAt(byte x,
+								   byte y,
+								   byte[] hostagesHealth,
+								   short hostagesToAgents,
+								   short killedTransHostages,
+								   long killedNormalAgent0,
+								   long killedNormalAgent1,
+								   long killedNormalAgent2,
+								   int killedNormalAgent3) {
+		return true;
+	}
 
 	private static String buildPath(Node currentNode) {
 		// TODO Auto-generated method stub

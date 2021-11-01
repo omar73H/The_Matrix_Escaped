@@ -50,23 +50,23 @@ public class SearchProblem {
 		return true;
 	}
 	
-	public static void main(String[] args) {
-		byte neoX=0;
-		byte neoY=0;
-		short movedHostages=0;
-		short currentlyCarriedHostages=0;
-		short hostagesToAgents=0;
-		short killedTransHostages=0;
-		byte[]  prehostagesHealth= {10,5,6,7,0};
-		byte[]  currhostagesHealth= {10,5,6,11,0};
-
-		byte neoHealth=0;
-		State prevState=new State(neoX,neoY,movedHostages,currentlyCarriedHostages,hostagesToAgents,killedTransHostages,prehostagesHealth,(byte)50);
-		State currState=new State(neoX,neoY,movedHostages,currentlyCarriedHostages,hostagesToAgents,killedTransHostages,currhostagesHealth,neoHealth);
-//		(State state, Node parent, byte operator, short depth, short pathCost)
-		Node parent=new Node(prevState,null,(byte) 1,(short) 10,(short) 100);
-		Node node=new Node(currState,parent,(byte) 1,(short) 10,(short) 100);
-		System.out.println(calculatePathCost(node));
-
-	}
+//	public static void main(String[] args) {
+//		byte neoX=0;
+//		byte neoY=0;
+//		short movedHostages=0;
+//		short currentlyCarriedHostages=0;
+//		short hostagesToAgents=0;
+//		short killedTransHostages=0;
+//		byte[]  prehostagesHealth= {10,5,6,7,0};
+//		byte[]  currhostagesHealth= {10,5,6,11,0};
+//
+//		byte neoHealth=0;
+//		State prevState=new State(neoX,neoY,movedHostages,currentlyCarriedHostages,hostagesToAgents,killedTransHostages,prehostagesHealth,(byte)50);
+//		State currState=new State(neoX,neoY,movedHostages,currentlyCarriedHostages,hostagesToAgents,killedTransHostages,currhostagesHealth,neoHealth);
+////		(State state, Node parent, byte operator, short depth, short pathCost)
+//		Node parent=new Node(prevState,null,(byte) 1,(short) 10,(short) 100);
+//		Node node=new Node(currState,parent,(byte) 1,(short) 10,(short) 100);
+//		System.out.println(calculatePathCost(node));
+//
+//	}
 }
