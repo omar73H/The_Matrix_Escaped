@@ -223,7 +223,7 @@ public class The_Matrix_Solver {
 			
 			LinkedList<Node> nodes = expand(currentNode);
 		}
-		return "failure";
+		return "failure"; 
 	}
 
 
