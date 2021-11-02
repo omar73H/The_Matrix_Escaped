@@ -5,7 +5,7 @@ public class SearchProblem {
 	
 	short numOfHostages;
 
-	public static int calculatePathCost(Node node) {
+	public static short calculatePathCost(Node node) {
 		// OPERATOR: Move(0) : 2, Kill(1): 2 if mutated and 20 otherwise, Carry(2) : 2, Drop(3): -500, Fly(4): 2, Take_Pill(5): 2
 		// STATE: Neo Dies: 10000, Hostage Dies 1000
 		byte op = node.operator;
@@ -27,7 +27,7 @@ public class SearchProblem {
 		for( int x : node.state.hostagesHealth) if(x==0) currHostages++;
 		
 		baseCost+=(currHostages-prevHostages)*1000;
-		return (node.parent != null)? baseCost + node.parent.pathCost :0 ;
+		return (node.parent != null)? (short)(baseCost + node.parent.pathCost) :(short)0 ;
 	}
 	
 	public SearchProblem(byte numOfHostages,State initialState) {

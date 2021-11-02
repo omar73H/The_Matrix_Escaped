@@ -31,7 +31,10 @@ public class State {
 		this.neoHealth = neoHealth;
 	}
 	
-	
+	public static void main(String[] args) {
+		short x = 255;
+		System.out.println((byte)x);
+	}
 	
 	
 }
