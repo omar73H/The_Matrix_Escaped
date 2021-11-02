@@ -533,26 +533,23 @@ public class The_Matrix_Solver {
 		    }
 		return null;
 	}
-	    Node n = fly(currentNode);
-		 
-		return null;
-	}
+	
 	
 	public static Node fly(Node node) {
-		for(int i=0; i<padsInformation.length;i++) {
-			
-		}
+//		for(int i=0; i<padsInformation.length;i++) {
+//			
+//		}
 		return null;
 	}
 	
 	public static Node pickUpAgent(Node node) {
 		int index = -1;
 		String lookingfor = node.state.neoX + "," + node.state.neoY;
-		for(int i = 0; i<hostagesInformation.length;i++) 
-			if(hostagesInformation[i].equals(lookingfor)) {
-				index = i;
-				break;
-			}
+//		for(int i = 0; i<hostagesInformation.length;i++) 
+//			if(hostagesInformation[i].equals(lookingfor)) {
+//				index = i;
+//				break;
+//			}
 
 		if(index == -1)
 			return null;
