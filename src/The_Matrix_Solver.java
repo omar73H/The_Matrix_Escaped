@@ -10,24 +10,18 @@ public class The_Matrix_Solver {
 	public static byte m,n,c;
 	public static byte initNeoX, initNeoY, telephoneX, telephoneY;
 	public static byte hostagesCount;
-	public static byte[] hostagesLocation;
-	// location of hostage i is saves at cells 2*i and 2*i+1
-	
-	
-	// use 2D array for grid???
 	public static byte[] hostagesHealth;
 	
-	public static String[] pillsInformation;
-	
-	public static String[] padsInformation;
-	
-<<<<<<< HEAD
-	public static byte[] agentsLocation;
 	// location of hostage i is saves at cells 2*i and 2*i+1
-=======
-	public static String[] agentsInformation;
-	// "0,0,1,1" "1,1,2,2"
->>>>>>> 3b4e9d17cd47514dd738259f64b228bec5bfe3da
+	public static byte[] hostagesLocation;
+	
+	public static byte[] pillsLocation;
+	
+	public static byte[] padsStartLocation;
+	public static byte[] padsEndLocation;
+	
+	public static byte[] agentsLocation;
+	
 	
 	public static void main(String[] args) {
 		System.out.println(genGrid());
@@ -96,7 +90,7 @@ public class The_Matrix_Solver {
 		//The number of pills
 		byte pillsCount = (byte)random(1,hostagesCount);
 		
-		pillsInformation = new String[pillsCount];
+		pillsLocation = new byte[pillsCount*2];
 		StringBuilder pillsInfo = new StringBuilder();
 		//Positions of pills;
 		for(int i=0;i<pillsCount;i++)
@@ -112,14 +106,17 @@ public class The_Matrix_Solver {
 				pillsInfo.append(",");
 			
 			pillsInfo.append(pillX+","+pillY);
-			pillsInformation[i]= pillX+","+pillY;
+			pillsLocation[2*i]= pillX;
+			pillsLocation[2*i+1]= pillY;
 		}
 		
 		//Pads
 		int maxPadsCount = availableCells.size()%2==0? (availableCells.size()-2)/2:(availableCells.size()-1)/2;
 		int padsCount = random(1,maxPadsCount);
 		
-		padsInformation = new String[padsCount];
+		
+		padsStartLocation = new byte[padsCount*2];
+		padsEndLocation = new byte[padsCount*2];
 		
 		StringBuilder padsInfo = new StringBuilder();
 		//Positions of pads;
@@ -146,7 +143,10 @@ public class The_Matrix_Solver {
 			padsInfo.append(",");
 			padsInfo.append(endPadX+","+endPadY+","+startPadX+","+startPadY);
 			
-			padsInformation[i] = startPadX+","+startPadY+","+endPadX+","+endPadY;
+			padsStartLocation[2*i] = startPadX;
+			padsStartLocation[2*i+1] = startPadY;
+			padsEndLocation[2*i] = endPadX;
+			padsEndLocation[2*i+1] = endPadY;
 			
 			
 		}
@@ -246,7 +246,7 @@ public class The_Matrix_Solver {
 		
 	    LinkedList<Node> expandedNodes = new LinkedList<Node>();
 	    
-	    // Try Up
+	    // Try Upd
 	    if(neoX-1 >= 0 && agentAt((byte) (neoX-1),
 	    						  neoY,
 	    						  currentNode.state.hostagesHealth,
@@ -285,7 +285,6 @@ public class The_Matrix_Solver {
 
 	    }
 	    
-<<<<<<< HEAD
 	  //Try Left
 	    if(neoY-1 >=0 && agentAt(neoX,
 	    						  (byte)(neoY-1),
@@ -534,27 +533,6 @@ public class The_Matrix_Solver {
 		    }
 		return null;
 	}
-	/**
-	 * 
-	 * @param x
-	 * @param y
-	 * @param hostagesHealth
-	 * @param movedHostages
-	 * @param hostagesToAgents
-	 * @param killedTransHostages
-	 * @param killedNormalAgent0
-	 * @param killedNormalAgent1
-	 * @param killedNormalAgent2
-	 * @param killedNormalAgent3
-	 * @return
-	 * if we check for movement then we return a short with negative number, if no agent in the directed cell
-	 * if we check for trying kill then
-	 * if there is an agent we return the index saved in in least siginifcant 8 bits 
-	 * and the 9th bit is set to 0 to indicate a normal agent  Or 1 to indicate a Hostage turned to agent
-	 * else will return negative value
-	 */
-	private static short agentAt(byte x,
-=======
 	    Node n = fly(currentNode);
 		 
 		return null;
@@ -581,8 +559,26 @@ public class The_Matrix_Solver {
 		return null;
 	}
 	
-	private static boolean agentAt(byte x,
->>>>>>> 3b4e9d17cd47514dd738259f64b228bec5bfe3da
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @param hostagesHealth
+	 * @param movedHostages
+	 * @param hostagesToAgents
+	 * @param killedTransHostages
+	 * @param killedNormalAgent0
+	 * @param killedNormalAgent1
+	 * @param killedNormalAgent2
+	 * @param killedNormalAgent3
+	 * @return
+	 * if we check for movement then we return a short with negative number, if no agent in the directed cell
+	 * if we check for trying kill then
+	 * if there is an agent we return the index saved in in least siginifcant 8 bits 
+	 * and the 9th bit is set to 0 to indicate a normal agent  Or 1 to indicate a Hostage turned to agent
+	 * else will return negative value
+	 */
+	private static short agentAt(byte x,
 								   byte y,
 								   byte[] hostagesHealth,
 								   short movedHostages,
