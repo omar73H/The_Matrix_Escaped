@@ -12,6 +12,7 @@ public class The_Matrix_Solver {
 	public static byte hostagesCount;
 	public static String[] hostagesInformation;
 	
+	// use 2D array for grid???
 	public static byte[] hostagesHealth;
 	
 	public static String[] pillsInformation;
@@ -259,6 +260,21 @@ public class The_Matrix_Solver {
 		for(int i=0; i<padsInformation.length;i++) {
 			
 		}
+		return null;
+	}
+	
+	public static Node pickUpAgent(Node node) {
+		int index = -1;
+		String lookingfor = node.state.neoX + "," + node.state.neoY;
+		for(int i = 0; i<hostagesInformation.length;i++) 
+			if(hostagesInformation[i].equals(lookingfor)) {
+				index = i;
+				break;
+			}
+
+		if(index == -1)
+			return null;
+		Node nextNode = node.
 		return null;
 	}
 	
