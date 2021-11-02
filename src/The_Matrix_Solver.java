@@ -14,14 +14,20 @@ public class The_Matrix_Solver {
 	// location of hostage i is saves at cells 2*i and 2*i+1
 	
 	
+	// use 2D array for grid???
 	public static byte[] hostagesHealth;
 	
 	public static String[] pillsInformation;
 	
 	public static String[] padsInformation;
 	
+<<<<<<< HEAD
 	public static byte[] agentsLocation;
 	// location of hostage i is saves at cells 2*i and 2*i+1
+=======
+	public static String[] agentsInformation;
+	// "0,0,1,1" "1,1,2,2"
+>>>>>>> 3b4e9d17cd47514dd738259f64b228bec5bfe3da
 	
 	public static void main(String[] args) {
 		System.out.println(genGrid());
@@ -227,7 +233,7 @@ public class The_Matrix_Solver {
 			
 			LinkedList<Node> nodes = expand(currentNode);
 		}
-		return "failure";
+		return "failure"; 
 	}
 
 
@@ -279,6 +285,7 @@ public class The_Matrix_Solver {
 
 	    }
 	    
+<<<<<<< HEAD
 	  //Try Left
 	    if(neoY-1 >=0 && agentAt(neoX,
 	    						  (byte)(neoY-1),
@@ -547,6 +554,36 @@ public class The_Matrix_Solver {
 	 * else will return negative value
 	 */
 	private static short agentAt(byte x,
+=======
+	    Node n = fly(currentNode);
+		 
+		return null;
+	}
+	
+	public static Node fly(Node node) {
+		for(int i=0; i<padsInformation.length;i++) {
+			
+		}
+		return null;
+	}
+	
+	public static Node pickUpAgent(Node node) {
+		int index = -1;
+		String lookingfor = node.state.neoX + "," + node.state.neoY;
+		for(int i = 0; i<hostagesInformation.length;i++) 
+			if(hostagesInformation[i].equals(lookingfor)) {
+				index = i;
+				break;
+			}
+
+		if(index == -1)
+			return null;
+		Node nextNode = node.
+		return null;
+	}
+	
+	private static boolean agentAt(byte x,
+>>>>>>> 3b4e9d17cd47514dd738259f64b228bec5bfe3da
 								   byte y,
 								   byte[] hostagesHealth,
 								   short movedHostages,
