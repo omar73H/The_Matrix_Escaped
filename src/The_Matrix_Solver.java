@@ -19,6 +19,7 @@ public class The_Matrix_Solver {
 	public static String[] padsInformation;
 	
 	public static String[] agentsInformation;
+	// "0,0,1,1" "1,1,2,2"
 	
 	public static void main(String[] args) {
 		System.out.println(genGrid());
@@ -249,7 +250,15 @@ public class The_Matrix_Solver {
 //	    	if()
 	    }
 	    
+	    Node n = fly(currentNode);
 		 
+		return null;
+	}
+	
+	public static Node fly(Node node) {
+		for(int i=0; i<padsInformation.length;i++) {
+			
+		}
 		return null;
 	}
 	
