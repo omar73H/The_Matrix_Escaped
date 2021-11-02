@@ -274,7 +274,6 @@ public class The_Matrix_Solver {
 
 		if(index == -1)
 			return null;
-		Node nextNode = node.
 		return null;
 	}
 	
