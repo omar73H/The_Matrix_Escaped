@@ -6,7 +6,7 @@ public class SearchProblem {
 	short numOfHostages;
 
 	public static short calculatePathCost(Node node) {
-		// OPERATOR: Move(0) : 2, Kill(1): 2 if mutated and 20 otherwise, Carry(2) : 2, Drop(3): -500, Fly(4): 2, Take_Pill(5): 2
+		// OPERATOR: Move(0,1,2,3) : 2, Carry(4) : 2, Drop(5): -500, Take_Pill(11): 2, Kill(7,8,9,10): 2 if mutated and 20 otherwise, Fly(11): 2
 		// STATE: Neo Dies: 10000, Hostage Dies 1000
 		byte op = node.operator;
 		int baseCost = 0;

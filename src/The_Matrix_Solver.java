@@ -246,7 +246,7 @@ public class The_Matrix_Solver {
 		
 	    LinkedList<Node> expandedNodes = new LinkedList<Node>();
 	    
-	    // Try Upd
+	    // Try Up
 	    if(neoX-1 >= 0 && agentAt((byte) (neoX-1),
 	    						  neoY,
 	    						  currentNode.state.hostagesHealth,
@@ -531,6 +531,9 @@ public class The_Matrix_Solver {
 		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 		    	expandedNodes.add(newNode);
 		    }
+		    
+		    // Try Carry
+
 		return null;
 	}
 	
@@ -542,20 +545,44 @@ public class The_Matrix_Solver {
 		return null;
 	}
 	
-	public static Node pickUpAgent(Node node) {
-		int index = -1;
-		String lookingfor = node.state.neoX + "," + node.state.neoY;
-//		for(int i = 0; i<hostagesInformation.length;i++) 
-//			if(hostagesInformation[i].equals(lookingfor)) {
-//				index = i;
-//				break;
-//			}
-
-		if(index == -1)
+	public static Node pickUpAgent(Node currentNode) {
+		
+		short hostageIdx = hostageAt(currentNode.state.neoX, currentNode.state.neoY, 
+				currentNode.state.hostagesHealth, currentNode.state.movedHostages);
+		
+		if(hostageIdx == -1)
 			return null;
-		return null;
+		
+	    State newState = timeStep(currentNode.state);
+		Node newNode = new Node(newState, currentNode, (byte)4, (short)(currentNode.depth+1), (short)0);
+		newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+//		expandedNodes.add(newNode);
+		
+		return newNode;
 	}
 	
+	// Return index of hostage at X,Y or -1 if no hostage here
+		private static short hostageAt(byte x, byte y, 
+				byte[] hosHealth, short movedHos) {
+			
+			for(byte i=(byte)0;i<hosHealth.length;i++){
+				// If init location isn't here no need to check
+				if(x != hostagesLocation[2*i] 
+						|| y != hostagesLocation[2*i+1])
+					continue;
+				
+				// If hostage that started at x,y was moved there is hostage one here
+				if((movedHos & (1<<i)) != 0)
+					return Short.MIN_VALUE;
+				
+				// If hostage is alive
+				if(hosHealth[i] < 100){
+					return i;
+				}
+			}
+			return -1;
+		}
+		
 	/**
 	 * 
 	 * @param x
@@ -680,6 +707,8 @@ public class The_Matrix_Solver {
 		
 		return Short.MIN_VALUE;
 	}
+
+	
 	
 	
 	private static State timeStep(State currState) {
