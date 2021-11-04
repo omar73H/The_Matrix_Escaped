@@ -537,14 +537,27 @@ public class The_Matrix_Solver {
 		return null;
 	}
 	
-	
+	//  
 	public static Node fly(Node node) {
 //		for(int i=0; i<padsInformation.length;i++) {
 //			
 //		}
 		return null;
 	}
+	public static Node takePill(Node node) {
+//		for(int i=0; i<padsInformation.length;i++) {
+//			
+//		}
+		return null;
+	}
+	public static boolean isTherePill(byte x,byte y) {
+		
+		return false;
+	}
 	
+	public static boolean isTherePad(byte x,byte y) {
+		return false;
+	}
 	public static Node pickUpAgent(Node currentNode) {
 		
 		short hostageIdx = hostageAt(currentNode.state.neoX, currentNode.state.neoY, 
