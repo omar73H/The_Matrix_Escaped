@@ -588,9 +588,8 @@ public class The_Matrix_Solver {
 		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 		    	return newNode;
 		    }
-	    }    
-		    
-		    
+	    }
+		return null;    
 	}
 	
 	//  
@@ -613,6 +612,27 @@ public class The_Matrix_Solver {
 	
 	public static boolean isTherePad(byte x,byte y) {
 		return false;
+	}
+	private static Node dropAllHostages(Node currentNode) {
+		if(telephoneX != currentNode.state.neoX)
+			return null;
+		if(telephoneY != currentNode.state.neoY)
+			return null;
+		
+		for(int i = 0; i<currentNode.state.hostagesHealth.length;i++) {
+			// Neo is carrying this hostage
+			if((currentNode.state.currentlyCarriedHostages & (1<<i)) != 0)
+			{
+				currentNode.state.currentlyCarriedHostages = 0;
+			}
+		}
+		
+		State newState = timeStep(currentNode.state);
+		Node newNode = new Node(newState, currentNode, (byte)4, (short)(currentNode.depth+1), (short)0);
+		newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+		
+		return newNode;
+		
 	}
 	public static Node pickUpAgent(Node currentNode) {
 		

@@ -19,14 +19,14 @@ public class Trying {
 		return -1;
 	}
 	
-	private static short dropHostages(byte x, byte y, 
+	private static short dropAllHostages(byte x, byte y, 
 			byte[] hosHealth, short carriedHos) {
 		
 		for(int i = 0; i<hosHealth.length;i++) {
 			// Neo is carrying this hostage
 			if((carriedHos & (1<<i)) != 0)
 			{
-				
+				carriedHos = 0;
 			}
 		}
 		return -1;
