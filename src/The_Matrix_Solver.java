@@ -593,26 +593,117 @@ public class The_Matrix_Solver {
 	}
 	
 	//  
-	public static Node fly(Node node) {
-//		for(int i=0; i<padsInformation.length;i++) {
-//			
-//		}
-		return null;
-	}
-	public static Node takePill(Node node) {
-//		for(int i=0; i<padsInformation.length;i++) {
-//			
-//		}
-		return null;
-	}
-	public static boolean isTherePill(byte x,byte y) {
-		
-		return false;
-	}
 	
-	public static boolean isTherePad(byte x,byte y) {
-		return false;
-	}
+	// //////// 
+		public static Node fly(Node node) {
+			
+			byte[] t=isTherePad(node.state.neoX, node.state.neoY);
+			
+			if(t[0]!=0) {
+				if(t[1]==0) {
+				State tempNode=timeStep(node.state);
+				tempNode.neoX=padsEndLocation[t[2]];
+				tempNode.neoY=padsEndLocation[t[2]+1];
+				Node sNode=new Node(tempNode,node,(byte) 11,(short)(node.depth+1),(short)0);
+				
+				return sNode;
+				}
+				else {
+					State tempNode=timeStep(node.state);
+					tempNode.neoX=padsStartLocation[t[2]];
+					tempNode.neoY=padsStartLocation[t[2]+1];
+					Node sNode=new Node(tempNode,node,(byte) 11,(short)(node.depth+1),(short)0);
+					
+					return sNode;
+				}
+//				State state;
+//				Node parent;
+//				byte operator;
+//				short depth;
+//				short pathCost;
+				
+			}
+			else {
+				return null ;
+			}
+			
+		}
+		public static Node takePill(Node node) {
+			if(isTherePill(node.state.neoX, node.state.neoY)) {
+				
+				
+				////////
+				
+				State newState = new State(node.state.neoX,
+						node.state.neoY,
+						node.state.movedHostages,
+						node.state.currentlyCarriedHostages,
+						node.state.hostagesToAgents,
+						node.state.killedTransHostages,
+						node.state.killedNormalAgent0,
+						node.state.killedNormalAgent1,
+						node.state.killedNormalAgent2,
+						node.state.killedNormalAgent3,
+						node.state.hostagesHealth,
+						node.state.neoHealth);
+			for(byte i=(byte)0;i<node.state.hostagesHealth.length;i++)
+			{
+				 // we check first if the hostage was delivered or not , if it was then we dont change it health 
+				 //(in moved and not in currently carried)
+				if(((newState.movedHostages & (1<<i)) !=0) && ((newState.currentlyCarriedHostages & (1<<i)) ==0))
+					continue;
+				
+				newState.hostagesHealth[i] = (byte)Math.min(100, newState.hostagesHealth[i]-20);
+				//if the hostage was not rescued and it health reached 100 
+				// we turn the hostage into agent if and only if it was not carried at the moment
+				if(newState.hostagesHealth[i]<0)
+				{	
+					newState.hostagesHealth[i]=0;
+				}
+					
+			}
+				////////
+				Node sNode=new Node(newState,node,(byte) 6,(short)(node.depth+1),(short)0);
+				
+				return sNode;
+				
+				
+			}
+			else {
+				return null ;
+			}
+			
+			
+		}
+		public static boolean isTherePill(byte x,byte y) {
+			for(int i=0;i<pillsLocation.length;i=i+2) {
+				
+				if(x==pillsLocation[i]&&y==pillsLocation[i+1])
+				return true;
+			}
+			return false;
+		}
+		
+		public static byte[] isTherePad(byte x,byte y) {
+			byte s[] = {0,0,0};
+			for(int i=0;i<padsStartLocation.length;i=i+2) {
+				if(x==padsStartLocation[i]&&y==padsStartLocation[i+1]) {
+				s[0]=1;
+				s[1]=0;
+				s[2]=(byte)i;}
+				else if (x==padsEndLocation[i]&&y==padsEndLocation[i+1]) {
+					s[0]=1;
+					s[1]=1;
+					s[2]=(byte)i;
+				}
+			}
+			return s;	}
+		
+		
+		
+		
+		
+		///////////////////////////////////////////////////////////////////////////////
 	private static Node dropAllHostages(Node currentNode) {
 		if(telephoneX != currentNode.state.neoX)
 			return null;
@@ -842,4 +933,13 @@ public class The_Matrix_Solver {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
