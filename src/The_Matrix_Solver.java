@@ -222,8 +222,14 @@ public class The_Matrix_Solver {
 	}
 	
 	public static String generalSearch(SearchProblem problem, String strategy) {
-		Node node = new Node(problem.initialState, null, (byte)-1, (short)0, (short)0);
-		PriorityQueue<Node> pq = new PriorityQueue<Node>();
+		Node initNode = new Node(problem.initialState, null, (byte)-1, (short)0, (short)0);
+		
+		return "failure"; 
+	}
+	
+	public static String bfs(Node initNode) {
+		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth-y.depth));// BFS
+		pq.add(initNode);
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = pq.poll();
@@ -232,10 +238,9 @@ public class The_Matrix_Solver {
 				return buildPath(currentNode);
 			
 			LinkedList<Node> nodes = expand(currentNode);
+			
 		}
-		return "failure"; 
 	}
-
 
 	private static LinkedList<Node> expand(Node currentNode) {
 
@@ -419,6 +424,7 @@ public class The_Matrix_Solver {
 		    	else
 		    	{
 		    		// negate 1<<8 then &
+		    		agentAt = (short)(agentAt & ~(1<<8));
 		    		newState.killedTransHostages |= 1<<agentAt;
 		    	}
 		    	
@@ -473,6 +479,7 @@ public class The_Matrix_Solver {
 		    	else
 		    	{
 		    		// negate 1<<8 then &
+		    		agentAt = (short)(agentAt & ~(1<<8));
 		    		newState.killedTransHostages |= 1<<agentAt;
 		    	}
 		    	
@@ -527,6 +534,7 @@ public class The_Matrix_Solver {
 		    	else
 		    	{
 		    		// negate 1<<8 then &
+		    		agentAt = (short)(agentAt & ~(1<<8));
 		    		newState.killedTransHostages |= 1<<agentAt;
 		    	}
 		    	
@@ -581,6 +589,7 @@ public class The_Matrix_Solver {
 		    	else
 		    	{
 		    		// negate 1<<8 then &
+		    		agentAt = (short)(agentAt & ~(1<<8));
 		    		newState.killedTransHostages |= 1<<agentAt;
 		    	}
 		    	
@@ -589,7 +598,7 @@ public class The_Matrix_Solver {
 		    	return newNode;
 		    }
 	    }    
-		    
+		return null;
 		    
 	}
 	
