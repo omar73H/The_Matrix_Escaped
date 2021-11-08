@@ -239,145 +239,198 @@ public class The_Matrix_Solver {
 
 	private static LinkedList<Node> expand(Node currentNode) {
 
-	    byte neoX =currentNode.state.neoX;
-	    byte neoY =currentNode.state.neoY;
+	    
 		//up, down, left, right, carry, drop, takePill, killU ,killD, killL, killR 	, and fly
 		//0    1      2     3     4      5        6      7         8      9      10       11
 		
 	    LinkedList<Node> expandedNodes = new LinkedList<Node>();
-	    
-	    // Try Up
-	    if(neoX-1 >= 0 && agentAt((byte) (neoX-1),
-	    						  neoY,
-	    						  currentNode.state.hostagesHealth,
-	    						  currentNode.state.movedHostages,
-	    						  currentNode.state.hostagesToAgents,
-	    						  currentNode.state.killedTransHostages,
-	    						  currentNode.state.killedNormalAgent0,
-	    						  currentNode.state.killedNormalAgent1,
-	    						  currentNode.state.killedNormalAgent2,
-	    						  currentNode.state.killedNormalAgent3, false) < 0)
+	    //Try Up
+	    Node triedNode=move(0, currentNode);
+	    if(triedNode!=null)
 	    {
-	    	State newState = timeStep(currentNode.state);
-	    	newState.neoX=(byte) (neoX-1);
-	    	Node newNode = new Node(newState, currentNode, (byte)0, (short)(currentNode.depth+1), (short)0);
-	    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-	    	expandedNodes.add(newNode);
-	    	
+			expandedNodes.add(triedNode);
 	    }
+	    
 	    //Try Down
-	    if(neoX+1 < m && agentAt((byte) (neoX+1),
-								  neoY,
-								  currentNode.state.hostagesHealth,
-								  currentNode.state.movedHostages,
-								  currentNode.state.hostagesToAgents,
-								  currentNode.state.killedTransHostages,
-								  currentNode.state.killedNormalAgent0,
-								  currentNode.state.killedNormalAgent1,
-								  currentNode.state.killedNormalAgent2,
-								  currentNode.state.killedNormalAgent3, false) < 0)
+	    triedNode=move(1, currentNode);
+	    if(triedNode!=null)
 	    {
-			State newState = timeStep(currentNode.state);
-			newState.neoX=(byte) (neoX+1);
-			Node newNode = new Node(newState, currentNode, (byte)1, (short)(currentNode.depth+1), (short)0);
-			newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-			expandedNodes.add(newNode);
-
+			expandedNodes.add(triedNode);
 	    }
 	    
-	  //Try Left
-	    if(neoY-1 >=0 && agentAt(neoX,
-	    						  (byte)(neoY-1),
-								  currentNode.state.hostagesHealth,
-								  currentNode.state.movedHostages,
-								  currentNode.state.hostagesToAgents,
-								  currentNode.state.killedTransHostages,
-								  currentNode.state.killedNormalAgent0,
-								  currentNode.state.killedNormalAgent1,
-								  currentNode.state.killedNormalAgent2,
-								  currentNode.state.killedNormalAgent3, false) < 0)
+	    triedNode=move(2, currentNode);
+	    if(triedNode!=null)
 	    {
-			State newState = timeStep(currentNode.state);
-			newState.neoY=(byte) (neoY-1);
-			Node newNode = new Node(newState, currentNode, (byte)2, (short)(currentNode.depth+1), (short)0);
-			newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-			expandedNodes.add(newNode);
-
-	    }
-	    //Try Right
-	    if(neoY+1 <n && agentAt(neoX,
-	    						  (byte)(neoY+1),
-								  currentNode.state.hostagesHealth,
-								  currentNode.state.movedHostages,
-								  currentNode.state.hostagesToAgents,
-								  currentNode.state.killedTransHostages,
-								  currentNode.state.killedNormalAgent0,
-								  currentNode.state.killedNormalAgent1,
-								  currentNode.state.killedNormalAgent2,
-								  currentNode.state.killedNormalAgent3, false) < 0)
-	    {
-			State newState = timeStep(currentNode.state);
-			newState.neoY=(byte) (neoY+1);
-			Node newNode = new Node(newState, currentNode, (byte)3, (short)(currentNode.depth+1), (short)0);
-			newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-			expandedNodes.add(newNode);
-
+			expandedNodes.add(triedNode);
 	    }
 	    
-	    //TryKillUp
-	    short agentAt = agentAt((byte) (neoX-1),
-				  neoY,
-				  currentNode.state.hostagesHealth,
-				  currentNode.state.movedHostages,
-				  currentNode.state.hostagesToAgents,
-				  currentNode.state.killedTransHostages,
-				  currentNode.state.killedNormalAgent0,
-				  currentNode.state.killedNormalAgent1,
-				  currentNode.state.killedNormalAgent2,
-				  currentNode.state.killedNormalAgent3, true);
-	    if(neoX-1 >= 0 && agentAt >= 0)
+	    triedNode=move(3, currentNode);
+	    if(triedNode!=null)
 	    {
-	    	State newState = timeStep(currentNode.state);
-	    	
-	    	newState.neoHealth += 20;
-	    	
-	    	// if normal agent
-	    	if((agentAt & (1<<8)) == 0)
-	    	{
-	    		if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
-				{
-					newState.killedNormalAgent0 |= (1<<agentAt);
-				}
-				else if(agentAt < 128)
-				{
-					agentAt -= (byte)64;
-					newState.killedNormalAgent1 |= (1<<agentAt);
-				}
-				else if(agentAt < 192)
-				{
-					agentAt -= (byte)128;
-					newState.killedNormalAgent2 |= (1<<agentAt);
-				}
-				else
-				{
-					agentAt -= (byte)192;
-					newState.killedNormalAgent3 |= (1<<agentAt);
-				}
-	    	}
-	    	else
-	    	{
-	    		// negate 1<<8 then &
-	    		newState.killedTransHostages |= 1<<agentAt;
-	    	}
-	    	
-	    	Node newNode = new Node(newState, currentNode, (byte)7, (short)(currentNode.depth+1), (short)0);
-	    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-	    	expandedNodes.add(newNode);
+			expandedNodes.add(triedNode);
 	    }
-	    	
-	    	
-		    //TryKillDown
-		    agentAt = agentAt((byte) (neoX+1),
+	    
+	    
+		    
+		    // Try Carry
+
+		return null;
+	}
+	
+	public static Node move(int actionId, Node currentNode)
+	{
+		byte neoX =currentNode.state.neoX;
+	    byte neoY =currentNode.state.neoY;
+		if(actionId == 0)
+		{
+			// Try Up
+		    if(neoX-1 >= 0 && agentAt((byte) (neoX-1),
+		    						  neoY,
+		    						  currentNode.state.hostagesHealth,
+		    						  currentNode.state.movedHostages,
+		    						  currentNode.state.hostagesToAgents,
+		    						  currentNode.state.killedTransHostages,
+		    						  currentNode.state.killedNormalAgent0,
+		    						  currentNode.state.killedNormalAgent1,
+		    						  currentNode.state.killedNormalAgent2,
+		    						  currentNode.state.killedNormalAgent3, false) < 0)
+		    {
+		    	State newState = timeStep(currentNode.state);
+		    	newState.neoX=(byte) (neoX-1);
+		    	Node newNode = new Node(newState, currentNode, (byte)0, (short)(currentNode.depth+1), (short)0);
+		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+		    	return newNode;
+		    	
+		    }
+			
+		}
+		else if(actionId == 1)
+		{
+			//TryDown
+			if(neoX+1 < m && agentAt((byte) (neoX+1),
+					  neoY,
+					  currentNode.state.hostagesHealth,
+					  currentNode.state.movedHostages,
+					  currentNode.state.hostagesToAgents,
+					  currentNode.state.killedTransHostages,
+					  currentNode.state.killedNormalAgent0,
+					  currentNode.state.killedNormalAgent1,
+					  currentNode.state.killedNormalAgent2,
+					  currentNode.state.killedNormalAgent3, false) < 0)
+			{
+				State newState = timeStep(currentNode.state);
+				newState.neoX=(byte) (neoX+1);
+				Node newNode = new Node(newState, currentNode, (byte)1, (short)(currentNode.depth+1), (short)0);
+				newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+				return newNode;
+			}
+		}
+		else if(actionId == 2)
+		{
+			//Try Left
+			if(neoY-1 >=0 && agentAt(neoX,
+							  (byte)(neoY-1),
+							  currentNode.state.hostagesHealth,
+							  currentNode.state.movedHostages,
+							  currentNode.state.hostagesToAgents,
+							  currentNode.state.killedTransHostages,
+							  currentNode.state.killedNormalAgent0,
+							  currentNode.state.killedNormalAgent1,
+							  currentNode.state.killedNormalAgent2,
+							  currentNode.state.killedNormalAgent3, false) < 0)
+			{
+				State newState = timeStep(currentNode.state);
+				newState.neoY=(byte) (neoY-1);
+				Node newNode = new Node(newState, currentNode, (byte)2, (short)(currentNode.depth+1), (short)0);
+				newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+				return newNode;
+			}
+		}
+		else if(actionId == 3)
+		{
+			//Try Right
+			if(neoY+1 <n && agentAt(neoX,
+							  (byte)(neoY+1),
+							  currentNode.state.hostagesHealth,
+							  currentNode.state.movedHostages,
+							  currentNode.state.hostagesToAgents,
+							  currentNode.state.killedTransHostages,
+							  currentNode.state.killedNormalAgent0,
+							  currentNode.state.killedNormalAgent1,
+							  currentNode.state.killedNormalAgent2,
+							  currentNode.state.killedNormalAgent3, false) < 0)
+			{
+				State newState = timeStep(currentNode.state);
+				newState.neoY=(byte) (neoY+1);
+				Node newNode = new Node(newState, currentNode, (byte)3, (short)(currentNode.depth+1), (short)0);
+				newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+				return newNode;
+			}
+		}
+		return null;
+	}
+	
+	public static Node kill(int actionId, Node currentNode)
+	{
+		byte neoX =currentNode.state.neoX;
+	    byte neoY =currentNode.state.neoY;
+	    if(actionId == 7)
+	    {
+	    	//TryKillUp
+		    short agentAt = agentAt((byte) (neoX-1),
+					  neoY,
+					  currentNode.state.hostagesHealth,
+					  currentNode.state.movedHostages,
+					  currentNode.state.hostagesToAgents,
+					  currentNode.state.killedTransHostages,
+					  currentNode.state.killedNormalAgent0,
+					  currentNode.state.killedNormalAgent1,
+					  currentNode.state.killedNormalAgent2,
+					  currentNode.state.killedNormalAgent3, true);
+		    if(neoX-1 >= 0 && agentAt >= 0)
+		    {
+		    	State newState = timeStep(currentNode.state);
+		    	
+		    	newState.neoHealth += 20;
+		    	
+		    	// if normal agent
+		    	if((agentAt & (1<<8)) == 0)
+		    	{
+		    		if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
+					{
+						newState.killedNormalAgent0 |= (1<<agentAt);
+					}
+					else if(agentAt < 128)
+					{
+						agentAt -= (byte)64;
+						newState.killedNormalAgent1 |= (1<<agentAt);
+					}
+					else if(agentAt < 192)
+					{
+						agentAt -= (byte)128;
+						newState.killedNormalAgent2 |= (1<<agentAt);
+					}
+					else
+					{
+						agentAt -= (byte)192;
+						newState.killedNormalAgent3 |= (1<<agentAt);
+					}
+		    	}
+		    	else
+		    	{
+		    		// negate 1<<8 then &
+		    		newState.killedTransHostages |= 1<<agentAt;
+		    	}
+		    	
+		    	Node newNode = new Node(newState, currentNode, (byte)7, (short)(currentNode.depth+1), (short)0);
+		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+		    	return newNode;
+		    }
+	    }
+	    else if(actionId == 8)
+	    {
+	    	//TryKillDown
+	    	short agentAt = agentAt((byte) (neoX+1),
 					  neoY,
 					  currentNode.state.hostagesHealth,
 					  currentNode.state.movedHostages,
@@ -425,12 +478,13 @@ public class The_Matrix_Solver {
 		    	
 		    	Node newNode = new Node(newState, currentNode, (byte)8, (short)(currentNode.depth+1), (short)0);
 		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-		    	expandedNodes.add(newNode);
+		    	return newNode;
 		    }
-	    
-		    
-		    //TryKillLeft
-		    agentAt = agentAt(neoX,
+	    }
+	    else if(actionId == 9)
+	    {
+	    	//TryKillLeft
+		    short agentAt = agentAt(neoX,
 		    			(byte) (neoY-1),
 					  currentNode.state.hostagesHealth,
 					  currentNode.state.movedHostages,
@@ -478,10 +532,13 @@ public class The_Matrix_Solver {
 		    	
 		    	Node newNode = new Node(newState, currentNode, (byte)9, (short)(currentNode.depth+1), (short)0);
 		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-		    	expandedNodes.add(newNode);
+		    	return newNode;
 		    }
-		    //TryKillRight
-		    agentAt = agentAt(neoX,
+	    }
+	    else if(actionId == 10)
+	    {
+	    	//TryKillRight
+		    short agentAt = agentAt(neoX,
 		    		(byte)(neoY+1),
 					  currentNode.state.hostagesHealth,
 					  currentNode.state.movedHostages,
@@ -529,12 +586,11 @@ public class The_Matrix_Solver {
 		    	
 		    	Node newNode = new Node(newState, currentNode, (byte)10, (short)(currentNode.depth+1), (short)0);
 		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-		    	expandedNodes.add(newNode);
+		    	return newNode;
 		    }
+	    }    
 		    
-		    // Try Carry
-
-		return null;
+		    
 	}
 	
 	//  
@@ -739,6 +795,8 @@ public class The_Matrix_Solver {
 					currState.killedNormalAgent3,
 					currState.hostagesHealth,
 					currState.neoHealth);
+		
+		// consider take pill
 		for(byte i=(byte)0;i<currState.hostagesHealth.length;i++)
 		{
 			 // we check first if the hostage was delivered or not , if it was then we dont change it health 
