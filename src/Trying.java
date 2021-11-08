@@ -4,22 +4,29 @@ public class Trying {
 	static int[] hostagesLocation;
 	
 	// Return index of hostage at X,Y or -1 if no hostage here
-	private static short hostageAt(byte x, byte y, 
-			byte[] hosHealth, short movedHos) {
+	private static short hostageToDrop(byte x, byte y, 
+			byte[] hosHealth, short carriedHos) {
 		
-		for(byte i=(byte)0;i<hosHealth.length;i++){
-			// If init location isn't here no need to check
-			if(x != hostagesLocation[2*i] 
-					|| y != hostagesLocation[2*i+1])
-				continue;
-			
-			// If hostage that started at x,y was moved there is hostage one here
-			if((movedHos & (1<<i)) != 0)
-				return Short.MIN_VALUE;
-			
-			// If hostage is alive
-			if(hosHealth[i] < 100){
-				return i;
+		int bestIdx = -1;
+		int bestHealth = 0;
+		for(int i = 0; i<hosHealth.length;i++) {
+			// Neo is carrying this hostage
+			if((carriedHos & (1<<i)) != 0)
+			{
+				
+			}
+		}
+		return -1;
+	}
+	
+	private static short dropAllHostages(byte x, byte y, 
+			byte[] hosHealth, short carriedHos) {
+		
+		for(int i = 0; i<hosHealth.length;i++) {
+			// Neo is carrying this hostage
+			if((carriedHos & (1<<i)) != 0)
+			{
+				carriedHos = 0;
 			}
 		}
 		return -1;
