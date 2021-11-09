@@ -24,14 +24,41 @@ public class The_Matrix_Solver {
 	
 	
 	public static void main(String[] args) {
-		System.out.println(genGrid());
+		String grid = genGrid();
+		System.out.println(grid);
+		
+//		m = (byte)3;
+//		n = (byte)3;
+//		initNeoX = (byte)0;
+//		initNeoY = (byte)0;
+//		telephoneX =(byte)2;
+//		telephoneY =(byte)2;
+//		hostagesCount = (byte)1;
+//		hostagesHealth = new byte[1]; hostagesHealth[0] = (byte)80;
+//		hostagesLocation = new byte[2]; hostagesLocation[0]=(byte)2;hostagesLocation[1]=(byte)0;
+//		pillsLocation = new byte[0];
+//		padsStartLocation = new byte[0]; padsEndLocation = new byte[0];
+//		agentsLocation = new byte[4];
+//		agentsLocation[0]=(byte)1; agentsLocation[1]=(byte)0;
+//		agentsLocation[2]=(byte)2; agentsLocation[3]=(byte)1;
+		
+		System.out.println(solve(grid, "bfs", false));
+//		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0);
+//		Node initNode = new Node(initState, null, (byte)-1, (short)0, (short)0);
+//		Node n2 = expand(initNode).get(0);
+//		System.out.println(expand(n2).size());
 	}
 	
 	
 	private static String genGrid() {
 		m = (byte)random(5,15);
 		n = (byte)random(5,15);
+		m = 5;
+		n = 5;
 		c = (byte)random(1,4);
+		
+		m = (byte)5;
+		n = (byte)5;
 		
 		//#########
 		System.out.println("Maximum to carry: "+c);
@@ -211,6 +238,8 @@ public class The_Matrix_Solver {
 		return cell;
 	}
 	
+
+	
 	public static String solve(String grid, String strategy, boolean visualize) {
 	
 		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0);
@@ -218,17 +247,49 @@ public class The_Matrix_Solver {
 		SearchProblem X = new SearchProblem(hostagesCount, initState);
 		
 		String plan = generalSearch(X, strategy);
-		return "plan;deaths;kills;nodes";
+		return plan+";deaths;kills;nodes";
 	}
 	
 	public static String generalSearch(SearchProblem problem, String strategy) {
 		Node initNode = new Node(problem.initialState, null, (byte)-1, (short)0, (short)0);
-		
-		return "failure"; 
+		if(strategy.equals("bfs")) {
+			return bfs(initNode, problem);
+		}
+		return "failure";
 	}
 	
-	public static String bfs(Node initNode) {
+	public static String bfs(Node initNode, SearchProblem problem){
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth-y.depth));// BFS
+		pq.add(initNode);
+		while(!pq.isEmpty()) 
+		{
+			Node currentNode = pq.poll();
+//			System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
+//			System.out.println(currentNode.state.hostagesHealth[0]);
+			try {
+				Thread.sleep(0);
+			}
+			catch(Exception e) {
+				
+			}
+			boolean isGoal = problem.goalTest(currentNode.state);
+			if(isGoal)
+				return buildPath(currentNode);
+			
+			LinkedList<Node> nodes = expand(currentNode);
+			
+			for(Node node: nodes) {
+				pq.add(node);
+			}
+			
+			System.out.println(pq.size());
+			
+		}
+		return "Fail";
+	}
+	
+	public static String dfs(Node initNode, SearchProblem problem) {
+		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(y.depth-x.depth));// BFS
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
 		{
@@ -239,47 +300,99 @@ public class The_Matrix_Solver {
 			
 			LinkedList<Node> nodes = expand(currentNode);
 			
+			for(Node node: nodes) {
+				pq.add(node);
+			}
+			
 		}
+		return "Fail";
 	}
 
 	private static LinkedList<Node> expand(Node currentNode) {
-
 	    
 		//up, down, left, right, carry, drop, takePill, killU ,killD, killL, killR 	, and fly
 		//0    1      2     3     4      5        6      7         8      9      10       11
 		
 	    LinkedList<Node> expandedNodes = new LinkedList<Node>();
-	    //Try Up
+	    
+	    if(currentNode.state.neoHealth>=100)
+	    	return expandedNodes;
+	    //Try move up
 	    Node triedNode=move(0, currentNode);
 	    if(triedNode!=null)
 	    {
 			expandedNodes.add(triedNode);
 	    }
 	    
-	    //Try Down
+	    //Try move down
 	    triedNode=move(1, currentNode);
 	    if(triedNode!=null)
 	    {
 			expandedNodes.add(triedNode);
 	    }
-	    
+	    // Try move left
 	    triedNode=move(2, currentNode);
 	    if(triedNode!=null)
 	    {
 			expandedNodes.add(triedNode);
 	    }
-	    
+	    // Try move right
 	    triedNode=move(3, currentNode);
 	    if(triedNode!=null)
 	    {
 			expandedNodes.add(triedNode);
 	    }
+	    // Try carry
+	    triedNode = pickUpAgent(currentNode);
+	    if(triedNode!=null)
+	    {
+			expandedNodes.add(triedNode);
+	    }
+	    // Try drop
+	    triedNode = dropAllHostages(currentNode);
+	    if(triedNode!=null)
+	    {
+			expandedNodes.add(triedNode);
+	    }
+	    // Try takepill
+//	    triedNode = takePill(currentNode);
+//	    if(triedNode!=null)
+//	    {
+//			expandedNodes.add(triedNode);
+//	    }
+	    //Try kill up
+	    triedNode = kill(7, currentNode);
+	    if(triedNode!=null)
+	    {
+			expandedNodes.add(triedNode);
+	    }
 	    
+	    //Try kill down
+	    triedNode = kill(8, currentNode);
+	    if(triedNode!=null)
+	    {
+			expandedNodes.add(triedNode);
+	    }
+	    // Try kill left
+	    triedNode = kill(9, currentNode);
+	    if(triedNode!=null)
+	    {
+			expandedNodes.add(triedNode);
+	    }
+	    // Try kill right
+	    triedNode = kill(10, currentNode);
+	    if(triedNode!=null)
+	    {
+			expandedNodes.add(triedNode);
+	    }
 	    
-		    
-		    // Try Carry
-
-		return null;
+	    // Try fly
+//	    triedNode = fly(currentNode);
+//	    if(triedNode!=null)
+//	    {
+//			expandedNodes.add(triedNode);
+//	    }
+		return expandedNodes;
 	}
 	
 	public static Node move(int actionId, Node currentNode)
@@ -729,7 +842,7 @@ public class The_Matrix_Solver {
 		}
 		
 		State newState = timeStep(currentNode.state);
-		Node newNode = new Node(newState, currentNode, (byte)4, (short)(currentNode.depth+1), (short)0);
+		Node newNode = new Node(newState, currentNode, (byte)5, (short)(currentNode.depth+1), (short)0);
 		newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 		
 		return newNode;
@@ -739,11 +852,30 @@ public class The_Matrix_Solver {
 		
 		short hostageIdx = hostageAt(currentNode.state.neoX, currentNode.state.neoY, 
 				currentNode.state.hostagesHealth, currentNode.state.movedHostages);
-		
 		if(hostageIdx == -1)
 			return null;
 		
-	    State newState = timeStep(currentNode.state);
+		State currState = currentNode.state;
+		
+		short intermediateCarried = currState.currentlyCarriedHostages;
+		intermediateCarried |= (1 << (short)hostageIdx);
+		short intermediateMoved = currState.movedHostages;
+		intermediateMoved |= (1 << (short)hostageIdx);
+		
+		State intermediateState = new State(currState.neoX,
+				currState.neoY,
+				intermediateMoved,
+				intermediateCarried,
+				currState.hostagesToAgents,
+				currState.killedTransHostages,
+				currState.killedNormalAgent0,
+				currState.killedNormalAgent1,
+				currState.killedNormalAgent2,
+				currState.killedNormalAgent3,
+				currState.hostagesHealth.clone(),
+				currState.neoHealth);
+				
+		State newState = timeStep(intermediateState);
 		Node newNode = new Node(newState, currentNode, (byte)4, (short)(currentNode.depth+1), (short)0);
 		newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 //		expandedNodes.add(newNode);
@@ -851,14 +983,15 @@ public class The_Matrix_Solver {
 			}
 		}
 		
-		for(byte i=0;i<agentsLocation.length;i+=2)
+		for(short i=0;i<agentsLocation.length;i+=2)
 		{
+			
 			if(x != agentsLocation[i] || y != agentsLocation[i+1])
 			{
 				continue;
 			}
 			
-			byte idx = (byte)(i/2);
+			short idx = (short)(i/2);
 			
 			if(idx < 64) // in the first bitmask (killedNormalAgent0)
 			{
@@ -870,7 +1003,7 @@ public class The_Matrix_Solver {
 			}
 			else if(idx < 128)
 			{
-				idx -= (byte)64;
+				idx -= (short)64;
 				if( (killedNormalAgent1 & (1<<idx)) == 0 )
 				{
 					return (short)(idx+64);
@@ -878,7 +1011,7 @@ public class The_Matrix_Solver {
 			}
 			else if(idx < 192)
 			{
-				idx -= (byte)128;
+				idx -= (short)128;
 				if( (killedNormalAgent2 & (1<<idx)) == 0 )
 				{
 					return (short)(idx+128);
@@ -886,7 +1019,7 @@ public class The_Matrix_Solver {
 			}
 			else
 			{
-				idx -= (byte)192;
+				idx -= (short)192;
 				if( (killedNormalAgent3 & (1<<idx)) == 0 )
 				{
 					return (short)(idx+192);
@@ -904,6 +1037,8 @@ public class The_Matrix_Solver {
 	private static State timeStep(State currState) {
 		// This function is for doing the basic update in the state related to 1 time step passed
 		//if another custom update required, then to be done after calling this function
+		
+		
 		State newState = new State(currState.neoX,
 					currState.neoY,
 					currState.movedHostages,
@@ -914,8 +1049,11 @@ public class The_Matrix_Solver {
 					currState.killedNormalAgent1,
 					currState.killedNormalAgent2,
 					currState.killedNormalAgent3,
-					currState.hostagesHealth,
+					currState.hostagesHealth.clone(),
 					currState.neoHealth);
+		
+		
+		
 		
 		// consider take pill
 		for(byte i=(byte)0;i<currState.hostagesHealth.length;i++)
@@ -940,8 +1078,9 @@ public class The_Matrix_Solver {
 	}
 	
 	private static String buildPath(Node currentNode) {
-		// TODO Auto-generated method stub
-		return null;
+		if(currentNode.parent ==null)
+			return "";
+		return buildPath(currentNode.parent)+currentNode.opString;
 	}
 	
 	
