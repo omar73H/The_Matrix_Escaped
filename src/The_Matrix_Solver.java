@@ -402,7 +402,7 @@ public class The_Matrix_Solver {
 		if(actionId == 0)
 		{
 			// Try Up
-		    if(neoX-1 >= 0 && agentAt((byte) (neoX-1),
+		    if(currentNode.operator!=1 && neoX-1 >= 0 && agentAt((byte) (neoX-1),
 		    						  neoY,
 		    						  currentNode.state.hostagesHealth,
 		    						  currentNode.state.movedHostages,
@@ -425,7 +425,7 @@ public class The_Matrix_Solver {
 		else if(actionId == 1)
 		{
 			//TryDown
-			if(neoX+1 < m && agentAt((byte) (neoX+1),
+			if(currentNode.operator!=0 &&neoX+1 < m && agentAt((byte) (neoX+1),
 					  neoY,
 					  currentNode.state.hostagesHealth,
 					  currentNode.state.movedHostages,
@@ -446,7 +446,7 @@ public class The_Matrix_Solver {
 		else if(actionId == 2)
 		{
 			//Try Left
-			if(neoY-1 >=0 && agentAt(neoX,
+			if(currentNode.operator!=3 && neoY-1 >=0 && agentAt(neoX,
 							  (byte)(neoY-1),
 							  currentNode.state.hostagesHealth,
 							  currentNode.state.movedHostages,
@@ -467,7 +467,7 @@ public class The_Matrix_Solver {
 		else if(actionId == 3)
 		{
 			//Try Right
-			if(neoY+1 <n && agentAt(neoX,
+			if(currentNode.operator!=2 && neoY+1 <n && agentAt(neoX,
 							  (byte)(neoY+1),
 							  currentNode.state.hostagesHealth,
 							  currentNode.state.movedHostages,
@@ -719,7 +719,8 @@ public class The_Matrix_Solver {
 	
 	// //////// 
 		public static Node fly(Node node) {
-			
+			if(node.operator==11)
+				return null;
 			byte[] t=isTherePad(node.state.neoX, node.state.neoY);
 			
 			if(t[0]!=0) {
