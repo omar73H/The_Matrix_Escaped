@@ -810,7 +810,7 @@ public class The_Matrix_Solver {
 		
 		public static byte[] isTherePad(byte x,byte y) {
 			byte s[] = {0,0,0};
-			for(int i=0;i<padsStartLocation.length;i=i+2) {
+			for(short i=0;i<padsStartLocation.length;i=(short)(i+2)) {
 				if(x==padsStartLocation[i]&&y==padsStartLocation[i+1]) {
 				s[0]=1;
 				s[1]=0;
