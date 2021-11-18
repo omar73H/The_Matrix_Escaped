@@ -2,9 +2,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.HashSet;
+
+import javax.jws.soap.InitParam;
 
 public class The_Matrix_Solver {
-	
+	private static  HashSet<String> encodedNodes = new HashSet<String>();
 	private static ArrayList<Integer> availableCells;
 	
 	public static byte m,n,c;
@@ -27,21 +30,38 @@ public class The_Matrix_Solver {
 		String grid = genGrid();
 		System.out.println(grid);
 		
-//		m = (byte)3;
-//		n = (byte)3;
+//		m = (byte)5;
+//		n = (byte)5;
+//		c=1;
 //		initNeoX = (byte)0;
-//		initNeoY = (byte)0;
-//		telephoneX =(byte)2;
-//		telephoneY =(byte)2;
-//		hostagesCount = (byte)1;
-//		hostagesHealth = new byte[1]; hostagesHealth[0] = (byte)80;
-//		hostagesLocation = new byte[2]; hostagesLocation[0]=(byte)2;hostagesLocation[1]=(byte)0;
+//		initNeoY = (byte)4;
+//		telephoneX =(byte)1;
+//		telephoneY =(byte)4;
+//		hostagesCount = (byte)3;
+//		hostagesHealth = new byte[hostagesCount]; hostagesHealth[0] = (byte)30; ; hostagesHealth[1] = (byte)80;; hostagesHealth[2] = (byte)80;// hostagesHealth[3] = (byte)98;//; hostagesHealth[4] = (byte)90;//; hostagesHealth[5] = (byte)98;; hostagesHealth[6] = (byte)98; hostagesHealth[7] = (byte)98;
+//		
+//		hostagesLocation = new byte[8]; hostagesLocation[0]=(byte)0;hostagesLocation[1]=(byte)0;
+//		 hostagesLocation[2]=(byte)3;hostagesLocation[3]=(byte)0;
+//		 hostagesLocation[4]=(byte)4;hostagesLocation[5]=(byte)4;
+////		 hostagesLocation[6]=(byte)0;hostagesLocation[7]=(byte)2;
+////		 hostagesLocation[8]=(byte)2;hostagesLocation[9]=(byte)4;
+////		 hostagesLocation[10]=(byte)3;hostagesLocation[11]=(byte)2;
+////		 hostagesLocation[12]=(byte)4;hostagesLocation[13]=(byte)4;
+////		 hostagesLocation[14]=(byte)1;hostagesLocation[15]=(byte)0;
+//
+//
+//		 
 //		pillsLocation = new byte[0];
-//		padsStartLocation = new byte[0]; padsEndLocation = new byte[0];
-//		agentsLocation = new byte[4];
-//		agentsLocation[0]=(byte)1; agentsLocation[1]=(byte)0;
-//		agentsLocation[2]=(byte)2; agentsLocation[3]=(byte)1;
-		
+//		padsStartLocation = new byte[2];padsStartLocation[0]=(byte)0;padsStartLocation[1]=(byte)3;
+//		padsEndLocation = new byte[2];padsEndLocation[0]=(byte)4;padsEndLocation[1]=(byte)3;
+//		agentsLocation = new byte[12];
+//		agentsLocation[0]=(byte)0; agentsLocation[1]=(byte)1;
+//		agentsLocation[2]=(byte)1; agentsLocation[3]=(byte)1;
+//		agentsLocation[4]=(byte)2; agentsLocation[5]=(byte)1;
+//		agentsLocation[6]=(byte)3; agentsLocation[7]=(byte)1;
+//		agentsLocation[8]=(byte)3; agentsLocation[9]=(byte)3;
+//		agentsLocation[10]=(byte)3; agentsLocation[11]=(byte)4;
+
 		System.out.println(solve(grid, "bfs", false));
 //		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0);
 //		Node initNode = new Node(initState, null, (byte)-1, (short)0, (short)0);
@@ -53,12 +73,11 @@ public class The_Matrix_Solver {
 	private static String genGrid() {
 		m = (byte)random(5,15);
 		n = (byte)random(5,15);
-		m = 5;
-		n = 5;
+		m = 15;
+		n = 15;
 		c = (byte)random(1,4);
 		
-		m = (byte)5;
-		n = (byte)5;
+
 		
 		//#########
 		System.out.println("Maximum to carry: "+c);
@@ -252,6 +271,7 @@ public class The_Matrix_Solver {
 	
 	public static String generalSearch(SearchProblem problem, String strategy) {
 		Node initNode = new Node(problem.initialState, null, (byte)-1, (short)0, (short)0);
+		encodedNodes.add(encode(initNode));
 		if(strategy.equals("bfs")) {
 			return bfs(initNode, problem);
 		}
@@ -264,8 +284,10 @@ public class The_Matrix_Solver {
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = pq.poll();
-//			System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
-//			System.out.println(currentNode.state.hostagesHealth[0]);
+			System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
+			//System.out.println(currentNode.depth);
+			//short btts=(short)(currentNode.state.movedHostages|currentNode.state.killedTransHostages);
+			//System.out.println((1<<hostagesCount)-1+" "+btts);
 			try {
 				Thread.sleep(0);
 			}
@@ -277,12 +299,12 @@ public class The_Matrix_Solver {
 				return buildPath(currentNode);
 			
 			LinkedList<Node> nodes = expand(currentNode);
-			
+
 			for(Node node: nodes) {
 				pq.add(node);
 			}
 			
-			System.out.println(pq.size());
+			//System.out.println(pq.size());
 			
 		}
 		return "Fail";
@@ -294,6 +316,13 @@ public class The_Matrix_Solver {
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = pq.poll();
+			System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth+" "+ encode(currentNode));
+			try {
+				Thread.sleep(0);
+			}
+			catch(Exception e) {
+				
+			}
 			boolean isGoal = problem.goalTest(currentNode.state);
 			if(isGoal)
 				return buildPath(currentNode);
@@ -316,43 +345,34 @@ public class The_Matrix_Solver {
 	    LinkedList<Node> expandedNodes = new LinkedList<Node>();
 	    
 	    if(currentNode.state.neoHealth>=100)
+	    {
 	    	return expandedNodes;
-	    //Try move up
-	    Node triedNode=move(0, currentNode);
-	    if(triedNode!=null)
-	    {
-			expandedNodes.add(triedNode);
 	    }
+	    	
 	    
-	    //Try move down
-	    triedNode=move(1, currentNode);
-	    if(triedNode!=null)
-	    {
-			expandedNodes.add(triedNode);
-	    }
-	    // Try move left
-	    triedNode=move(2, currentNode);
-	    if(triedNode!=null)
-	    {
-			expandedNodes.add(triedNode);
-	    }
-	    // Try move right
-	    triedNode=move(3, currentNode);
-	    if(triedNode!=null)
-	    {
-			expandedNodes.add(triedNode);
-	    }
+	    Node triedNode=null;
+	    
 	    // Try carry
 	    triedNode = pickUpAgent(currentNode);
+	    String encodedNode="";
 	    if(triedNode!=null)
-	    {
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
 			expandedNodes.add(triedNode);
+	    	}
 	    }
 	    // Try drop
 	    triedNode = dropAllHostages(currentNode);
+	    
 	    if(triedNode!=null)
-	    {
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
 			expandedNodes.add(triedNode);
+	    	}
 	    }
 	    // Try takepill
 //	    triedNode = takePill(currentNode);
@@ -362,36 +382,122 @@ public class The_Matrix_Solver {
 //	    }
 	    //Try kill up
 	    triedNode = kill(7, currentNode);
+	    
 	    if(triedNode!=null)
-	    {
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
 			expandedNodes.add(triedNode);
+	    	}
 	    }
 	    
 	    //Try kill down
 	    triedNode = kill(8, currentNode);
+	   
 	    if(triedNode!=null)
-	    {
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
 			expandedNodes.add(triedNode);
+	    	}
 	    }
 	    // Try kill left
 	    triedNode = kill(9, currentNode);
+	    
 	    if(triedNode!=null)
-	    {
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
 			expandedNodes.add(triedNode);
+	    	}
 	    }
 	    // Try kill right
 	    triedNode = kill(10, currentNode);
+	    
 	    if(triedNode!=null)
-	    {
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
 			expandedNodes.add(triedNode);
+	    	}
 	    }
 	    
 	    // Try fly
-//	    triedNode = fly(currentNode);
-//	    if(triedNode!=null)
-//	    {
-//			expandedNodes.add(triedNode);
-//	    }
+	    if(currentNode.operator!=11)
+	    {
+	    triedNode = fly(currentNode);
+	    
+	    if(triedNode!=null)
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
+			expandedNodes.add(triedNode);
+	    	}
+	    }
+	    }
+	  //Try move up
+	    if(currentNode.operator!=1)
+	    {
+	     triedNode=move(0, currentNode);
+	    
+	     
+	     if(triedNode!=null)
+		    {	encodedNode=encode(triedNode);
+		    	if(!(encodedNodes.contains(encodedNode)))
+		    	{
+		    	encodedNodes.add(encodedNode);
+				expandedNodes.add(triedNode);
+		    	}
+		    }
+	    }
+	    //Try move down
+	    if(currentNode.operator!=0)
+	    {
+	    triedNode=move(1, currentNode);
+	    
+	    if(triedNode!=null)
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
+			expandedNodes.add(triedNode);
+	    	}
+	    }
+	    }
+	    // Try move left
+	    if(currentNode.operator!=3)
+	    {
+	    triedNode=move(2, currentNode);
+	 
+	    if(triedNode!=null)
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
+			expandedNodes.add(triedNode);
+	    	}
+	    }
+	    }
+	    // Try move right
+	    if(currentNode.operator!=2)
+	    {
+	    triedNode=move(3, currentNode);
+	   
+	    if(triedNode!=null)
+	    {	encodedNode=encode(triedNode);
+	    	if(!(encodedNodes.contains(encodedNode)))
+	    	{
+	    	encodedNodes.add(encodedNode);
+			expandedNodes.add(triedNode);
+	    	}
+	    }
+	    }
+	    
 		return expandedNodes;
 	}
 	
@@ -719,9 +825,14 @@ public class The_Matrix_Solver {
 	
 	// //////// 
 		public static Node fly(Node node) {
+<<<<<<< Updated upstream
 			if(node.operator==11)
 				return null;
 			byte[] t=isTherePad(node.state.neoX, node.state.neoY);
+=======
+			
+			short[] t=isTherePad(node.state.neoX, node.state.neoY);
+>>>>>>> Stashed changes
 			
 			if(t[0]!=0) {
 				if(t[1]==0) {
@@ -729,7 +840,7 @@ public class The_Matrix_Solver {
 				tempNode.neoX=padsEndLocation[t[2]];
 				tempNode.neoY=padsEndLocation[t[2]+1];
 				Node sNode=new Node(tempNode,node,(byte) 11,(short)(node.depth+1),(short)0);
-				
+				sNode.pathCost=SearchProblem.calculatePathCost(sNode);
 				return sNode;
 				}
 				else {
@@ -737,7 +848,8 @@ public class The_Matrix_Solver {
 					tempNode.neoX=padsStartLocation[t[2]];
 					tempNode.neoY=padsStartLocation[t[2]+1];
 					Node sNode=new Node(tempNode,node,(byte) 11,(short)(node.depth+1),(short)0);
-					
+					sNode.pathCost=SearchProblem.calculatePathCost(sNode);
+
 					return sNode;
 				}
 //				State state;
@@ -808,17 +920,22 @@ public class The_Matrix_Solver {
 			return false;
 		}
 		
+<<<<<<< Updated upstream
 		public static byte[] isTherePad(byte x,byte y) {
 			byte s[] = {0,0,0};
+=======
+		public static short[] isTherePad(byte x,byte y) {
+			short s[]= {0,0,0};
+>>>>>>> Stashed changes
 			for(short i=0;i<padsStartLocation.length;i=(short)(i+2)) {
 				if(x==padsStartLocation[i]&&y==padsStartLocation[i+1]) {
 				s[0]=1;
 				s[1]=0;
-				s[2]=(byte)i;}
+				s[2]=i;return s;}
 				else if (x==padsEndLocation[i]&&y==padsEndLocation[i+1]) {
 					s[0]=1;
 					s[1]=1;
-					s[2]=(byte)i;
+					s[2]=i; return s;
 				}
 			}
 			return s;	}
@@ -834,15 +951,39 @@ public class The_Matrix_Solver {
 		if(telephoneY != currentNode.state.neoY)
 			return null;
 		
-		for(int i = 0; i<currentNode.state.hostagesHealth.length;i++) {
-			// Neo is carrying this hostage
-			if((currentNode.state.currentlyCarriedHostages & (1<<i)) != 0)
-			{
-				currentNode.state.currentlyCarriedHostages = 0;
-			}
+//		for(int i = 0; i<currentNode.state.hostagesHealth.length;i++) {
+//			// Neo is carrying this hostage
+//			if((currentNode.state.currentlyCarriedHostages & (1<<i)) != 0)
+//			{
+//				currentNode.state.currentlyCarriedHostages = 0;
+//			}
+//		}
+		
+		
+		
+		
+		
+		
+		if(currentNode.state.currentlyCarriedHostages==0)
+		{
+			return null;
 		}
 		
-		State newState = timeStep(currentNode.state);
+		State intermediateState = new State(currentNode.state.neoX,
+				currentNode.state.neoY,
+				currentNode.state.movedHostages,
+				(short)0,
+				currentNode.state.hostagesToAgents,
+				currentNode.state.killedTransHostages,
+				currentNode.state.killedNormalAgent0,
+				currentNode.state.killedNormalAgent1,
+				currentNode.state.killedNormalAgent2,
+				currentNode.state.killedNormalAgent3,
+				currentNode.state.hostagesHealth.clone(),
+				currentNode.state.neoHealth);
+		
+		
+		State newState = timeStep(intermediateState);
 		Node newNode = new Node(newState, currentNode, (byte)5, (short)(currentNode.depth+1), (short)0);
 		newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 		
@@ -850,10 +991,9 @@ public class The_Matrix_Solver {
 		
 	}
 	public static Node pickUpAgent(Node currentNode) {
-		
 		short hostageIdx = hostageAt(currentNode.state.neoX, currentNode.state.neoY, 
 				currentNode.state.hostagesHealth, currentNode.state.movedHostages);
-		if(hostageIdx == -1)
+		if(hostageIdx <0)
 			return null;
 		
 		State currState = currentNode.state;
@@ -903,7 +1043,7 @@ public class The_Matrix_Solver {
 					return i;
 				}
 			}
-			return -1;
+			return Short.MIN_VALUE;
 		}
 		
 	/**
@@ -1083,8 +1223,43 @@ public class The_Matrix_Solver {
 			return "";
 		return buildPath(currentNode.parent)+currentNode.opString;
 	}
+	// this function encode the node state for the hashSet
+	public static  String encode(Node node)
+	{
+		
+		/*
+		byte neoX,neoY;
+	short movedHostages;
+	short currentlyCarriedHostages;
+	short hostagesToAgents;
+	short killedTransHostages;
 	
 	
+	
+	// interface/object that have a methods that makes the required operations easy
+	long killedNormalAgent0, killedNormalAgent1, killedNormalAgent2;
+	int killedNormalAgent3;
+		*/
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(node.state.neoX);
+		sb.append(node.state.neoY);
+		sb.append(node.state.movedHostages);
+		sb.append(node.state.currentlyCarriedHostages);
+		sb.append(node.state.hostagesToAgents);
+		sb.append(node.state.killedTransHostages);
+		sb.append(node.state.killedNormalAgent0);
+		sb.append(node.state.killedNormalAgent1);
+		sb.append(node.state.killedNormalAgent2);
+		sb.append(node.state.killedNormalAgent3);
+		
+	
+		
+		String encode=sb.toString();
+		return  encode;
+		
+		
+	}	
 	
 	
 	
