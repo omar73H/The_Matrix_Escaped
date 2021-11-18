@@ -375,127 +375,151 @@ public class The_Matrix_Solver {
 	    	}
 	    }
 	    // Try takepill
-//	    triedNode = takePill(currentNode);
-//	    if(triedNode!=null)
-//	    {
-//			expandedNodes.add(triedNode);
-//	    }
+	    triedNode = takePill(currentNode);
+	    if(triedNode!=null)
+	    {
+			expandedNodes.add(triedNode);
+	    }
 	    //Try kill up
 	    triedNode = kill(7, currentNode);
-	    
+ 		//if the node is not null we check if it's repeated state or not
 	    if(triedNode!=null)
 	    {	encodedNode=encode(triedNode);
+	    	//if its repeated state we dont add it to the list 
+			//if not we add it to hash set and add it to linked list
 	    	if(!(encodedNodes.contains(encodedNode)))
 	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    		encodedNodes.add(encodedNode);
+				expandedNodes.add(triedNode);
 	    	}
 	    }
 	    
 	    //Try kill down
 	    triedNode = kill(8, currentNode);
-	   
+ 		//if the node is not null we check if it's repeated state or not
 	    if(triedNode!=null)
 	    {	encodedNode=encode(triedNode);
+	    	//if its repeated state we dont add it to the list 
+			//if not we add it to hash set and add it to linked list
 	    	if(!(encodedNodes.contains(encodedNode)))
 	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    		encodedNodes.add(encodedNode);
+	    		expandedNodes.add(triedNode);
 	    	}
 	    }
 	    // Try kill left
 	    triedNode = kill(9, currentNode);
-	    
+ 		//if the node is not null we check if it's repeated state or not
 	    if(triedNode!=null)
 	    {	encodedNode=encode(triedNode);
+	    	//if its repeated state we dont add it to the list 
+			//if not we add it to hash set and add it to linked list
 	    	if(!(encodedNodes.contains(encodedNode)))
 	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    		encodedNodes.add(encodedNode);
+	    		expandedNodes.add(triedNode);
 	    	}
 	    }
 	    // Try kill right
 	    triedNode = kill(10, currentNode);
-	    
+ 		//if the node is not null we check if it's repeated state or not
 	    if(triedNode!=null)
-	    {	encodedNode=encode(triedNode);
+	    {	
+	    	encodedNode=encode(triedNode);
+	    	//if its repeated state we dont add it to the list 
+			//if not we add it to hash set and add it to linked list
 	    	if(!(encodedNodes.contains(encodedNode)))
 	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    		encodedNodes.add(encodedNode);
+	    		expandedNodes.add(triedNode);
 	    	}
 	    }
 	    
-	    // Try fly
+	    
+		//Try fly if parent was not fly
 	    if(currentNode.operator!=11)
 	    {
-	    triedNode = fly(currentNode);
-	    
-	    if(triedNode!=null)
-	    {	encodedNode=encode(triedNode);
-	    	if(!(encodedNodes.contains(encodedNode)))
-	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    	triedNode = fly(currentNode);
+	 		//if the node is not null we check if it's repeated state or not
+	    	if(triedNode!=null)
+	    	{	
+	    		encodedNode=encode(triedNode);
+	    		//if its repeated state we dont add it to the list 
+	    		//if not we add it to hash set and add it to linked list
+	    		if(!(encodedNodes.contains(encodedNode)))
+	    		{
+	    			encodedNodes.add(encodedNode);
+	    			expandedNodes.add(triedNode);
+	    		}
 	    	}
 	    }
-	    }
-	  //Try move up
+	  //Try move up if parent was not move down
 	    if(currentNode.operator!=1)
 	    {
 	     triedNode=move(0, currentNode);
-	    
-	     
+ 		 //if the node is not null we check if it's repeated state or not
 	     if(triedNode!=null)
-		    {	encodedNode=encode(triedNode);
-		    	if(!(encodedNodes.contains(encodedNode)))
-		    	{
+	     {	
+	    	 encodedNode=encode(triedNode);
+	    	//if its repeated state we dont add it to the list 
+    		//if not we add it to hash set and add it to linked list
+	    	 if(!(encodedNodes.contains(encodedNode)))
+	    	 {
 		    	encodedNodes.add(encodedNode);
 				expandedNodes.add(triedNode);
-		    	}
-		    }
+	    	 }
+	     }
 	    }
-	    //Try move down
+	    //Try move down if parent was not move up 
 	    if(currentNode.operator!=0)
 	    {
-	    triedNode=move(1, currentNode);
-	    
-	    if(triedNode!=null)
-	    {	encodedNode=encode(triedNode);
-	    	if(!(encodedNodes.contains(encodedNode)))
-	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    	triedNode=move(1, currentNode);
+	    	//if the node is not null we check if it's repeated state or not
+	    	if(triedNode!=null)
+	    	{	
+	    		encodedNode=encode(triedNode);
+	    		//if its repeated state we dont add it to the list 
+	    		//if not we add it to hash set and add it to linked list
+	    		if(!(encodedNodes.contains(encodedNode)))
+	    		{
+	    			encodedNodes.add(encodedNode);
+	    			expandedNodes.add(triedNode);
+	    		}
 	    	}
 	    }
-	    }
-	    // Try move left
+	    // Try move left if parent was not move right
 	    if(currentNode.operator!=3)
 	    {
-	    triedNode=move(2, currentNode);
-	 
-	    if(triedNode!=null)
-	    {	encodedNode=encode(triedNode);
-	    	if(!(encodedNodes.contains(encodedNode)))
-	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    	triedNode=move(2, currentNode);
+		    //if the node is not null we check if it's repeated state or not
+	    	if(triedNode!=null)
+	    	{		
+	    		encodedNode=encode(triedNode);
+	    		//if its repeated state we dont add it to the list 
+	    		//if not we add it to hash set and add it to linked list
+	    		if(!(encodedNodes.contains(encodedNode)))
+	    		{
+	    			encodedNodes.add(encodedNode);
+	    			expandedNodes.add(triedNode);
+	    		}
 	    	}
 	    }
-	    }
-	    // Try move right
+	    // Try move right if parent was not move left
 	    if(currentNode.operator!=2)
 	    {
-	    triedNode=move(3, currentNode);
-	   
-	    if(triedNode!=null)
-	    {	encodedNode=encode(triedNode);
-	    	if(!(encodedNodes.contains(encodedNode)))
-	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    	triedNode=move(3, currentNode);
+	    	//if the node is not null we check if it's repeated state or not
+	    	if(triedNode!=null)
+	    	{	
+	    		encodedNode=encode(triedNode);
+	    		//if its repeated state we dont add it to the list 
+	    		//if not we add it to hash set and add it to linked list
+	    		if(!(encodedNodes.contains(encodedNode)))
+	    		{
+	    			encodedNodes.add(encodedNode);
+	    			expandedNodes.add(triedNode);
+	    		}
 	    	}
-	    }
 	    }
 	    
 		return expandedNodes;
@@ -825,15 +849,8 @@ public class The_Matrix_Solver {
 	
 	// //////// 
 		public static Node fly(Node node) {
-<<<<<<< Updated upstream
-			if(node.operator==11)
-				return null;
-			byte[] t=isTherePad(node.state.neoX, node.state.neoY);
-=======
-			
+
 			short[] t=isTherePad(node.state.neoX, node.state.neoY);
->>>>>>> Stashed changes
-			
 			if(t[0]!=0) {
 				if(t[1]==0) {
 				State tempNode=timeStep(node.state);
@@ -920,13 +937,10 @@ public class The_Matrix_Solver {
 			return false;
 		}
 		
-<<<<<<< Updated upstream
-		public static byte[] isTherePad(byte x,byte y) {
-			byte s[] = {0,0,0};
-=======
+		//check if there pad at location
 		public static short[] isTherePad(byte x,byte y) {
 			short s[]= {0,0,0};
->>>>>>> Stashed changes
+
 			for(short i=0;i<padsStartLocation.length;i=(short)(i+2)) {
 				if(x==padsStartLocation[i]&&y==padsStartLocation[i+1]) {
 				s[0]=1;
