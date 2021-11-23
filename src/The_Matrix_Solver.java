@@ -1015,6 +1015,15 @@ public class The_Matrix_Solver {
 		
 	}
 	public static Node pickUpAgent(Node currentNode) {
+		
+		// check if carrying max, if so return null
+		int carriedNow = 0;
+		for(byte i=(byte)0;i<currentNode.state.hostagesHealth.length;i++)
+			if((currentNode.state.currentlyCarriedHostages & (1<<i)) != 0)
+				carriedNow++;
+		if(carriedNow >= c)
+			return null;
+		
 		short hostageIdx = hostageAt(currentNode.state.neoX, currentNode.state.neoY, 
 				currentNode.state.hostagesHealth, currentNode.state.movedHostages);
 		if(hostageIdx <0)
