@@ -1320,7 +1320,37 @@ public class The_Matrix_Solver {
 	}	
 	
 	
-	
+	public static String UniformCostSearch(Node initNode, SearchProblem problem){
+		PQ pq = new PQ();// BFS
+		pq.push(initNode,0);
+		while(!pq.isEmpty()) 
+		{
+			Node currentNode = (Node) pq.poll();
+			System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
+			//System.out.println(currentNode.depth);
+			//short btts=(short)(currentNode.state.movedHostages|currentNode.state.killedTransHostages);
+			//System.out.println((1<<hostagesCount)-1+" "+btts);
+			try {
+				Thread.sleep(0);
+			}
+			catch(Exception e) {
+				
+			}
+			boolean isGoal = problem.goalTest(currentNode.state);
+			if(isGoal)
+				return buildPath(currentNode);
+			
+			LinkedList<Node> nodes = expand(currentNode);
+
+			for(Node node: nodes) {
+				pq.push(node,node.pathCost);
+			}
+			
+			//System.out.println(pq.size());
+			
+		}
+		return "Fail";
+	}	
 	public static String HeuristicSearch(Node initNode, SearchProblem problem){
 		PQ pq = new PQ();// BFS
 		pq.push(initNode,0);
