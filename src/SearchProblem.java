@@ -32,7 +32,7 @@ public class SearchProblem {
 	
 	public SearchProblem(byte numOfHostages,State initialState) {
 		this.numOfHostages=numOfHostages;
-		 this.initialState= initialState;
+		 this.initialState= initialState; 
 		
 	}
 	
