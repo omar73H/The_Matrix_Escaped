@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.HashSet;
@@ -27,6 +28,12 @@ public class The_Matrix_Solver {
 	
 	
 	public static void main(String[] args) {
+		
+		// Create a Priority Queue
+				// 7.4.5.6
+		
+	
+		
 		String grid = genGrid();
 		System.out.println(grid);
 		
@@ -67,6 +74,9 @@ public class The_Matrix_Solver {
 //		Node initNode = new Node(initState, null, (byte)-1, (short)0, (short)0);
 //		Node n2 = expand(initNode).get(0);
 //		System.out.println(expand(n2).size());
+	
+	
+	
 	}
 	
 	
@@ -1274,6 +1284,90 @@ public class The_Matrix_Solver {
 		
 		
 	}	
+	
+	
+	
+	public static String AStarSearch(Node initNode, SearchProblem problem){
+		PQ pq = new PQ();// BFS
+		pq.push(initNode,0);
+		while(!pq.isEmpty()) 
+		{
+			Node currentNode = (Node) pq.poll();
+			System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
+			//System.out.println(currentNode.depth);
+			//short btts=(short)(currentNode.state.movedHostages|currentNode.state.killedTransHostages);
+			//System.out.println((1<<hostagesCount)-1+" "+btts);
+			try {
+				Thread.sleep(0);
+			}
+			catch(Exception e) {
+				
+			}
+			boolean isGoal = problem.goalTest(currentNode.state);
+			if(isGoal)
+				return buildPath(currentNode);
+			
+			LinkedList<Node> nodes = expand(currentNode);
+
+			for(Node node: nodes) {
+				pq.push(node,HeuristicFunction(node, problem)+node.pathCost);
+			}
+			
+			//System.out.println(pq.size());
+			
+		}
+		return "Fail";
+	}	
+	
+	
+	
+	public static String HeuristicSearch(Node initNode, SearchProblem problem){
+		PQ pq = new PQ();// BFS
+		pq.push(initNode,0);
+		while(!pq.isEmpty()) 
+		{
+			Node currentNode = (Node) pq.poll();
+			System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
+			//System.out.println(currentNode.depth);
+			//short btts=(short)(currentNode.state.movedHostages|currentNode.state.killedTransHostages);
+			//System.out.println((1<<hostagesCount)-1+" "+btts);
+			try {
+				Thread.sleep(0);
+			}
+			catch(Exception e) {
+				
+			}
+			boolean isGoal = problem.goalTest(currentNode.state);
+			if(isGoal)
+				return buildPath(currentNode);
+			
+			LinkedList<Node> nodes = expand(currentNode);
+
+			for(Node node: nodes) {
+				pq.push(node,HeuristicFunction(node, problem));
+			}
+			
+			//System.out.println(pq.size());
+			
+		}
+		return "Fail";
+	}	
+	
+	public static int HeuristicFunction(Node node, SearchProblem problem){
+		int H =0;
+		
+		
+		return H;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
