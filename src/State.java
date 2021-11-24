@@ -5,7 +5,8 @@ public class State {
 	short currentlyCarriedHostages;
 	short hostagesToAgents;
 	short killedTransHostages;
-	
+	short pills;
+
 	
 	
 	// interface/object that have a methods that makes the required operations easy
@@ -15,7 +16,7 @@ public class State {
 	byte neoHealth;
 	public State(byte neoX, byte neoY, short movedHostages, short currentlyCarriedHostages, short hostagesToAgents,
 			short killedTransHostages, long killedNormalAgent0, long killedNormalAgent1, long killedNormalAgent2,
-			int killedNormalAgent3, byte[] hostagesHealth, byte neoHealth) {
+			int killedNormalAgent3, byte[] hostagesHealth, byte neoHealth,short pills) {
 		super();
 		this.neoX = neoX;
 		this.neoY = neoY;
@@ -29,6 +30,8 @@ public class State {
 		this.killedNormalAgent3 = killedNormalAgent3;
 		this.hostagesHealth = hostagesHealth;
 		this.neoHealth = neoHealth;
+		this.pills = pills;
+
 	}
 	
 	public static void main(String[] args) {
