@@ -1427,18 +1427,25 @@ public class The_Matrix_Solver {
 	}	
 	
 	public static int HeuristicFunction(Node node, SearchProblem problem){
+		return Heuristic1(node, problem)+Heuristic2(node, problem);
+	}
+	
+	
+	
+	
+	public static int Heuristic1(Node node, SearchProblem problem){
 		int H =0;
 		
 		
 		return H;
 	}
 	
-	
-	
-	
-	
-	
-	
+	public static int Heuristic2(Node node, SearchProblem problem){
+		int H =0;
+		
+		
+		return H;
+	}
 	
 	
 	
