@@ -1448,8 +1448,26 @@ public class The_Matrix_Solver {
 	
 	
 	public static int Heuristic1(Node node, SearchProblem problem){
-		int H =0;
+		int H =100;
+		boolean modeOn=false;
+		byte leastDist=100;
+		byte pillLocation=-1;
+		// we need to calculate the distance betwen neo and the nearest pill and store it on leastDistance 
+		for(int i=0;i<pillsLocation.length;i=i+2) {
+			if(((node.parent.state.pills & (1 << i))==0) &&(Math.abs(node.parent.state.neoX-pillsLocation[i]) + Math.abs(node.parent.state.neoY-pillsLocation[i+1])<leastDist)) {
+			leastDist = (byte) (Math.abs(node.parent.state.neoX-pillsLocation[i]) + Math.abs(node.parent.state.neoY-pillsLocation[i+1]));
+			pillLocation=(byte) i;
+			}
+		}
 		
+		if(node.parent.state.neoHealth>=(100-(leastDist)*2+4))
+			modeOn=true;
+		if(modeOn&&(Math.abs(node.parent.state.neoX-pillsLocation[pillLocation]) + Math.abs(node.parent.state.neoY-pillsLocation[pillLocation+1])>(Math.abs(node.state.neoX-pillsLocation[pillLocation]) + Math.abs(node.state.neoY-pillsLocation[pillLocation+1])))) {
+			H=10;
+		}
+		
+		if(modeOn&&node.operator==6)
+			H=1;
 		
 		return H;
 	}
