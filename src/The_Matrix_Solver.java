@@ -143,9 +143,9 @@ public class The_Matrix_Solver {
 			hostagesLocation[2*i+1] = hostageY;
 			hostagesHealth[i] = hostageDamage;
 		}
-		//The number of pills
+		//The number of pills                         hahahahahahahahahahahahahahahahaha
 		byte pillsCount = (byte)random(1,hostagesCount);
-		
+	
 		pillsLocation = new byte[pillsCount*2];
 		StringBuilder pillsInfo = new StringBuilder();
 		//Positions of pills;
@@ -271,7 +271,7 @@ public class The_Matrix_Solver {
 	
 	public static String solve(String grid, String strategy, boolean visualize) {
 	
-		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0);
+		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0,(short)0);
 		
 		SearchProblem X = new SearchProblem(hostagesCount, initState);
 		
@@ -892,9 +892,12 @@ public class The_Matrix_Solver {
 			
 		}
 		public static Node takePill(Node node) {
-			if(isTherePill(node.state.neoX, node.state.neoY)) {
+			
+			byte idx=isTherePill(node.state.neoX, node.state.neoY,node.state.pills);
+			if(idx!=-1) {
 				
-				
+				short pills=node.state.pills;
+				pills|=1<<idx;
 				////////
 				
 				State newState = new State(node.state.neoX,
@@ -908,7 +911,8 @@ public class The_Matrix_Solver {
 						node.state.killedNormalAgent2,
 						node.state.killedNormalAgent3,
 						node.state.hostagesHealth,
-						node.state.neoHealth);
+						node.state.neoHealth,
+						pills);
 			for(byte i=(byte)0;i<node.state.hostagesHealth.length;i++)
 			{
 				 // we check first if the hostage was delivered or not , if it was then we dont change it health 
@@ -938,13 +942,20 @@ public class The_Matrix_Solver {
 			
 			
 		}
-		public static boolean isTherePill(byte x,byte y) {
+		public static byte isTherePill(byte x,byte y,short mask) {
 			for(int i=0;i<pillsLocation.length;i=i+2) {
 				
-				if(x==pillsLocation[i]&&y==pillsLocation[i+1])
-				return true;
+				if(x==pillsLocation[i]&&y==pillsLocation[i+1]) {
+					if((mask & (1 << i))==0) {
+						return (byte) i;
+
+					}
+					
+					
+
+				}
 			}
-			return false;
+			return (byte)(-1);
 		}
 		
 		//check if there pad at location
@@ -1004,7 +1015,8 @@ public class The_Matrix_Solver {
 				currentNode.state.killedNormalAgent2,
 				currentNode.state.killedNormalAgent3,
 				currentNode.state.hostagesHealth.clone(),
-				currentNode.state.neoHealth);
+				currentNode.state.neoHealth,
+				currentNode.state.pills);
 		
 		
 		State newState = timeStep(intermediateState);
@@ -1047,7 +1059,8 @@ public class The_Matrix_Solver {
 				currState.killedNormalAgent2,
 				currState.killedNormalAgent3,
 				currState.hostagesHealth.clone(),
-				currState.neoHealth);
+				currState.neoHealth,
+				currState.pills);
 				
 		State newState = timeStep(intermediateState);
 		Node newNode = new Node(newState, currentNode, (byte)4, (short)(currentNode.depth+1), (short)0);
@@ -1224,7 +1237,8 @@ public class The_Matrix_Solver {
 					currState.killedNormalAgent2,
 					currState.killedNormalAgent3,
 					currState.hostagesHealth.clone(),
-					currState.neoHealth);
+					currState.neoHealth,
+					currState.pills);
 		
 		
 		
