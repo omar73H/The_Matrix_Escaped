@@ -21,13 +21,13 @@ public class SearchProblem {
 		case(7): baseCost = 2;break;
 		case(8): baseCost = 2;break;
 		}
-		if(node.state.neoHealth<=0) {
+		if(node.state.neoHealth>=100) {
 			baseCost+=10000;
 		}
 		int prevHostages=0;
 		int currHostages=0;
-		for( int x : node.parent.state.hostagesHealth) if(x==0) prevHostages++;
-		for( int x : node.state.hostagesHealth) if(x==0) currHostages++;
+		for( int x : node.parent.state.hostagesHealth) if(x>=100) prevHostages++;
+		for( int x : node.state.hostagesHealth) if(x>=100) currHostages++;
 		
 		baseCost+=(currHostages-prevHostages)*1000;
 		return (node.parent != null)? (short)(baseCost + node.parent.pathCost) :(short)0 ;
