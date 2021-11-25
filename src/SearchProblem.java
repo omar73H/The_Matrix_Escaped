@@ -6,17 +6,20 @@ public class SearchProblem {
 	short numOfHostages;
 
 	public static short calculatePathCost(Node node) {
-		// OPERATOR: Move(0,1,2,3) : 2, Carry(4) : 2, Drop(5): -500, Take_Pill(11): 2, Kill(7,8,9,10): 2 if mutated and 20 otherwise, Fly(11): 2
+		// OPERATOR: Move(0,1,2,3) : 2, Carry(4) : 2, Drop(5): -500, Take_Pill(6): 2, Kill(7): 2 if mutated and 20 otherwise, Fly(8): 2
 		// STATE: Neo Dies: 10000, Hostage Dies 1000
 		byte op = node.operator;
 		int baseCost = 0;
-		switch(op) {
+		switch(op) {////////////////////////       tag
 		case(0): baseCost = 2;break;
-		case(1): baseCost = 20;break; // how to check if mutated
+		case(1): baseCost = 2;break;
 		case(2): baseCost = 2;break;
-		case(3): baseCost = -500;break;
-		case(4): baseCost = 2;break;
+		case(3): baseCost = 2;break;
+		case(4): baseCost = 20;break; // how to check if mutated
 		case(5): baseCost = 2;break;
+		case(6): baseCost = 0;break;
+		case(7): baseCost = 2;break;
+		case(8): baseCost = 2;break;
 		}
 		if(node.state.neoHealth<=0) {
 			baseCost+=10000;
