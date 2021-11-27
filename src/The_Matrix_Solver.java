@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.HashSet;
 
-import javax.jws.soap.InitParam;
+//import javax.jws.soap.InitParam;
 
 public class The_Matrix_Solver {
 	private static  HashSet<String> encodedNodes = new HashSet<String>();
@@ -374,20 +374,19 @@ public class The_Matrix_Solver {
 		if(strategy.equals("ID")) {
 			return IterativeSearch(initNode, problem);
 		}
-//		if(strategy.equals("GR1")) {
-//			return heu(initNode, problem);
-//		}
-//		if(strategy.equals("GR2")) {
-//			return dfs(initNode, problem);
-//		}
-//		
-//		if(strategy.equals("AS1")) {
-//			return dfs(initNode, problem);
-//		}
-//		
-//		if(strategy.equals("AS2")) {
-//			return dfs(initNode, problem);
-//		}
+		if(strategy.equals("GR1")) {
+			return HeuristicSearch(0,initNode, problem);
+		}
+		if(strategy.equals("GR2")) {
+			return HeuristicSearch(1,initNode, problem);
+		}
+		if(strategy.equals("AS1")) {
+			return AStarSearch(0,initNode, problem);
+		}
+		
+		if(strategy.equals("AS2")) {
+			return AStarSearch(1,initNode, problem);
+		}
 		return "failure";
 	}
 	
@@ -1500,7 +1499,7 @@ public class The_Matrix_Solver {
 	
 	
 	
-	public static String AStarSearch(Node initNode, SearchProblem problem){
+	public static String AStarSearch(int idx,Node initNode, SearchProblem problem){
 		PQ pq = new PQ();// BFS
 		pq.push(initNode,0);
 		while(!pq.isEmpty()) 
@@ -1520,7 +1519,7 @@ public class The_Matrix_Solver {
 			LinkedList<Node> nodes = expand(currentNode);
 
 			for(Node node: nodes) {
-				pq.push(node,HeuristicFunction(node, problem)+node.pathCost);
+				pq.push(node,HeuristicFunction(idx,node, problem)+node.pathCost);
 			}
 			
 			//System.out.println(pq.size());
@@ -1595,7 +1594,7 @@ public class The_Matrix_Solver {
 		}
 		return "Fail";
 	}	
-	public static String HeuristicSearch(Node initNode, SearchProblem problem){
+	public static String HeuristicSearch(int idx,Node initNode, SearchProblem problem){
 		PQ pq = new PQ();// BFS
 		pq.push(initNode,0);
 		while(!pq.isEmpty()) 
@@ -1618,7 +1617,7 @@ public class The_Matrix_Solver {
 			LinkedList<Node> nodes = expand(currentNode);
 
 			for(Node node: nodes) {
-				pq.push(node,HeuristicFunction(node, problem));
+				pq.push(node,HeuristicFunction(idx,node, problem));
 			}
 			
 			//System.out.println(pq.size());
@@ -1627,8 +1626,8 @@ public class The_Matrix_Solver {
 		return "Fail";
 	}	
 	
-	public static int HeuristicFunction(Node node, SearchProblem problem){
-		return Heuristic1(node, problem)+Heuristic2(node, problem);
+	public static int HeuristicFunction(int idx,Node node, SearchProblem problem){
+		return idx==0?Heuristic0(node, problem):Heuristic00(node, problem);
 	}
 	
 	
