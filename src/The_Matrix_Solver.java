@@ -354,7 +354,10 @@ public class The_Matrix_Solver {
 		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0,(short)0);
 		SearchProblem X = new SearchProblem(hostagesCount, initState);
 		String plan = generalSearch(X, strategy);
-		return plan+";"+DeathCounter+";"+KillCounter+";"+encodedNodes.size();
+		if(plan.equals("Fail"))	
+			return "No Solution";
+		else
+			return plan+";"+DeathCounter+";"+KillCounter+";"+encodedNodes.size();
 	}
 	
 	public static String generalSearch(SearchProblem problem, String strategy) {
@@ -958,7 +961,7 @@ public class The_Matrix_Solver {
 		    }
 		    if(didkill)
 		    {
-		    	 Node newNode = new Node(newState, currentNode, (byte)7, (short)(currentNode.depth+1), (short)0);
+		    	Node newNode = new Node(newState, currentNode, (byte)7, (short)(currentNode.depth+1), (short)0);
 			    newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 			   // System.out.println(newNode);
 			    return newNode;
@@ -1500,8 +1503,8 @@ public class The_Matrix_Solver {
 	
 	
 	public static String AStarSearch(int idx,Node initNode, SearchProblem problem){
-		PQ pq = new PQ();// BFS
-		pq.push(initNode,0);
+		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->( (HeuristicFunction(idx,x, problem)+x.pathCost)-(HeuristicFunction(idx,y, problem)+y.pathCost) ));// A*
+		pq.add(initNode);
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = (Node) pq.poll();
@@ -1519,7 +1522,7 @@ public class The_Matrix_Solver {
 			LinkedList<Node> nodes = expand(currentNode);
 
 			for(Node node: nodes) {
-				pq.push(node,HeuristicFunction(idx,node, problem)+node.pathCost);
+				pq.add(node);
 			}
 			
 			//System.out.println(pq.size());
@@ -1530,8 +1533,10 @@ public class The_Matrix_Solver {
 	
 	
 	public static String UniformCostSearch(Node initNode, SearchProblem problem){
-		PQ pq = new PQ();// BFS
-		pq.push(initNode,0);
+		
+		
+		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.pathCost-y.pathCost));// UCS
+		pq.add(initNode);
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = (Node) pq.poll();
@@ -1552,7 +1557,7 @@ public class The_Matrix_Solver {
 			LinkedList<Node> nodes = expand(currentNode);
 
 			for(Node node: nodes) {
-				pq.push(node,node.pathCost);
+				pq.add(node);
 			}
 			
 			//System.out.println(pq.size());
@@ -1595,8 +1600,8 @@ public class The_Matrix_Solver {
 		return "Fail";
 	}	
 	public static String HeuristicSearch(int idx,Node initNode, SearchProblem problem){
-		PQ pq = new PQ();// BFS
-		pq.push(initNode,0);
+		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->( HeuristicFunction(idx,x, problem)-HeuristicFunction(idx,y, problem) ));// A*
+		pq.add(initNode);
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = (Node) pq.poll();
@@ -1617,7 +1622,7 @@ public class The_Matrix_Solver {
 			LinkedList<Node> nodes = expand(currentNode);
 
 			for(Node node: nodes) {
-				pq.push(node,HeuristicFunction(idx,node, problem));
+				pq.add(node);
 			}
 			
 			//System.out.println(pq.size());
@@ -1730,18 +1735,18 @@ public static int bestPath(int x1, int y1, int x2, int y2) {
 	// Assuming we can talk only one pad to try to shorten the distance from P1 to P2 
 	int bestDistance = manhattan(x1, y1, x2, y2);
 	
-	for(int i = 0; i<padsStartLocation.length;i++)
+	for(int i = 0; i<padsStartLocation.length-1;i+=2)
 		bestDistance = Math.min(bestDistance, distanceUsingPad(x1, y1, x2, y2, i));
 	
 	return bestDistance;
 }
 	
 public static int distanceUsingPad(int x1, int y1, int x2, int y2, int padIdx) {
-	int padStartX = padsStartLocation[2*padIdx];
-	int padStartY = padsStartLocation[2*padIdx +1];
+	int padStartX = padsStartLocation[padIdx];
+	int padStartY = padsStartLocation[padIdx +1];
 	
-	int padEndX = padsEndLocation[2*padIdx];
-	int padEndY = padsEndLocation[2*padIdx +1];
+	int padEndX = padsEndLocation[padIdx];
+	int padEndY = padsEndLocation[padIdx +1];
 	
 	int d1 = manhattan(x1, y1, padStartX, padStartY) + manhattan(padEndX, padEndY, x2, y2);
 	int d2 = manhattan(x1, y1, padEndX, padEndY) + manhattan(padStartX, padStartY, x2, y2);
