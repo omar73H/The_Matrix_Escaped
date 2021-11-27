@@ -1449,15 +1449,30 @@ public class The_Matrix_Solver {
 		int remainingCount = 0;
 		for(byte i=(byte)0;i<hostagesCount;i++)
 			if((node.state.movedHostages & (1<<i)) == 0)
-				remainingCount+=2;
+				remainingCount+=2; // for each hostage we will at least move one step then carry
 		
-		return remainingCount+1; // 1 added to go to booth
+		return remainingCount+2; // 2 added to go to booth (one move then drop)
 	}
 	
 	public static int Heuristic00(Node node, SearchProblem problem) {
+		int maxBestDistance = 0;
+		// best distance for the furthest hostage that I will deliver to the T booth
+		
+		int remainingCount = 0;
+		for(byte i=(byte)0;i<hostagesCount;i++)
+			if((node.state.movedHostages & (1<<i)) == 0)
+			{
+				remainingCount++;
+				int currDis = bestPath(node.state.neoX, node.state.neoY, hostagesLocation[2*i], hostagesLocation[2*i+1])
+							  +bestPath(hostagesLocation[2*i], hostagesLocation[2*i+1], telephoneX, telephoneY);
+				maxBestDistance = Math.max(maxBestDistance, currDis);
+			}
+		return maxBestDistance + remainingCount; 
+		// + remainingCount because each other hostage will need at least to carry it
 		
 	}
 	public static int bestPath(int x1, int y1, int x2, int y2) {
+		// Assuming we can talk only one pad to try to shorten the distance from P1 to P2 
 		int bestDistance = manhattan(x1, y1, x2, y2);
 		
 		for(int i = 0; i<padsStartLocation.length;i++)
