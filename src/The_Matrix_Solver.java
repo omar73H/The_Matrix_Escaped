@@ -1636,44 +1636,57 @@ public class The_Matrix_Solver {
 	}
 	
 	public static int Heuristic0(Node node, SearchProblem problem){
+		int remainingCount = 0;
+		for(byte i=(byte)0;i<hostagesCount;i++)
+			if((node.state.movedHostages & (1<<i)) == 0)
+				remainingCount+=2; // for each hostage we will at least move one step then carry
+		
+		return remainingCount+2; // 2 added to go to booth (one move then drop)
+	}
+	
+	public static int Heuristic00(Node node, SearchProblem problem) {
+		int maxBestDistance = 0;
+		// best distance for the furthest hostage that I will deliver to the T booth
 		
 		int remainingCount = 0;
 		for(byte i=(byte)0;i<hostagesCount;i++)
 			if((node.state.movedHostages & (1<<i)) == 0)
-				remainingCount+=2;
-		
-		return remainingCount+1; // 1 added to go to booth
-	}
-	
-	public static int Heuristic00(Node node, SearchProblem problem) {
+			{
+				remainingCount++;
+				int currDis = bestPath(node.state.neoX, node.state.neoY, hostagesLocation[2*i], hostagesLocation[2*i+1])
+							  +bestPath(hostagesLocation[2*i], hostagesLocation[2*i+1], telephoneX, telephoneY);
+				maxBestDistance = Math.max(maxBestDistance, currDis);
+			}
+		return maxBestDistance + remainingCount; 
+		// + remainingCount because each other hostage will need at least to carry it
 		
 	}
 	public static int bestPath(int x1, int y1, int x2, int y2) {
+		// Assuming we can talk only one pad to try to shorten the distance from P1 to P2 
 		int bestDistance = manhattan(x1, y1, x2, y2);
 		
-		for(int i = 0; i<padsStartLocation.length;i++)
+		for(int i = 0; i<padsStartLocation.length-1;i+=2)
 			bestDistance = Math.min(bestDistance, distanceUsingPad(x1, y1, x2, y2, i));
 		
 		return bestDistance;
 	}
 	
 	public static int distanceUsingPad(int x1, int y1, int x2, int y2, int padIdx) {
-		int padStartX = padsStartLocation[2*padIdx];
-		int padStartY = padsStartLocation[2*padIdx +1];
+		int padStartX = padsStartLocation[padIdx];
+		int padStartY = padsStartLocation[padIdx +1];
 		
-		int padEndX = padsEndLocation[2*padIdx];
-		int padEndY = padsEndLocation[2*padIdx +1];
+		int padEndX = padsEndLocation[padIdx];
+		int padEndY = padsEndLocation[padIdx +1];
 		
 		int d1 = manhattan(x1, y1, padStartX, padStartY) + manhattan(padEndX, padEndY, x2, y2);
 		int d2 = manhattan(x1, y1, padEndX, padEndY) + manhattan(padStartX, padStartY, x2, y2);
 		
 		return Math.min(d1, d2);
 	}
-	
+
 	public static int manhattan(int x1, int y1, int x2, int y2) {
 		return Math.abs(x1-x2) + Math.abs(y1-y2); 
 	}
-	
 	
 	public static int Heuristic1(Node node, SearchProblem problem){
 		int H =100;
@@ -1738,61 +1751,5 @@ public class The_Matrix_Solver {
 			
 			return H;
 	}
-	
-	
-public static int Heuristic0(Node node, SearchProblem problem){
-		
-		int remainingCount = 0;
-		for(byte i=(byte)0;i<hostagesCount;i++)
-			if((node.state.movedHostages & (1<<i)) == 0)
-				remainingCount+=2; // for each hostage we will at least move one step then carry
-		
-		return remainingCount+2; // 2 added to go to booth (one move then drop)
-	}
-	
-public static int Heuristic00(Node node, SearchProblem problem) {
-	int maxBestDistance = 0;
-	// best distance for the furthest hostage that I will deliver to the T booth
-	
-	int remainingCount = 0;
-	for(byte i=(byte)0;i<hostagesCount;i++)
-		if((node.state.movedHostages & (1<<i)) == 0)
-		{
-			remainingCount++;
-			int currDis = bestPath(node.state.neoX, node.state.neoY, hostagesLocation[2*i], hostagesLocation[2*i+1])
-						  +bestPath(hostagesLocation[2*i], hostagesLocation[2*i+1], telephoneX, telephoneY);
-			maxBestDistance = Math.max(maxBestDistance, currDis);
-		}
-	return maxBestDistance + remainingCount; 
-	// + remainingCount because each other hostage will need at least to carry it
-	
-}
-	
-public static int bestPath(int x1, int y1, int x2, int y2) {
-	// Assuming we can talk only one pad to try to shorten the distance from P1 to P2 
-	int bestDistance = manhattan(x1, y1, x2, y2);
-	
-	for(int i = 0; i<padsStartLocation.length-1;i+=2)
-		bestDistance = Math.min(bestDistance, distanceUsingPad(x1, y1, x2, y2, i));
-	
-	return bestDistance;
-}
-	
-public static int distanceUsingPad(int x1, int y1, int x2, int y2, int padIdx) {
-	int padStartX = padsStartLocation[padIdx];
-	int padStartY = padsStartLocation[padIdx +1];
-	
-	int padEndX = padsEndLocation[padIdx];
-	int padEndY = padsEndLocation[padIdx +1];
-	
-	int d1 = manhattan(x1, y1, padStartX, padStartY) + manhattan(padEndX, padEndY, x2, y2);
-	int d2 = manhattan(x1, y1, padEndX, padEndY) + manhattan(padStartX, padStartY, x2, y2);
-	
-	return Math.min(d1, d2);
-}
-
-public static int manhattan(int x1, int y1, int x2, int y2) {
-	return Math.abs(x1-x2) + Math.abs(y1-y2); 
-}
 
 }

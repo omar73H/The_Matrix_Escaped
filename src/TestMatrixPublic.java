@@ -25,7 +25,6 @@ public class TestMatrixPublic {
 	String grid9 = "5,5;2;0,4;1,4;0,1,1,1,2,1,3,1,3,3,3,4;1,0,2,4;0,3,4,3,4,3,0,3;0,0,30,3,0,80,4,4,80";
 	String grid10 = "5,5;4;1,1;4,1;2,4,0,4,3,2,3,0,4,2,0,1,1,3,2,1;4,0,4,4,1,0;2,0,0,2,0,2,2,0;0,0,62,4,3,45,3,3,39,2,3,40";
 	
-	
 	@Test(timeout = 10000)
 	public void testa0() throws Exception {
 		String solution = The_Matrix_Solver.solve(grid0, "BF", false);
