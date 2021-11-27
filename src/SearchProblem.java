@@ -49,10 +49,26 @@ public class SearchProblem {
 			return false;
 		
 		// hostages in movedHostages + killed hostagesAgent == no. of all hostages
-		if((state.movedHostages |state.killedTransHostages)!= (1<<numOfHostages)-1)
+		          
+		if( (state.movedHostages |state.killedTransHostages) != (1<<numOfHostages)-1 )
 			return false;
 		
 		return true;
+	}
+	public static void main(String[] args) {
+//		System.out.println(18 | 13);
+//		System.out.println((1<<5) - 1);
+//		for(int i=0;i<32;i++)
+//		{
+//			if( (  ( (1<<5)-1 )  & (1<<i)  ) != 0)
+//			{
+//				System.out.print("1");
+//			}
+//			else
+//			{
+//				System.out.print("0");
+//			}
+//		}
 	}
 	
 //	public static void main(String[] args) {

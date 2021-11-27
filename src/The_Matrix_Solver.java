@@ -4,16 +4,24 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
-import java.util.HashSet;
 
 //import javax.jws.soap.InitParam;
 
 public class The_Matrix_Solver {
-	private static  HashSet<String> encodedNodes = new HashSet<String>();
+	// For eliminating repeated states
+	private static HashMap<String,Short> encodedNodes = new HashMap<String,Short>();
+	
+	//For genGrid
 	private static ArrayList<Integer> availableCells;
+	
+	// For printing the solution
 	private static short DeathCounter=0;
 	private static short KillCounter=0;
+	
+	// Used in buildPath to know that we are in the start node for building the path
 	public static  boolean leafnode;
+	
+	// Filled by genGrid
 	public static byte m,n,c;
 	public static byte initNeoX, initNeoY, telephoneX, telephoneY;
 	public static byte hostagesCount;
@@ -86,8 +94,6 @@ public class The_Matrix_Solver {
 	private static String genGrid() {
 		m = (byte)random(5,15);
 		n = (byte)random(5,15);
-		m = 15;
-		n = 15;
 		c = (byte)random(1,4);
 		
 
@@ -288,18 +294,21 @@ public class The_Matrix_Solver {
 	//"5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62";
 	 //  m,n;c;neox,neoy;telx,tely;AgentX,AgentY;PillX,PillY;PadStartX,PadStartY,FinishX,FinishY,HostageX,HostageY,Damage
 	
+	
+	
+	//";0,3,1,4;2,3;4,4,0,2,0,2,4,4";
 	public static void gridSplicer(String grid)
 	{
 		String[] gridArray= grid.split(";");
-		m=(byte)Integer.parseInt(gridArray[0].split(",")[0]);
-		n=(byte)Integer.parseInt(gridArray[0].split(",")[1]);
-		c=(byte)Integer.parseInt(gridArray[1]);
+		m=Byte.parseByte(gridArray[0].split(",")[0]);
+		n=Byte.parseByte(gridArray[0].split(",")[1]);
+		c=Byte.parseByte(gridArray[1]);
 		
-		initNeoX=(byte)Integer.parseInt(gridArray[2].split(",")[0]);
-		initNeoY=(byte)Integer.parseInt(gridArray[2].split(",")[1]);
+		initNeoX=Byte.parseByte(gridArray[2].split(",")[0]);
+		initNeoY=Byte.parseByte(gridArray[2].split(",")[1]);
 		
-		telephoneX=(byte)Integer.parseInt(gridArray[3].split(",")[0]);
-		telephoneY=(byte)Integer.parseInt(gridArray[3].split(",")[1]);
+		telephoneX=Byte.parseByte(gridArray[3].split(",")[0]);
+		telephoneY=Byte.parseByte(gridArray[3].split(",")[1]);
 		
 		String[] Info=(gridArray[7].split(","));
 		hostagesCount=(byte)(Info.length/3);
@@ -308,17 +317,17 @@ public class The_Matrix_Solver {
 		
 		for(byte i =0; i<hostagesCount;i++)
 		{
-			hostagesHealth[i]=(byte)Integer.parseInt(Info[(i*3)+2]);
-			hostagesLocation[2*i]=(byte)Integer.parseInt(Info[(i*3)]);
-			hostagesLocation[(2*i)+1]=(byte)Integer.parseInt(Info[(i*3)+1]);
+			hostagesLocation[2*i]=Byte.parseByte(Info[(i*3)]);
+			hostagesLocation[(2*i)+1]=Byte.parseByte(Info[(i*3)+1]);
+			hostagesHealth[i]=Byte.parseByte(Info[(i*3)+2]);
 		}
 		
 		Info=(gridArray[5].split(","));
 		pillsLocation= new byte [Info.length];		
 		for(byte i =0; i<Info.length;i+=2)
 		{
-			pillsLocation[i]=(byte)Integer.parseInt(Info[(i)]);
-			pillsLocation[(i)+1]=(byte)Integer.parseInt(Info[i+1]);
+			pillsLocation[i]=Byte.parseByte(Info[(i)]);
+			pillsLocation[(i)+1]=Byte.parseByte(Info[i+1]);
 		}
 		
 		Info=(gridArray[6].split(","));
@@ -326,11 +335,11 @@ public class The_Matrix_Solver {
 		padsEndLocation=new byte[Info.length/4];
 		for(byte i =0; i<Info.length;i+=8)
 		{
-			padsStartLocation[i/4]=(byte)Integer.parseInt(Info[(i)]);
-			padsStartLocation[(i/4)+1]=(byte)Integer.parseInt(Info[i+1]);
+			padsStartLocation[i/4]=Byte.parseByte(Info[(i)]);
+			padsStartLocation[(i/4)+1]=Byte.parseByte(Info[i+1]);
 			
-			padsEndLocation[i/4]=(byte)Integer.parseInt(Info[(i)+2]);
-			padsEndLocation[(i/4)+1]=(byte)Integer.parseInt(Info[i+3]);
+			padsEndLocation[i/4]=Byte.parseByte(Info[(i)+2]);
+			padsEndLocation[(i/4)+1]=Byte.parseByte(Info[i+3]);
 		}
 		
 		Info=(gridArray[4].split(","));
@@ -346,7 +355,7 @@ public class The_Matrix_Solver {
 	
 	
 	public static String solve(String grid, String strategy, boolean visualize) {
-		encodedNodes = new HashSet<String>();
+		encodedNodes = new HashMap<String,Short>();
 		DeathCounter=0;
 		leafnode=true;
 		KillCounter=0;
@@ -360,9 +369,11 @@ public class The_Matrix_Solver {
 			return plan+";"+DeathCounter+";"+KillCounter+";"+encodedNodes.size();
 	}
 	
+
+	
 	public static String generalSearch(SearchProblem problem, String strategy) {
 		Node initNode = new Node(problem.initialState, null, (byte)-1, (short)0, (short)0);
-		encodedNodes.add(encode(initNode));
+		encodedNodes.put(encode(initNode),sumHealthes(initNode));
 		if(strategy.equals("BF")) {
 			return bfs(initNode, problem);
 		}
@@ -394,7 +405,7 @@ public class The_Matrix_Solver {
 	}
 	
 	public static String bfs(Node initNode, SearchProblem problem){
-		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth-y.depth));// BFS
+		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth==y.depth? (y.operator-x.operator):(x.depth-y.depth)));// BFS
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
 		{
@@ -418,7 +429,7 @@ public class The_Matrix_Solver {
 	}
 	
 	public static String dfs(Node initNode, SearchProblem problem) {
-		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(y.depth-x.depth));// BFS
+		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth==y.depth? (y.operator-x.operator):(y.depth-x.depth)));// DFS
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
 		{
@@ -441,8 +452,8 @@ public class The_Matrix_Solver {
 
 	private static LinkedList<Node> expand(Node currentNode) {
 	    
-		//up, down, left, right, carry, drop, takePill, killU ,killD, killL, killR 	, and fly
-		//0    1      2     3     4      5        6                    7                   11
+		//up, down, left, right, carry, drop, takePill, kill , and fly
+		//0    1      2     3     4      5        6      7          8
 		
 	    LinkedList<Node> expandedNodes = new LinkedList<Node>();
 	    
@@ -453,87 +464,93 @@ public class The_Matrix_Solver {
 	    	
 	    
 	    Node triedNode=null;
+	    String encodedNode="";
 	    
 	    // Try carry
 	    triedNode = pickUpAgent(currentNode);
-	    String encodedNode="";
 	    if(triedNode!=null)
-	    {	encodedNode=encode(triedNode);
-	    	if(!(encodedNodes.contains(encodedNode)))
+	    {	
+	    	encodedNode=encode(triedNode);
+	    	short sumHealthes = sumHealthes(triedNode);
+	    	if(! encodedNodes.containsKey(encodedNode))
 	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    		encodedNodes.put(encodedNode,sumHealthes);
+	    		expandedNodes.add(triedNode);
+	    	}
+	    	else
+	    	{
+	    		short oldSumHealthes = encodedNodes.get(encodedNode);
+	    		if(sumHealthes < oldSumHealthes)
+	    		{
+	    			encodedNodes.put(encodedNode, sumHealthes);
+	    			expandedNodes.add(triedNode);
+	    		}
 	    	}
 	    }
 	    // Try drop
 	    triedNode = dropAllHostages(currentNode);
 	    
 	    if(triedNode!=null)
-	    {	encodedNode=encode(triedNode);
-	    	if(!(encodedNodes.contains(encodedNode)))
+	    {	
+	    	encodedNode=encode(triedNode);
+	    	short sumHealthes = sumHealthes(triedNode);
+	    	if(! encodedNodes.containsKey(encodedNode) )
 	    	{
-	    	encodedNodes.add(encodedNode);
-			expandedNodes.add(triedNode);
+	    		encodedNodes.put(encodedNode,sumHealthes);
+	    		expandedNodes.add(triedNode);
+	    	}
+	    	else
+	    	{
+	    		short oldSumHealthes = encodedNodes.get(encodedNode);
+	    		if(sumHealthes < oldSumHealthes)
+	    		{
+	    			encodedNodes.put(encodedNode, sumHealthes);
+	    			expandedNodes.add(triedNode);
+	    		}
 	    	}
 	    }
 	    // Try takepill
 	    triedNode = takePill(currentNode);
 	    if(triedNode!=null)
-	    {
-			expandedNodes.add(triedNode);
+	    {	
+	    	encodedNode=encode(triedNode);
+	    	short sumHealthes = sumHealthes(triedNode);
+	    	if(! encodedNodes.containsKey(encodedNode) )
+	    	{
+	    		encodedNodes.put(encodedNode,sumHealthes);
+	    		expandedNodes.add(triedNode);
+	    	}
+	    	else
+	    	{
+	    		short oldSumHealthes = encodedNodes.get(encodedNode);
+	    		if(sumHealthes < oldSumHealthes)
+	    		{
+	    			encodedNodes.put(encodedNode, sumHealthes);
+	    			expandedNodes.add(triedNode);
+	    		}
+	    	}
 	    }
-//	    //Try kill up
-//	    triedNode = kill(7, currentNode);
-// 		//if the node is not null we check if it's repeated state or not
-//	    if(triedNode!=null)
-//	    {	encodedNode=encode(triedNode);
-//	    	//if its repeated state we dont add it to the list 
-//			//if not we add it to hash set and add it to linked list
-//	    	if(!(encodedNodes.contains(encodedNode)))
-//	    	{
-//	    		encodedNodes.add(encodedNode);
-//				expandedNodes.add(triedNode);
-//	    	}
-//	    }
-//	    
-//	    //Try kill down
-//	    triedNode = kill(8, currentNode);
-// 		//if the node is not null we check if it's repeated state or not
-//	    if(triedNode!=null)
-//	    {	encodedNode=encode(triedNode);
-//	    	//if its repeated state we dont add it to the list 
-//			//if not we add it to hash set and add it to linked list
-//	    	if(!(encodedNodes.contains(encodedNode)))
-//	    	{
-//	    		encodedNodes.add(encodedNode);
-//	    		expandedNodes.add(triedNode);
-//	    	}
-//	    }
-//	    // Try kill left
-//	    triedNode = kill(9, currentNode);
-// 		//if the node is not null we check if it's repeated state or not
-//	    if(triedNode!=null)
-//	    {	encodedNode=encode(triedNode);
-//	    	//if its repeated state we dont add it to the list 
-//			//if not we add it to hash set and add it to linked list
-//	    	if(!(encodedNodes.contains(encodedNode)))
-//	    	{
-//	    		encodedNodes.add(encodedNode);
-//	    		expandedNodes.add(triedNode);
-//	    	}
-//	    }
+
 	    // Try kill Around
-	    triedNode = kill(7, currentNode);
+	    triedNode = kill(currentNode);
  		//if the node is not null we check if it's repeated state or not
 	    if(triedNode!=null)
 	    {	
 	    	encodedNode=encode(triedNode);
-	    	//if its repeated state we dont add it to the list 
-			//if not we add it to hash set and add it to linked list
-	    	if(!(encodedNodes.contains(encodedNode)))
+	    	short sumHealthes = sumHealthes(triedNode);
+	    	if(! encodedNodes.containsKey(encodedNode) )
 	    	{
-	    		encodedNodes.add(encodedNode);
+	    		encodedNodes.put(encodedNode,sumHealthes);
 	    		expandedNodes.add(triedNode);
+	    	}
+	    	else
+	    	{
+	    		short oldSumHealthes = encodedNodes.get(encodedNode);
+	    		if(sumHealthes < oldSumHealthes)
+	    		{
+	    			encodedNodes.put(encodedNode, sumHealthes);
+	    			expandedNodes.add(triedNode);
+	    		}
 	    	}
 	    }
 	    
@@ -544,16 +561,24 @@ public class The_Matrix_Solver {
 	    	triedNode = fly(currentNode);
 	 		//if the node is not null we check if it's repeated state or not
 	    	if(triedNode!=null)
-	    	{	
-	    		encodedNode=encode(triedNode);
-	    		//if its repeated state we dont add it to the list 
-	    		//if not we add it to hash set and add it to linked list
-	    		if(!(encodedNodes.contains(encodedNode)))
-	    		{
-	    			encodedNodes.add(encodedNode);
-	    			expandedNodes.add(triedNode);
-	    		}
-	    	}
+		    {	
+		    	encodedNode=encode(triedNode);
+		    	short sumHealthes = sumHealthes(triedNode);
+		    	if(! encodedNodes.containsKey(encodedNode) )
+		    	{
+		    		encodedNodes.put(encodedNode,sumHealthes);
+		    		expandedNodes.add(triedNode);
+		    	}
+		    	else
+		    	{
+		    		short oldSumHealthes = encodedNodes.get(encodedNode);
+		    		if(sumHealthes < oldSumHealthes)
+		    		{
+		    			encodedNodes.put(encodedNode, sumHealthes);
+		    			expandedNodes.add(triedNode);
+		    		}
+		    	}
+		    }
 	    }
 	    
 	  
@@ -561,19 +586,27 @@ public class The_Matrix_Solver {
 	  //Try move up if parent was not move down
 	    if(currentNode.operator!=1)
 	    {
-	     triedNode=move(0, currentNode);
- 		 //if the node is not null we check if it's repeated state or not
-	     if(triedNode!=null)
-	     {	
-	    	 encodedNode=encode(triedNode);
-	    	//if its repeated state we dont add it to the list 
-    		//if not we add it to hash set and add it to linked list
-	    	 if(!(encodedNodes.contains(encodedNode)))
-	    	 {
-		    	encodedNodes.add(encodedNode);
-				expandedNodes.add(triedNode);
-	    	 }
-	     }
+	    	triedNode=move(0, currentNode);
+	    	//if the node is not null we check if it's repeated state or not
+	    	if(triedNode!=null)
+		    {	
+		    	encodedNode=encode(triedNode);
+		    	short sumHealthes = sumHealthes(triedNode);
+		    	if(! encodedNodes.containsKey(encodedNode) )
+		    	{
+		    		encodedNodes.put(encodedNode,sumHealthes);
+		    		expandedNodes.add(triedNode);
+		    	}
+		    	else
+		    	{
+		    		short oldSumHealthes = encodedNodes.get(encodedNode);
+		    		if(sumHealthes < oldSumHealthes)
+		    		{
+		    			encodedNodes.put(encodedNode, sumHealthes);
+		    			expandedNodes.add(triedNode);
+		    		}
+		    	}
+		    }
 	    }
 	    //Try move down if parent was not move up 
 	    if(currentNode.operator!=0)
@@ -581,16 +614,24 @@ public class The_Matrix_Solver {
 	    	triedNode=move(1, currentNode);
 	    	//if the node is not null we check if it's repeated state or not
 	    	if(triedNode!=null)
-	    	{	
-	    		encodedNode=encode(triedNode);
-	    		//if its repeated state we dont add it to the list 
-	    		//if not we add it to hash set and add it to linked list
-	    		if(!(encodedNodes.contains(encodedNode)))
-	    		{
-	    			encodedNodes.add(encodedNode);
-	    			expandedNodes.add(triedNode);
-	    		}
-	    	}
+		    {	
+		    	encodedNode=encode(triedNode);
+		    	short sumHealthes = sumHealthes(triedNode);
+		    	if(! encodedNodes.containsKey(encodedNode) )
+		    	{
+		    		encodedNodes.put(encodedNode,sumHealthes);
+		    		expandedNodes.add(triedNode);
+		    	}
+		    	else
+		    	{
+		    		short oldSumHealthes = encodedNodes.get(encodedNode);
+		    		if(sumHealthes < oldSumHealthes)
+		    		{
+		    			encodedNodes.put(encodedNode, sumHealthes);
+		    			expandedNodes.add(triedNode);
+		    		}
+		    	}
+		    }
 	    }
 	    // Try move left if parent was not move right
 	    if(currentNode.operator!=3)
@@ -598,16 +639,24 @@ public class The_Matrix_Solver {
 	    	triedNode=move(2, currentNode);
 		    //if the node is not null we check if it's repeated state or not
 	    	if(triedNode!=null)
-	    	{		
-	    		encodedNode=encode(triedNode);
-	    		//if its repeated state we dont add it to the list 
-	    		//if not we add it to hash set and add it to linked list
-	    		if(!(encodedNodes.contains(encodedNode)))
-	    		{
-	    			encodedNodes.add(encodedNode);
-	    			expandedNodes.add(triedNode);
-	    		}
-	    	}
+		    {	
+		    	encodedNode=encode(triedNode);
+		    	short sumHealthes = sumHealthes(triedNode);
+		    	if(! encodedNodes.containsKey(encodedNode) )
+		    	{
+		    		encodedNodes.put(encodedNode,sumHealthes);
+		    		expandedNodes.add(triedNode);
+		    	}
+		    	else
+		    	{
+		    		short oldSumHealthes = encodedNodes.get(encodedNode);
+		    		if(sumHealthes < oldSumHealthes)
+		    		{
+		    			encodedNodes.put(encodedNode, sumHealthes);
+		    			expandedNodes.add(triedNode);
+		    		}
+		    	}
+		    }
 	    }
 	    // Try move right if parent was not move left
 	    if(currentNode.operator!=2)
@@ -615,16 +664,24 @@ public class The_Matrix_Solver {
 	    	triedNode=move(3, currentNode);
 	    	//if the node is not null we check if it's repeated state or not
 	    	if(triedNode!=null)
-	    	{	
-	    		encodedNode=encode(triedNode);
-	    		//if its repeated state we dont add it to the list 
-	    		//if not we add it to hash set and add it to linked list
-	    		if(!(encodedNodes.contains(encodedNode)))
-	    		{
-	    			encodedNodes.add(encodedNode);
-	    			expandedNodes.add(triedNode);
-	    		}
-	    	}
+		    {	
+		    	encodedNode=encode(triedNode);
+		    	short sumHealthes = sumHealthes(triedNode);
+		    	if(! encodedNodes.containsKey(encodedNode) )
+		    	{
+		    		encodedNodes.put(encodedNode,sumHealthes);
+		    		expandedNodes.add(triedNode);
+		    	}
+		    	else
+		    	{
+		    		short oldSumHealthes = encodedNodes.get(encodedNode);
+		    		if(sumHealthes < oldSumHealthes)
+		    		{
+		    			encodedNodes.put(encodedNode, sumHealthes);
+		    			expandedNodes.add(triedNode);
+		    		}
+		    	}
+		    }
 	    }
 	    
 		return expandedNodes;
@@ -632,8 +689,6 @@ public class The_Matrix_Solver {
 	
 	public static Node move(int actionId, Node currentNode)
 	{
-		
-
 		byte neoX =currentNode.state.neoX;
 	    byte neoY =currentNode.state.neoY;
 		if(actionId == 0)
@@ -725,7 +780,7 @@ public class The_Matrix_Solver {
 		return null;
 	}
 	
-	public static Node kill(int actionId, Node currentNode)
+	public static Node kill(Node currentNode)
 	{
 		
 		byte neoX =currentNode.state.neoX;
@@ -1481,17 +1536,27 @@ public class The_Matrix_Solver {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append(node.state.neoX);
+		sb.append(",");
 		sb.append(node.state.neoY);
+		sb.append(",");
 		sb.append(node.state.movedHostages);
+		sb.append(",");
 		sb.append(node.state.currentlyCarriedHostages);
+		sb.append(",");
 		sb.append(node.state.hostagesToAgents);
+		sb.append(",");
 		sb.append(node.state.killedTransHostages);
+		sb.append(",");
 		sb.append(node.state.pills);
+		sb.append(",");
 		sb.append(node.state.killedNormalAgent0);
+		sb.append(",");
 		sb.append(node.state.killedNormalAgent1);
+		sb.append(",");
 		sb.append(node.state.killedNormalAgent2);
+		sb.append(",");
 		sb.append(node.state.killedNormalAgent3);
-		
+
 	
 		
 		String encode=sb.toString();
@@ -1750,6 +1815,15 @@ public class The_Matrix_Solver {
 			
 			
 			return H;
+	}
+	
+	private static short sumHealthes(Node node) {
+		short sum=(byte)0;
+		for(int i=0;i<hostagesCount;i++)
+		{
+			sum += node.state.hostagesHealth[i];
+		}
+		return sum;
 	}
 
 }
