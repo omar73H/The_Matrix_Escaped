@@ -366,7 +366,10 @@ public class The_Matrix_Solver {
 		if(plan.equals("Fail"))	
 			return "No Solution";
 		else
+		{
+			System.out.println(plan+";"+DeathCounter+";"+KillCounter+";"+encodedNodes.size());
 			return plan+";"+DeathCounter+";"+KillCounter+";"+encodedNodes.size();
+		}
 	}
 	
 
@@ -1089,12 +1092,14 @@ public class The_Matrix_Solver {
 						pills);
 			for(byte i=(byte)0;i<node.state.hostagesHealth.length;i++)
 			{
+				if(newState.hostagesHealth[i] >= 100)
+					continue;
 				 // we check first if the hostage was delivered or not , if it was then we dont change it health 
 				 //(in moved and not in currently carried)
 				if(((newState.movedHostages & (1<<i)) !=0) && ((newState.currentlyCarriedHostages & (1<<i)) ==0))
 					continue;
 				
-				//if the hostage turned to agent we dont change its damage
+				//if the hostage turned to agent we don't change its damage
 				if((newState.hostagesToAgents & (1<<i))==0)
 					newState.hostagesHealth[i] = (byte)Math.max(0, newState.hostagesHealth[i]-20);
 				
@@ -1453,21 +1458,22 @@ public class The_Matrix_Solver {
 		if(leafnode)
 		{
 			killCount(currentNode);
+			deathCount(currentNode);
 			leafnode=false;
 		}
-		byte prevHostages=0;
-		byte currHostages=0;
-		
-			for( int x : currentNode.parent.state.hostagesHealth) if(x<100) prevHostages++;
-			for( int x : currentNode.state.hostagesHealth) if(x<100) currHostages++;
-			
-			System.out.print("       ");
-			System.out.print(prevHostages);
-			System.out.print(" ");
-			System.out.print(currHostages);
-			System.out.print(" " + DeathCounter);
-			System.out.println();
-			DeathCounter+=(prevHostages-currHostages);
+//		byte prevHostages=0;
+//		byte currHostages=0;
+//		
+//			for( int x : currentNode.parent.state.hostagesHealth) if(x<100) prevHostages++;
+//			for( int x : currentNode.state.hostagesHealth) if(x<100) currHostages++;
+//			
+//			System.out.print("       ");
+//			System.out.print(prevHostages);
+//			System.out.print(" ");
+//			System.out.print(currHostages);
+//			System.out.print(" " + DeathCounter);
+//			System.out.println();
+//			DeathCounter+=(prevHostages-currHostages);
 			
 			if(currentNode.parent.parent==null)
 				return buildPath(currentNode.parent)+currentNode.opString;
@@ -1477,6 +1483,17 @@ public class The_Matrix_Solver {
 			}
 	}
 	
+	
+	private static void deathCount(Node currentNode){
+		
+		for(int i=0;i<hostagesCount;i++)
+		{
+			if(currentNode.state.hostagesHealth[i] >= 100)
+			{
+				DeathCounter++;
+			}
+		}
+	}
 	
 	private static void killCount(Node currentNode)
 	{
