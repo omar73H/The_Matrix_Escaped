@@ -15,11 +15,11 @@ public class SearchProblem {
 		case(1): baseCost = 2;break;
 		case(2): baseCost = 2;break;
 		case(3): baseCost = 2;break;
-		case(4): baseCost = 20;break; // how to check if mutated
-		case(5): baseCost = 2;break;
-		case(6): baseCost = 0;break;
-		case(7): baseCost = 2;break;
-		case(8): baseCost = 2;break;
+		case(4): baseCost = 2;break; //carry
+		case(5): baseCost = 2;break;//drop
+		case(6): baseCost = 0;break;//pill
+		case(7): baseCost = 20;break;//kill // how to check if mutated
+		case(8): baseCost = 2;break;//fly
 		}
 		if(node.state.neoHealth>=100) {
 			baseCost+=10000;
@@ -40,8 +40,10 @@ public class SearchProblem {
 	}
 	
 	public boolean goalTest(State state) {
-		// Check all hostages are either delivered or died, All converted hostages are killed
 		
+		if(state.neoX!= The_Matrix_Solver.telephoneX || state.neoY!=The_Matrix_Solver.telephoneY)
+			return false;
+		// Check all hostages are either delivered or died, All converted hostages are killed		
 		// No one in the currently carried
 		if(state.currentlyCarriedHostages!=0)
 			return false;
