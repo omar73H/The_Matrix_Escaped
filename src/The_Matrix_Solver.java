@@ -1040,7 +1040,7 @@ public class The_Matrix_Solver {
 				State tempNode=timeStep(node.state);
 				tempNode.neoX=padsEndLocation[t[2]];
 				tempNode.neoY=padsEndLocation[t[2]+1];
-				Node sNode=new Node(tempNode,node,(byte) 11,(short)(node.depth+1),(short)0);
+				Node sNode=new Node(tempNode,node,(byte) 8,(short)(node.depth+1),(short)0);
 				sNode.pathCost=SearchProblem.calculatePathCost(sNode);
 				return sNode;
 				}
@@ -1482,27 +1482,27 @@ public class The_Matrix_Solver {
 	{
 		for (byte i =0;i<64;i++)
 		{
-			if((currentNode.state.killedNormalAgent0 & 1<<i)!=0)
+			if((currentNode.state.killedNormalAgent0 & (1L<<i))!=0)
 			{
 				KillCounter++;
 			}
-			if((currentNode.state.killedNormalAgent1 & 1<<i)!=0)
+			if((currentNode.state.killedNormalAgent1 & (1L<<i))!=0)
 			{
 				KillCounter++;
 			}
-			if((currentNode.state.killedNormalAgent2 & 1<<i)!=0)
+			if((currentNode.state.killedNormalAgent2 & (1L<<i))!=0)
 			{
 				KillCounter++;
 			}
 			if(i<32)
 			{
-				if((currentNode.state.killedNormalAgent3 & 1<<i)!=0)
+				if((currentNode.state.killedNormalAgent3 & (1<<i))!=0)
 				{
 					KillCounter++;
 				}
 				if(i<16)
 				{
-					if((currentNode.state.killedTransHostages & 1<<i)!=0)
+					if((currentNode.state.killedTransHostages & (1<<i))!=0)
 					{
 						KillCounter++;
 					}
