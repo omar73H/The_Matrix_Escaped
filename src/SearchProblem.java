@@ -56,6 +56,16 @@ public class SearchProblem {
 		return true;
 	}
 	public static void main(String[] args) {
+		System.out.println((short)(1<<8));
+		System.out.println(~(short)(1<<8));
+		
+		
+		// 1111111011111111 
+		
+		
+		
+		
+		
 //		System.out.println(18 | 13);
 //		System.out.println((1<<5) - 1);
 //		for(int i=0;i<32;i++)

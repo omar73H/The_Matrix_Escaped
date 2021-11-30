@@ -697,7 +697,7 @@ public class The_Matrix_Solver {
 		if(actionId == 0)
 		{
 			// Try Up
-		    if(currentNode.operator!=1 && neoX-1 >= 0 && agentAt((byte) (neoX-1),
+		    if(neoX-1 >= 0 && agentAt((byte) (neoX-1),
 		    						  neoY,
 		    						  currentNode.state.hostagesHealth,
 		    						  currentNode.state.movedHostages,
@@ -720,7 +720,7 @@ public class The_Matrix_Solver {
 		else if(actionId == 1)
 		{
 			//TryDown
-			if(currentNode.operator!=0 &&neoX+1 < m && agentAt((byte) (neoX+1),
+			if(neoX+1 < m && agentAt((byte) (neoX+1),
 					  neoY,
 					  currentNode.state.hostagesHealth,
 					  currentNode.state.movedHostages,
@@ -741,7 +741,7 @@ public class The_Matrix_Solver {
 		else if(actionId == 2)
 		{
 			//Try Left
-			if(currentNode.operator!=3 && neoY-1 >=0 && agentAt(neoX,
+			if(neoY-1 >=0 && agentAt(neoX,
 							  (byte)(neoY-1),
 							  currentNode.state.hostagesHealth,
 							  currentNode.state.movedHostages,
@@ -762,7 +762,7 @@ public class The_Matrix_Solver {
 		else if(actionId == 3)
 		{
 			//Try Right
-			if(currentNode.operator!=2 && neoY+1 <n && agentAt(neoX,
+			if(neoY+1 <n && agentAt(neoX,
 							  (byte)(neoY+1),
 							  currentNode.state.hostagesHealth,
 							  currentNode.state.movedHostages,
@@ -789,8 +789,8 @@ public class The_Matrix_Solver {
 		byte neoX =currentNode.state.neoX;
 	    byte neoY =currentNode.state.neoY;
 	    
-	    	//TryKillUp
-		    short agentAt = agentAt((byte) (neoX-1),
+	    //TryKillUp
+		short agentAt = agentAt((byte) (neoX-1),
 					  neoY,
 					  currentNode.state.hostagesHealth,
 					  currentNode.state.movedHostages,
@@ -800,54 +800,49 @@ public class The_Matrix_Solver {
 					  currentNode.state.killedNormalAgent1,
 					  currentNode.state.killedNormalAgent2,
 					  currentNode.state.killedNormalAgent3, true);
-		    State newState = timeStep(currentNode.state);
-		    boolean didkill=false;
-		    if(neoX-1 >= 0 && agentAt >= 0)
+		State newState = timeStep(currentNode.state);
+		boolean didkill=false;
+		if(neoX-1 >= 0 && agentAt >= 0)
+		{
+		    if(!didkill)
 		    {
-		    	if(!didkill)
-		    	{
-		    		newState.neoHealth += 20;
-		    		didkill=true;
-		    	}
-		    	
-		    	// if normal agent
-		    	if((agentAt & (1<<8)) == 0)
-		    	{
-		    		if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
-					{
-						newState.killedNormalAgent0 |= (1<<agentAt);
-					}
-					else if(agentAt < 128)
-					{
-						agentAt -= (byte)64;
-						newState.killedNormalAgent1 |= (1<<agentAt);
-					}
-					else if(agentAt < 192)
-					{
-						agentAt -= (byte)128;
-						newState.killedNormalAgent2 |= (1<<agentAt);
-					}
-					else
-					{
-						agentAt -= (byte)192;
-						newState.killedNormalAgent3 |= (1<<agentAt);
-					}
-		    	}
-		    	else
-		    	{
-		    		// negate 1<<8 then &
-		    		agentAt = (short)(agentAt & ~(1<<8));
-		    		newState.killedTransHostages |= 1<<agentAt;
-		    	}
-		    	
-//		    	Node newNode = new Node(newState, currentNode, (byte)7, (short)(currentNode.depth+1), (short)0);
-//		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-//		    	return newNode;
+		    	newState.neoHealth += 20;
+		    	didkill=true;
 		    }
+		    // if normal agent
+		    if((agentAt & (1<<8)) == 0)
+		    {
+		    	if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
+				{
+					newState.killedNormalAgent0 |= (1L<<agentAt);
+				}
+				else if(agentAt < 128)
+				{
+					agentAt -= (short)64;
+					newState.killedNormalAgent1 |= (1L<<agentAt);
+				}
+				else if(agentAt < 192)
+				{
+					agentAt -= (short)128;
+					newState.killedNormalAgent2 |= (1L<<agentAt);
+				}	
+				else
+				{
+					agentAt -= (short)192;
+					newState.killedNormalAgent3 |= (1<<agentAt);
+				}
+		    }
+		    else
+		    {
+		    	// negate 1<<8 then &
+		    	agentAt = (short)(agentAt & ~(short)(1<<8));
+		    	newState.killedTransHostages |= (1<<agentAt);
+		    }
+		}
 	    
 	    
-	    	//TryKillDown
-	    	agentAt = agentAt((byte) (neoX+1),
+	    //TryKillDown
+	    agentAt = agentAt((byte) (neoX+1),
 					  neoY,
 					  currentNode.state.hostagesHealth,
 					  currentNode.state.movedHostages,
@@ -858,112 +853,105 @@ public class The_Matrix_Solver {
 					  currentNode.state.killedNormalAgent2,
 					  currentNode.state.killedNormalAgent3, true);
 		    // to do check first not outside the grid
-		    if(neoX+1 < m && agentAt >= 0)
-		    {
+		if(neoX+1 < m && agentAt >= 0)
+		{
 		    	
 
-		    	if(!didkill)
-		    	{
-		    		newState.neoHealth += 20;
-		    		didkill=true;
-		    	}
-		    	
-		    	// if normal agent
-		    	if((agentAt & (1<<8)) == 0)
-		    	{
-		    		if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
-					{
-						newState.killedNormalAgent0 |= (1<<agentAt);
-					}
-					else if(agentAt < 128)
-					{
-						agentAt -= (byte)64;
-						newState.killedNormalAgent1 |= (1<<agentAt);
-					}
-					else if(agentAt < 192)
-					{
-						agentAt -= (byte)128;
-						newState.killedNormalAgent2 |= (1<<agentAt);
-					}
-					else
-					{
-						agentAt -= (byte)192;
-						newState.killedNormalAgent3 |= (1<<agentAt);
-					}
-		    	}
-		    	else
-		    	{
-		    		// negate 1<<8 then &
-		    		agentAt = (short)(agentAt & ~(1<<8));
-		    		newState.killedTransHostages |= 1<<agentAt;
-		    	}
-		    	
-//		    	Node newNode = new Node(newState, currentNode, (byte)8, (short)(currentNode.depth+1), (short)0);
-//		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-//		    	return newNode;
+			if(!didkill)
+			{
+		    	newState.neoHealth += 20;
+		    	didkill=true;
 		    }
-	    
-	    
-	    	//TryKillLeft
-		    agentAt = agentAt(neoX,
-		    			(byte) (neoY-1),
-					  currentNode.state.hostagesHealth,
-					  currentNode.state.movedHostages,
-					  currentNode.state.hostagesToAgents,
-					  currentNode.state.killedTransHostages,
-					  currentNode.state.killedNormalAgent0,
-					  currentNode.state.killedNormalAgent1,
-					  currentNode.state.killedNormalAgent2,
-					  currentNode.state.killedNormalAgent3, true);
-		    // to do check first not outside the grid
-		    if(neoY-1 >= 0 && agentAt >= 0)
+		    	
+		    // if normal agent
+		    if((agentAt & (1<<8)) == 0)
 		    {
+		    	if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
+				{
+		    		newState.killedNormalAgent0 |= (1L<<agentAt);
+				}
+				else if(agentAt < 128)
+				{
+					agentAt -= (short)64;
+					newState.killedNormalAgent1 |= (1L<<agentAt);
+				}
+				else if(agentAt < 192)
+				{
+					agentAt -= (short)128;
+					newState.killedNormalAgent2 |= (1L<<agentAt);
+				}
+				else
+				{
+					agentAt -= (short)192;
+					newState.killedNormalAgent3 |= (1<<agentAt);
+				}
+		    }
+		    else
+		    {
+		    	// negate 1<<8 then &
+		    	agentAt = (short)(agentAt & ~(short)(1<<8));
+		    	newState.killedTransHostages |= (1<<agentAt);
+		    }
+
+		}
+	    
+	    
+   	    //TryKillLeft
+	    agentAt = agentAt(neoX,
+	    			(byte) (neoY-1),
+				  currentNode.state.hostagesHealth,
+				  currentNode.state.movedHostages,
+				  currentNode.state.hostagesToAgents,
+				  currentNode.state.killedTransHostages,
+				  currentNode.state.killedNormalAgent0,
+				  currentNode.state.killedNormalAgent1,
+				  currentNode.state.killedNormalAgent2,
+				  currentNode.state.killedNormalAgent3, true);
+	    // to do check first not outside the grid
+		 if(neoY-1 >= 0 && agentAt >= 0)
+		 {
 		    	
 
-		    	if(!didkill)
-		    	{
-		    		newState.neoHealth += 20;
-		    		didkill=true;
-		    	}
-		    	
-		    	// if normal agent
-		    	if((agentAt & (1<<8)) == 0)
-		    	{
-		    		if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
-					{
-						newState.killedNormalAgent0 |= (1<<agentAt);
-					}
-					else if(agentAt < 128)
-					{
-						agentAt -= (byte)64;
-						newState.killedNormalAgent1 |= (1<<agentAt);
-					}
-					else if(agentAt < 192)
-					{
-						agentAt -= (byte)128;
-						newState.killedNormalAgent2 |= (1<<agentAt);
-					}
-					else
-					{
-						agentAt -= (byte)192;
-						newState.killedNormalAgent3 |= (1<<agentAt);
-					}
-		    	}
-		    	else
-		    	{
-		    		// negate 1<<8 then &
-		    		agentAt = (short)(agentAt & ~(1<<8));
-		    		newState.killedTransHostages |= 1<<agentAt;
-		    	}
-		    	
-//		    	Node newNode = new Node(newState, currentNode, (byte)9, (short)(currentNode.depth+1), (short)0);
-//		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-//		    	return newNode;
+			 if(!didkill)
+		    {
+		    	newState.neoHealth += 20;
+		    	didkill=true;
 		    }
+		    	
+		    // if normal agent
+		    if((agentAt & (1<<8)) == 0)
+		    {
+		    	if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
+				{
+					newState.killedNormalAgent0 |= (1L<<agentAt);
+				}
+				else if(agentAt < 128)
+				{
+					agentAt -= (short)64;
+					newState.killedNormalAgent1 |= (1L<<agentAt);
+				}
+				else if(agentAt < 192)
+				{
+					agentAt -= (short)128;
+					newState.killedNormalAgent2 |= (1L<<agentAt);
+				}
+				else
+				{
+					agentAt -= (short)192;
+					newState.killedNormalAgent3 |= (1<<agentAt);
+				}
+		    }
+		    else
+		    {
+		    	// negate 1<<8 then &
+		    	agentAt = (short)(agentAt & ~(short)(1<<8));
+		    	newState.killedTransHostages |= (1<<agentAt);
+		    }
+		}
 	    
 	    
-	    	//TryKillRight
-		    agentAt = agentAt(neoX,
+	    //TryKillRight
+		agentAt = agentAt(neoX,
 		    		(byte)(neoY+1),
 					  currentNode.state.hostagesHealth,
 					  currentNode.state.movedHostages,
@@ -974,80 +962,74 @@ public class The_Matrix_Solver {
 					  currentNode.state.killedNormalAgent2,
 					  currentNode.state.killedNormalAgent3, true);
 		    // to do check first not outside the grid
-		    if(neoY+1 < n && agentAt >= 0)
+		if(neoY+1 < n && agentAt >= 0)
+		{
+		   	
+			if(!didkill)
 		    {
-		    	
-		    	if(!didkill)
-		    	{
-		    		newState.neoHealth += 20;
-		    		didkill=true;
-		    	}
-		    	
-		    	// if normal agent
-		    	if((agentAt & (1<<8)) == 0)
-		    	{
-		    		if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
-					{
-						newState.killedNormalAgent0 |= (1<<agentAt);
-					}
-					else if(agentAt < 128)
-					{
-						agentAt -= (byte)64;
-						newState.killedNormalAgent1 |= (1<<agentAt);
-					}
-					else if(agentAt < 192)
-					{
-						agentAt -= (byte)128;
-						newState.killedNormalAgent2 |= (1<<agentAt);
-					}
-					else
-					{
-						agentAt -= (byte)192;
-						newState.killedNormalAgent3 |= (1<<agentAt);
-					}
-		    	}
-		    	else
-		    	{
-		    		// negate 1<<8 then &
-		    		agentAt = (short)(agentAt & ~(1<<8));
-		    		newState.killedTransHostages |= 1<<agentAt;
-		    	}
-		    	
-//		    	Node newNode = new Node(newState, currentNode, (byte)10, (short)(currentNode.depth+1), (short)0);
-//		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-//		    	return newNode;
+		    	newState.neoHealth += 20;
+		    	didkill=true;
 		    }
-		    if(didkill)
+		    	
+		    // if normal agent
+		    if((agentAt & (1<<8)) == 0)
 		    {
-		    	Node newNode = new Node(newState, currentNode, (byte)7, (short)(currentNode.depth+1), (short)0);
-			    newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-			   // System.out.println(newNode);
-			    return newNode;
-		    }
-	    	return null;
-
-
-		   
-	    	
-		    
+		    	if(agentAt < 64) // in the first bitmask (killedNormalAgent0)
+				{
+					newState.killedNormalAgent0 |= (1L<<agentAt);
+				}
+				else if(agentAt < 128)
+				{
+					agentAt -= (short)64;
+					newState.killedNormalAgent1 |= (1L<<agentAt);
+				}
+				else if(agentAt < 192)
+				{
+					agentAt -= (short)128;
+					newState.killedNormalAgent2 |= (1L<<agentAt);
+				}
+				else
+				{
+					agentAt -= (short)192;
+					newState.killedNormalAgent3 |= (1<<agentAt);
+				}
+	    	}
+	    	else
+	    	{
+	    		// negate 1<<8 then &
+	    		agentAt = (short)(agentAt & ~(short)(1<<8));
+	    		newState.killedTransHostages |= (1<<agentAt);
+	    	}
+		}
+		if(didkill)
+		{
+		    Node newNode = new Node(newState, currentNode, (byte)7, (short)(currentNode.depth+1), (short)0);
+			newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+			// System.out.println(newNode);
+			return newNode;
+		}
+	    return null;    
 	}
 	
 	//  
 	
-	// //////// 
-		public static Node fly(Node node) {
-
-			short[] t=isTherePad(node.state.neoX, node.state.neoY);
-			if(t[0]!=0) {
-				if(t[1]==0) {
-				State tempNode=timeStep(node.state);
-				tempNode.neoX=padsEndLocation[t[2]];
-				tempNode.neoY=padsEndLocation[t[2]+1];
-				Node sNode=new Node(tempNode,node,(byte) 8,(short)(node.depth+1),(short)0);
-				sNode.pathCost=SearchProblem.calculatePathCost(sNode);
-				return sNode;
+	public static Node fly(Node node) {
+		
+		short[] t=isTherePad(node.state.neoX, node.state.neoY);
+		
+			if(t[0]!=0) 
+			{
+				if(t[1]==0) 
+				{
+					State tempNode=timeStep(node.state);
+					tempNode.neoX=padsEndLocation[t[2]];
+					tempNode.neoY=padsEndLocation[t[2]+1];
+					Node sNode=new Node(tempNode,node,(byte) 8,(short)(node.depth+1),(short)0);
+					sNode.pathCost=SearchProblem.calculatePathCost(sNode);
+					return sNode;
 				}
-				else {
+				else
+				{
 					State tempNode=timeStep(node.state);
 					tempNode.neoX=padsStartLocation[t[2]];
 					tempNode.neoY=padsStartLocation[t[2]+1];
@@ -1056,25 +1038,21 @@ public class The_Matrix_Solver {
 
 					return sNode;
 				}
-//				State state;
-//				Node parent;
-//				byte operator;
-//				short depth;
-//				short pathCost;
-				
 			}
-			else {
-				return null ;
+			else 
+			{
+				return null;
 			}
 			
 		}
 		public static Node takePill(Node node) {
 			
 			byte idx=isTherePill(node.state.neoX, node.state.neoY,node.state.pills);
-			if(idx!=-1) {
+			if(idx!=-1)
+			{
 				
 				short pills=node.state.pills;
-				pills|=1<<idx;
+				pills|=(1<<idx);
 				////////
 				
 				State newState = new State(node.state.neoX,
@@ -1090,46 +1068,43 @@ public class The_Matrix_Solver {
 						node.state.hostagesHealth.clone(),
 						node.state.neoHealth,
 						pills);
-			for(byte i=(byte)0;i<node.state.hostagesHealth.length;i++)
-			{
-				if(newState.hostagesHealth[i] >= 100)
-					continue;
-				 // we check first if the hostage was delivered or not , if it was then we dont change it health 
-				 //(in moved and not in currently carried)
-				if(((newState.movedHostages & (1<<i)) !=0) && ((newState.currentlyCarriedHostages & (1<<i)) ==0))
-					continue;
+				for(byte i=(byte)0;i<node.state.hostagesHealth.length;i++)
+				{
+					if(newState.hostagesHealth[i] >= 100)
+						continue;
+					// we check first if the hostage was delivered or not , if it was then we dont change it health 
+					//(in moved and not in currently carried)
+					if(((newState.movedHostages & (1<<i)) !=0) && ((newState.currentlyCarriedHostages & (1<<i)) ==0))
+						continue;
 				
-				//if the hostage turned to agent we don't change its damage
-				if((newState.hostagesToAgents & (1<<i))==0)
-					newState.hostagesHealth[i] = (byte)Math.max(0, newState.hostagesHealth[i]-20);
+					//if the hostage turned to agent we don't change its damage
+					if((newState.hostagesToAgents & (1<<i))==0)
+						newState.hostagesHealth[i] = (byte)Math.max(0, newState.hostagesHealth[i]-20);
 				
+				}
 				
-					
-			}
+				newState.neoHealth = (byte)Math.max(0, newState.neoHealth-20);
 				
-				Node sNode=new Node(newState,node,(byte) 6,(short)(node.depth+1),(short)0);
+				Node sNode=new Node(newState,node,(byte)6,(short)(node.depth+1),(short)0);
 				sNode.pathCost=SearchProblem.calculatePathCost(sNode);
-				return sNode;
-				
-				
+				return sNode;	
 			}
-			else {
+			else
+			{
 				return null ;
 			}
 			
 			
 		}
 		public static byte isTherePill(byte x,byte y,short mask) {
-			for(int i=0;i<pillsLocation.length/2;i++) {
-				
-				if(x==pillsLocation[2*i]&&y==pillsLocation[2*i+1]) {
-					if((mask & (1 << i))==0) {
+			for(int i=0;i<pillsLocation.length/2;i++)
+			{				
+				if(x==pillsLocation[2*i]&&y==pillsLocation[(2*i)+1])
+				{
+					if((mask & (1<<i))==0)
+					{
 						return (byte) i;
-
 					}
-					
-					
-
 				}
 			}
 			return (byte)(-1);
@@ -1139,18 +1114,24 @@ public class The_Matrix_Solver {
 		public static short[] isTherePad(byte x,byte y) {
 			short s[]= {0,0,0};
 
-			for(short i=0;i<padsStartLocation.length;i=(short)(i+2)) {
-				if(x==padsStartLocation[i]&&y==padsStartLocation[i+1]) {
-				s[0]=1;
-				s[1]=0;
-				s[2]=i;return s;}
-				else if (x==padsEndLocation[i]&&y==padsEndLocation[i+1]) {
+			for(short i=0;i<padsStartLocation.length;i=(short)(i+2))
+			{
+				if(x==padsStartLocation[i]&&y==padsStartLocation[i+1])
+				{
+					s[0]=1;
+					s[1]=0;
+					s[2]=i;
+					return s;
+				}
+				else if (x==padsEndLocation[i]&&y==padsEndLocation[i+1])
+				{
 					s[0]=1;
 					s[1]=1;
 					s[2]=i; return s;
 				}
 			}
-			return s;	}
+			return s;
+		}
 		
 		
 		
@@ -1318,15 +1299,14 @@ public class The_Matrix_Solver {
 			{
 			
 				// it is dead
-				if(hostagesHealth[i] == 100)
+				if(hostagesHealth[i] >= 100)
 				{
 					// since it was not moved and it is dead, then we know for sure it was converted to agent
 					// if not killed yet
 					if((killedTransHostages&(1<<i)) == 0 )
 					{
 						short ans = i;
-						ans |= (1<<8);
-						
+						ans |= (1<<8);	
 						return ans;
 					}
 					return Short.MIN_VALUE;
@@ -1346,7 +1326,7 @@ public class The_Matrix_Solver {
 			}
 		}
 		
-		for(short i=0;i<agentsLocation.length;i+=2)
+		for(short i=(short)0;i<agentsLocation.length;i+=(short)2)
 		{
 			
 			if(x != agentsLocation[i] || y != agentsLocation[i+1])
@@ -1359,7 +1339,7 @@ public class The_Matrix_Solver {
 			if(idx < 64) // in the first bitmask (killedNormalAgent0)
 			{
 				// if not killed
-				if( (killedNormalAgent0 & (1<<idx)) == 0 )
+				if( (killedNormalAgent0 & (1L<<idx)) == 0 )
 				{
 					return (short)idx;
 				}
@@ -1367,7 +1347,7 @@ public class The_Matrix_Solver {
 			else if(idx < 128)
 			{
 				idx -= (short)64;
-				if( (killedNormalAgent1 & (1<<idx)) == 0 )
+				if( (killedNormalAgent1 & (1L<<idx)) == 0 )
 				{
 					return (short)(idx+64);
 				}
@@ -1375,7 +1355,7 @@ public class The_Matrix_Solver {
 			else if(idx < 192)
 			{
 				idx -= (short)128;
-				if( (killedNormalAgent2 & (1<<idx)) == 0 )
+				if( (killedNormalAgent2 & (1L<<idx)) == 0 )
 				{
 					return (short)(idx+128);
 				}
@@ -1416,15 +1396,11 @@ public class The_Matrix_Solver {
 					currState.neoHealth,
 					currState.pills);
 		
-		
-		
-		
-		// consider take pill
 		for(byte i=(byte)0;i<currState.hostagesHealth.length;i++)
 		{
 			 // we check first if the hostage was delivered or not , if it was then we dont change it health 
 			 //(in moved and not in currently carried)
-			if(((newState.movedHostages & (1<<i)) !=0) && ((newState.currentlyCarriedHostages & (1<<i)) ==0))
+			if(((newState.movedHostages & ( ((short)1)<<i) ) !=0) && ((newState.currentlyCarriedHostages & ( ((short)1)<<i) ) ==0))
 				continue;
 			
 			newState.hostagesHealth[i] = (byte)Math.min(100, newState.hostagesHealth[i]+2);
@@ -1433,11 +1409,7 @@ public class The_Matrix_Solver {
 			if(newState.hostagesHealth[i]>=100)
 			{	
 				if((newState.currentlyCarriedHostages & (1<<i)) ==0)				
-					newState.hostagesToAgents |=1<<i;
-				
-				
-					
-
+					newState.hostagesToAgents |= (1<<i);
 			}
 				
 		}
