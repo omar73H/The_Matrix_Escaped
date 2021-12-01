@@ -1,3 +1,4 @@
+package code;
 
 public class State {
 	byte neoX,neoY;

@@ -1,3 +1,4 @@
+package code;
 
 public class PQNode {
 	public Object data;

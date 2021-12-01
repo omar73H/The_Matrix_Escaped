@@ -1,3 +1,4 @@
+package code;
 import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,10 +8,10 @@ import java.util.PriorityQueue;
 
 //import javax.jws.soap.InitParam;
 
-public class The_Matrix_Solver {
+public class Matrix {
 	// For eliminating repeated states
 	private static HashMap<String,Short> encodedNodes = new HashMap<String,Short>();
-	
+	private static int nodesExpanded = 0;
 	//For genGrid
 	private static ArrayList<Integer> availableCells;
 	
@@ -46,48 +47,7 @@ public class The_Matrix_Solver {
 	
 		
 		String grid = genGrid();
-		//System.out.println(grid);
 		
-//		m = (byte)5;
-//		n = (byte)5;
-//		c=1;
-//		initNeoX = (byte)0;
-//		initNeoY = (byte)4;
-//		telephoneX =(byte)1;
-//		telephoneY =(byte)4;
-//		hostagesCount = (byte)3;
-//		hostagesHealth = new byte[hostagesCount]; hostagesHealth[0] = (byte)30; ; hostagesHealth[1] = (byte)80;; hostagesHealth[2] = (byte)80;// hostagesHealth[3] = (byte)98;//; hostagesHealth[4] = (byte)90;//; hostagesHealth[5] = (byte)98;; hostagesHealth[6] = (byte)98; hostagesHealth[7] = (byte)98;
-//		
-//		hostagesLocation = new byte[8]; hostagesLocation[0]=(byte)0;hostagesLocation[1]=(byte)0;
-//		 hostagesLocation[2]=(byte)3;hostagesLocation[3]=(byte)0;
-//		 hostagesLocation[4]=(byte)4;hostagesLocation[5]=(byte)4;
-////		 hostagesLocation[6]=(byte)0;hostagesLocation[7]=(byte)2;
-////		 hostagesLocation[8]=(byte)2;hostagesLocation[9]=(byte)4;
-////		 hostagesLocation[10]=(byte)3;hostagesLocation[11]=(byte)2;
-////		 hostagesLocation[12]=(byte)4;hostagesLocation[13]=(byte)4;
-////		 hostagesLocation[14]=(byte)1;hostagesLocation[15]=(byte)0;
-//
-//
-//		 
-//		pillsLocation = new byte[0];
-//		padsStartLocation = new byte[2];padsStartLocation[0]=(byte)0;padsStartLocation[1]=(byte)3;
-//		padsEndLocation = new byte[2];padsEndLocation[0]=(byte)4;padsEndLocation[1]=(byte)3;
-//		agentsLocation = new byte[12];
-//		agentsLocation[0]=(byte)0; agentsLocation[1]=(byte)1;
-//		agentsLocation[2]=(byte)1; agentsLocation[3]=(byte)1;
-//		agentsLocation[4]=(byte)2; agentsLocation[5]=(byte)1;
-//		agentsLocation[6]=(byte)3; agentsLocation[7]=(byte)1;
-//		agentsLocation[8]=(byte)3; agentsLocation[9]=(byte)3;
-//		agentsLocation[10]=(byte)3; agentsLocation[11]=(byte)4;
-
-		//System.out.println(solve(grid, "bfs", false));
-//		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0);
-//		Node initNode = new Node(initState, null, (byte)-1, (short)0, (short)0);
-//		Node n2 = expand(initNode).get(0);
-//		System.out.println(expand(n2).size());
-	
-	
-	
 	}
 	
 	
@@ -97,11 +57,6 @@ public class The_Matrix_Solver {
 		c = (byte)random(1,4);
 		
 
-		
-		//#########
-	//	System.out.println("Maximum to carry: "+c);
-		
-		//#########
 		String[][] grid = new String[m][n];
 		
 		availableCells = new ArrayList<Integer>(m*n);
@@ -355,6 +310,8 @@ public class The_Matrix_Solver {
 	
 	
 	public static String solve(String grid, String strategy, boolean visualize) {
+		int s = 2/0;
+
 		encodedNodes = new HashMap<String,Short>();
 		DeathCounter=0;
 		leafnode=true;
@@ -365,11 +322,11 @@ public class The_Matrix_Solver {
 		String plan = generalSearch(X, strategy);
 		if(plan.equals("Fail"))	
 			return "No Solution";
+		else if(strategy.equals("ID"))
+		
+			return plan+";"+DeathCounter+";"+KillCounter+";"+nodesExpanded;
 		else
-		{
-			System.out.println(plan+";"+DeathCounter+";"+KillCounter+";"+encodedNodes.size());
 			return plan+";"+DeathCounter+";"+KillCounter+";"+encodedNodes.size();
-		}
 	}
 	
 
@@ -413,8 +370,7 @@ public class The_Matrix_Solver {
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = pq.poll();
-			//System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
-		
+			
 			boolean isGoal = problem.goalTest(currentNode.state);
 			if(isGoal)
 				return buildPath(currentNode);
@@ -425,32 +381,39 @@ public class The_Matrix_Solver {
 				pq.add(node);
 			}
 			
-			//System.out.println(pq.size());
 			
 		}
 		return "Fail";
 	}
 	
 	public static String dfs(Node initNode, SearchProblem problem) {
+		String sol =  dfs_up_to_level(initNode, problem, -1);
+		return sol.split(" ")[0];
+	}
+	
+	public static String dfs_up_to_level(Node initNode, SearchProblem problem, int maxDepth) {
+		int maxSofar = 0;
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth==y.depth? (y.operator-x.operator):(y.depth-x.depth)));// DFS
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = pq.poll();
-			//System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth+" "+ encode(currentNode));
-			
+			maxSofar = Math.max(maxSofar, currentNode.depth);
 			boolean isGoal = problem.goalTest(currentNode.state);
 			if(isGoal)
-				return buildPath(currentNode);
+				return buildPath(currentNode) +" "+maxSofar;
 			
-			LinkedList<Node> nodes = expand(currentNode);
-			
-			for(Node node: nodes) {
-				pq.add(node);
+			if(maxDepth == -1 || currentNode.depth < maxDepth) {
+				
+				LinkedList<Node> nodes = expand(currentNode);
+				
+				for(Node node: nodes) {
+					pq.add(node);
+				}
 			}
-			
 		}
-		return "Fail";
+		return "Fail"+" "+maxSofar;
+		
 	}
 
 	private static LinkedList<Node> expand(Node currentNode) {
@@ -1005,7 +968,7 @@ public class The_Matrix_Solver {
 		{
 		    Node newNode = new Node(newState, currentNode, (byte)7, (short)(currentNode.depth+1), (short)0);
 			newNode.pathCost = SearchProblem.calculatePathCost(newNode);
-			// System.out.println(newNode);
+
 			return newNode;
 		}
 	    return null;    
@@ -1144,18 +1107,6 @@ public class The_Matrix_Solver {
 		if(telephoneY != currentNode.state.neoY)
 			return null;
 		
-//		for(int i = 0; i<currentNode.state.hostagesHealth.length;i++) {
-//			// Neo is carrying this hostage
-//			if((currentNode.state.currentlyCarriedHostages & (1<<i)) != 0)
-//			{
-//				currentNode.state.currentlyCarriedHostages = 0;
-//			}
-//		}
-		
-		
-		
-		
-		
 		
 		if(currentNode.state.currentlyCarriedHostages==0)
 		{
@@ -1200,7 +1151,6 @@ public class The_Matrix_Solver {
 			return null;
 		
 		State currState = currentNode.state;
-		System.out.println(currentNode.state.hostagesHealth[hostageIdx]);
 		short intermediateCarried = currState.currentlyCarriedHostages;
 		intermediateCarried |= (1 << (short)hostageIdx);
 		short intermediateMoved = currState.movedHostages;
@@ -1417,35 +1367,16 @@ public class The_Matrix_Solver {
 	}
 	
 	private static String buildPath(Node currentNode) {
-		for (int i =0 ; i<currentNode.state.hostagesHealth.length;i++)
-		{
-			System.out.print(currentNode.state.hostagesHealth[i]);
-			System.out.print(" ");
 
-		}
-		
 		if(currentNode.parent ==null)
 			return "";
-		 System.out.println(leafnode);
 		if(leafnode)
 		{
 			killCount(currentNode);
 			deathCount(currentNode);
 			leafnode=false;
 		}
-//		byte prevHostages=0;
-//		byte currHostages=0;
-//		
-//			for( int x : currentNode.parent.state.hostagesHealth) if(x<100) prevHostages++;
-//			for( int x : currentNode.state.hostagesHealth) if(x<100) currHostages++;
-//			
-//			System.out.print("       ");
-//			System.out.print(prevHostages);
-//			System.out.print(" ");
-//			System.out.print(currHostages);
-//			System.out.print(" " + DeathCounter);
-//			System.out.println();
-//			DeathCounter+=(prevHostages-currHostages);
+
 			
 			if(currentNode.parent.parent==null)
 				return buildPath(currentNode.parent)+currentNode.opString;
@@ -1562,7 +1493,7 @@ public class The_Matrix_Solver {
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = (Node) pq.poll();
-			//System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);			
+			
 			try {
 				Thread.sleep(0);
 			}
@@ -1579,7 +1510,6 @@ public class The_Matrix_Solver {
 				pq.add(node);
 			}
 			
-			//System.out.println(pq.size());
 			
 		}
 		return "Fail";
@@ -1594,16 +1524,8 @@ public class The_Matrix_Solver {
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = (Node) pq.poll();
-			//System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
-			//System.out.println(currentNode.depth);
-			//short btts=(short)(currentNode.state.movedHostages|currentNode.state.killedTransHostages);
-			//System.out.println((1<<hostagesCount)-1+" "+btts);
-			try {
-				Thread.sleep(0);
-			}
-			catch(Exception e) {
-				
-			}
+
+			
 			boolean isGoal = problem.goalTest(currentNode.state);
 			if(isGoal)
 				return buildPath(currentNode);
@@ -1614,7 +1536,6 @@ public class The_Matrix_Solver {
 				pq.add(node);
 			}
 			
-			//System.out.println(pq.size());
 			
 		}
 		return "Fail";
@@ -1623,35 +1544,21 @@ public class The_Matrix_Solver {
 	
 	
 	public static String IterativeSearch(Node initNode, SearchProblem problem){
-		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth-y.depth));// BFS
-		pq.add(initNode);
-		while(!pq.isEmpty()) 
-		{
-			Node currentNode = pq.poll();
-			//System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
-			//System.out.println(currentNode.depth);
-			//short btts=(short)(currentNode.state.movedHostages|currentNode.state.killedTransHostages);
-			//System.out.println((1<<hostagesCount)-1+" "+btts);
-			try {
-				Thread.sleep(0);
-			}
-			catch(Exception e) {
-				
-			}
-			boolean isGoal = problem.goalTest(currentNode.state);
-			if(isGoal)
-				return buildPath(currentNode);
+		nodesExpanded = 0;
+		int currDepth = 0;
+		do {
+			String[] solPair =  dfs_up_to_level(initNode, problem, currDepth).split(" ");
+			String answer = solPair[0];
+			if(!answer.equals("Fail"))
+				return answer;
 			
-			LinkedList<Node> nodes = expand(currentNode);
-
-			for(Node node: nodes) {
-				pq.add(node);
-			}
+			if(currDepth > Integer.parseInt(solPair[1]))
+				return "Fail";
 			
-			//System.out.println(pq.size());
-			
-		}
-		return "Fail";
+			currDepth++;
+			nodesExpanded+= encodedNodes.size();
+			encodedNodes = new HashMap<String, Short>();
+		}while(true);
 	}	
 	public static String HeuristicSearch(int idx,Node initNode, SearchProblem problem){
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->( HeuristicFunction(idx,x, problem)-HeuristicFunction(idx,y, problem) ));// A*
@@ -1659,10 +1566,7 @@ public class The_Matrix_Solver {
 		while(!pq.isEmpty()) 
 		{
 			Node currentNode = (Node) pq.poll();
-			//System.out.println(currentNode.opString + " " + currentNode.state.neoX + " " + currentNode.state.neoY +" "+ currentNode.depth);
-			//System.out.println(currentNode.depth);
-			//short btts=(short)(currentNode.state.movedHostages|currentNode.state.killedTransHostages);
-			//System.out.println((1<<hostagesCount)-1+" "+btts);
+			
 			try {
 				Thread.sleep(0);
 			}
@@ -1679,7 +1583,6 @@ public class The_Matrix_Solver {
 				pq.add(node);
 			}
 			
-			//System.out.println(pq.size());
 			
 		}
 		return "Fail";
@@ -1719,23 +1622,29 @@ public class The_Matrix_Solver {
 		// Assuming we can talk only one pad to try to shorten the distance from P1 to P2 
 		int bestDistance = manhattan(x1, y1, x2, y2);
 		
-		for(int i = 0; i<padsStartLocation.length-1;i+=2)
-			bestDistance = Math.min(bestDistance, distanceUsingPad(x1, y1, x2, y2, i));
+		bestDistance = Math.min(bestDistance, distanceUsingPad(x1, y1, x2, y2));
 		
 		return bestDistance;
 	}
 	
-	public static int distanceUsingPad(int x1, int y1, int x2, int y2, int padIdx) {
-		int padStartX = padsStartLocation[padIdx];
-		int padStartY = padsStartLocation[padIdx +1];
+	public static int distanceUsingPad(int x1, int y1, int x2, int y2) {
+		int d1 = Integer.MAX_VALUE;
+		int d2 = Integer.MAX_VALUE;
+
+		for(int padIdx = 0; padIdx< padsStartLocation.length;padIdx+=2) {
+			int padStartX = padsStartLocation[padIdx];
+			int padStartY = padsStartLocation[padIdx +1];
+			d1 = Math.min(d1, manhattan(x1, y1, padStartX, padStartY));
+			d2 = Math.min(d2, manhattan(x2, y2, padStartX, padStartY));
+		}
+		for(int padIdx = 0; padIdx< padsEndLocation.length;padIdx+=2) {
+			int padEndX = padsEndLocation[padIdx];
+			int padEndY = padsEndLocation[padIdx +1];
+			d1 = Math.min(d1, manhattan(x1, y1, padEndX, padEndY));
+			d2 = Math.min(d2, manhattan(x2, y2, padEndX, padEndY));
+		}
 		
-		int padEndX = padsEndLocation[padIdx];
-		int padEndY = padsEndLocation[padIdx +1];
-		
-		int d1 = manhattan(x1, y1, padStartX, padStartY) + manhattan(padEndX, padEndY, x2, y2);
-		int d2 = manhattan(x1, y1, padEndX, padEndY) + manhattan(padStartX, padStartY, x2, y2);
-		
-		return Math.min(d1, d2);
+		return d1 + d2;
 	}
 
 	public static int manhattan(int x1, int y1, int x2, int y2) {

@@ -1,3 +1,4 @@
+package code;
 public class SearchProblem {
 	byte numOperators = 8; // or array of enum
 	State initialState;
@@ -11,14 +12,11 @@ public class SearchProblem {
 		byte op = node.operator;
 		int baseCost = 0;
 		switch(op) {////////////////////////       tag
-		case(0): baseCost = 2;break;
-		case(1): baseCost = 2;break;
-		case(2): baseCost = 2;break;
-		case(3): baseCost = 2;break;
+		case(0): case(1): case(2): case(3): baseCost = 2;break;
 		case(4): baseCost = 2;break; //carry
 		case(5): baseCost = 2;break;//drop
-		case(6): baseCost = 0;break;//pill
-		case(7): baseCost = 20;break;//kill // how to check if mutated
+		case(6): baseCost = 2;break;//pill
+		case(7): baseCost = 150 + (int)Math.floor(0.5);break;//kill // how to check if mutated
 		case(8): baseCost = 2;break;//fly
 		}
 		if(node.state.neoHealth>=100) {
@@ -41,7 +39,7 @@ public class SearchProblem {
 	
 	public boolean goalTest(State state) {
 		
-		if(state.neoX!= The_Matrix_Solver.telephoneX || state.neoY!=The_Matrix_Solver.telephoneY)
+		if(state.neoX!= Matrix.telephoneX || state.neoY!=Matrix.telephoneY)
 			return false;
 		// Check all hostages are either delivered or died, All converted hostages are killed		
 		// No one in the currently carried
