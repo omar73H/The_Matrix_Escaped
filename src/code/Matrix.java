@@ -787,7 +787,7 @@ public class Matrix {
 		{
 		    if(!didkill)
 		    {
-		    	newState.neoHealth += 20;
+		    	newState.neoHealth = (byte)Math.min(100, newState.neoHealth + 20);
 		    	didkill=true;
 		    }
 		    
@@ -842,7 +842,7 @@ public class Matrix {
 
 			if(!didkill)
 			{
-		    	newState.neoHealth += 20;
+				newState.neoHealth = (byte)Math.min(100, newState.neoHealth + 20);
 		    	didkill=true;
 		    }
 			count += (byte)1;	
@@ -897,7 +897,7 @@ public class Matrix {
 
 			 if(!didkill)
 		    {
-		    	newState.neoHealth += 20;
+				newState.neoHealth = (byte)Math.min(100, newState.neoHealth + 20);
 		    	didkill=true;
 		    }
 			 count += (byte)1;
@@ -950,7 +950,7 @@ public class Matrix {
 		   	
 			if(!didkill)
 		    {
-		    	newState.neoHealth += 20;
+				newState.neoHealth = (byte)Math.min(100, newState.neoHealth + 20);
 		    	didkill=true;
 		    }
 			count += (byte)1;
