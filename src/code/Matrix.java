@@ -749,6 +749,24 @@ public class Matrix {
 		byte neoX =currentNode.state.neoX;
 	    byte neoY =currentNode.state.neoY;
 	    
+	    
+	    // check if I am at a cell where there is an agent of damage 98 or 99
+	    for(byte i=(byte)0;i<hostagesCount;i++)
+		{
+			// if not at that location
+			if(neoX != hostagesLocation[2*i] || neoY != hostagesLocation[2*i+1])
+				continue;
+			// if it was moved before (in the moved hostages bitmask)
+			if((currentNode.state.movedHostages & (1<<i)) != 0)
+				break;
+			if(currentNode.state.hostagesHealth[i] == 98 || currentNode.state.hostagesHealth[i] == 99)
+				return null;
+			else
+				break;
+		}
+	    
+	    
+	    
 	    boolean didkill=false;
 	    byte count = (byte)0; // To count the killed agents by this kill action
 	    
