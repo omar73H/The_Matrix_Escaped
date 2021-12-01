@@ -1,5 +1,4 @@
 package code;
-import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,7 +46,7 @@ public class Matrix {
 	
 		
 		String grid = genGrid();
-		
+		System.out.println(grid);
 	}
 	
 	
@@ -310,7 +309,6 @@ public class Matrix {
 	
 	
 	public static String solve(String grid, String strategy, boolean visualize) {
-		int s = 2/0;
 
 		encodedNodes = new HashMap<String,Short>();
 		DeathCounter=0;
@@ -323,7 +321,6 @@ public class Matrix {
 		if(plan.equals("Fail"))	
 			return "No Solution";
 		else if(strategy.equals("ID"))
-		
 			return plan+";"+DeathCounter+";"+KillCounter+";"+nodesExpanded;
 		else
 			return plan+";"+DeathCounter+";"+KillCounter+";"+encodedNodes.size();
@@ -332,7 +329,7 @@ public class Matrix {
 
 	
 	public static String generalSearch(SearchProblem problem, String strategy) {
-		Node initNode = new Node(problem.initialState, null, (byte)-1, (short)0, (short)0);
+		Node initNode = new Node(problem.initialState, null, (byte)-1, (short)0, 0);
 		encodedNodes.put(encode(initNode),sumHealthes(initNode));
 		if(strategy.equals("BF")) {
 			return bfs(initNode, problem);
@@ -673,7 +670,7 @@ public class Matrix {
 		    {
 		    	State newState = timeStep(currentNode.state);
 		    	newState.neoX=(byte) (neoX-1);
-		    	Node newNode = new Node(newState, currentNode, (byte)0, (short)(currentNode.depth+1), (short)0);
+		    	Node newNode = new Node(newState, currentNode, (byte)0, (short)(currentNode.depth+1), 0);
 		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 		    	return newNode;
 		    	
@@ -696,7 +693,7 @@ public class Matrix {
 			{
 				State newState = timeStep(currentNode.state);
 				newState.neoX=(byte) (neoX+1);
-				Node newNode = new Node(newState, currentNode, (byte)1, (short)(currentNode.depth+1), (short)0);
+				Node newNode = new Node(newState, currentNode, (byte)1, (short)(currentNode.depth+1), 0);
 				newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 				return newNode;
 			}
@@ -717,7 +714,7 @@ public class Matrix {
 			{
 				State newState = timeStep(currentNode.state);
 				newState.neoY=(byte) (neoY-1);
-				Node newNode = new Node(newState, currentNode, (byte)2, (short)(currentNode.depth+1), (short)0);
+				Node newNode = new Node(newState, currentNode, (byte)2, (short)(currentNode.depth+1), 0);
 				newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 				return newNode;
 			}
@@ -738,7 +735,7 @@ public class Matrix {
 			{
 				State newState = timeStep(currentNode.state);
 				newState.neoY=(byte) (neoY+1);
-				Node newNode = new Node(newState, currentNode, (byte)3, (short)(currentNode.depth+1), (short)0);
+				Node newNode = new Node(newState, currentNode, (byte)3, (short)(currentNode.depth+1), 0);
 				newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 				return newNode;
 			}
@@ -752,6 +749,9 @@ public class Matrix {
 		byte neoX =currentNode.state.neoX;
 	    byte neoY =currentNode.state.neoY;
 	    
+	    boolean didkill=false;
+	    byte count = (byte)0; // To count the killed agents by this kill action
+	    
 	    //TryKillUp
 		short agentAt = agentAt((byte) (neoX-1),
 					  neoY,
@@ -764,7 +764,7 @@ public class Matrix {
 					  currentNode.state.killedNormalAgent2,
 					  currentNode.state.killedNormalAgent3, true);
 		State newState = timeStep(currentNode.state);
-		boolean didkill=false;
+		
 		if(neoX-1 >= 0 && agentAt >= 0)
 		{
 		    if(!didkill)
@@ -772,6 +772,8 @@ public class Matrix {
 		    	newState.neoHealth += 20;
 		    	didkill=true;
 		    }
+		    
+		    count += (byte)1;
 		    // if normal agent
 		    if((agentAt & (1<<8)) == 0)
 		    {
@@ -825,7 +827,7 @@ public class Matrix {
 		    	newState.neoHealth += 20;
 		    	didkill=true;
 		    }
-		    	
+			count += (byte)1;	
 		    // if normal agent
 		    if((agentAt & (1<<8)) == 0)
 		    {
@@ -880,7 +882,7 @@ public class Matrix {
 		    	newState.neoHealth += 20;
 		    	didkill=true;
 		    }
-		    	
+			 count += (byte)1;
 		    // if normal agent
 		    if((agentAt & (1<<8)) == 0)
 		    {
@@ -933,7 +935,7 @@ public class Matrix {
 		    	newState.neoHealth += 20;
 		    	didkill=true;
 		    }
-		    	
+			count += (byte)1;
 		    // if normal agent
 		    if((agentAt & (1<<8)) == 0)
 		    {
@@ -966,7 +968,7 @@ public class Matrix {
 		}
 		if(didkill)
 		{
-		    Node newNode = new Node(newState, currentNode, (byte)7, (short)(currentNode.depth+1), (short)0);
+		    Node newNode = new Node(newState, currentNode, (byte)(6+count), (short)(currentNode.depth+1), 0);
 			newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 
 			return newNode;
@@ -987,7 +989,7 @@ public class Matrix {
 					State tempNode=timeStep(node.state);
 					tempNode.neoX=padsEndLocation[t[2]];
 					tempNode.neoY=padsEndLocation[t[2]+1];
-					Node sNode=new Node(tempNode,node,(byte) 8,(short)(node.depth+1),(short)0);
+					Node sNode=new Node(tempNode,node,(byte) 11,(short)(node.depth+1),0);
 					sNode.pathCost=SearchProblem.calculatePathCost(sNode);
 					return sNode;
 				}
@@ -996,7 +998,7 @@ public class Matrix {
 					State tempNode=timeStep(node.state);
 					tempNode.neoX=padsStartLocation[t[2]];
 					tempNode.neoY=padsStartLocation[t[2]+1];
-					Node sNode=new Node(tempNode,node,(byte) 8,(short)(node.depth+1),(short)0);
+					Node sNode=new Node(tempNode,node,(byte) 11,(short)(node.depth+1),0);
 					sNode.pathCost=SearchProblem.calculatePathCost(sNode);
 
 					return sNode;
@@ -1048,7 +1050,7 @@ public class Matrix {
 				
 				newState.neoHealth = (byte)Math.max(0, newState.neoHealth-20);
 				
-				Node sNode=new Node(newState,node,(byte)6,(short)(node.depth+1),(short)0);
+				Node sNode=new Node(newState,node,(byte)6,(short)(node.depth+1),0);
 				sNode.pathCost=SearchProblem.calculatePathCost(sNode);
 				return sNode;	
 			}
@@ -1129,7 +1131,7 @@ public class Matrix {
 		
 		
 		State newState = timeStep(intermediateState);
-		Node newNode = new Node(newState, currentNode, (byte)5, (short)(currentNode.depth+1), (short)0);
+		Node newNode = new Node(newState, currentNode, (byte)5, (short)(currentNode.depth+1), 0);
 		newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 		
 		return newNode;
@@ -1170,7 +1172,7 @@ public class Matrix {
 				currState.pills);
 				
 		State newState = timeStep(intermediateState);
-		Node newNode = new Node(newState, currentNode, (byte)4, (short)(currentNode.depth+1), (short)0);
+		Node newNode = new Node(newState, currentNode, (byte)4, (short)(currentNode.depth+1), 0);
 		newNode.pathCost = SearchProblem.calculatePathCost(newNode);
 //		expandedNodes.add(newNode);
 		

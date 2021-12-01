@@ -6,12 +6,10 @@ public class Node {
 	byte operator;
 	String opString;
 	short depth;
-	short pathCost;
+	int pathCost;
 	
 	
-	
-	
-	public Node(State state, Node parent, byte operator, short depth, short pathCost) {
+	public Node(State state, Node parent, byte operator, short depth, int pathCost) {
 		super();
 		this.state = state;
 		this.parent = parent;
@@ -27,11 +25,8 @@ public class Node {
 		case(4): this.opString = "carry";break;
 		case(5): this.opString = "drop";break;
 		case(6): this.opString = "takePill";break;
-		case(7): this.opString = "kill";break;
-//		case(8): this.opString = "KillDown";break;
-//		case(9): this.opString = "KillLeft";break;
-//		case(10): this.opString = "KillRight";break;
-		case(8): this.opString = "fly";break;
+		case(7): case(8): case(9): case(10): this.opString = "kill";break;
+		case(11): this.opString = "fly";break;
 		}
 		
 	}

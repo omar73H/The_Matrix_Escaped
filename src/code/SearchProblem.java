@@ -2,22 +2,24 @@ package code;
 public class SearchProblem {
 	byte numOperators = 8; // or array of enum
 	State initialState;
-	// State space!?
 	
 	short numOfHostages;
 
-	public static short calculatePathCost(Node node) {
-		// OPERATOR: Move(0,1,2,3) : 2, Carry(4) : 2, Drop(5): -500, Take_Pill(6): 2, Kill(7): 2 if mutated and 20 otherwise, Fly(8): 2
-		// STATE: Neo Dies: 10000, Hostage Dies 1000
+	public static int calculatePathCost(Node node) {
+		// OPERATOR: Move(0,1,2,3) : 1, Carry(4) : 1, Drop(5): 1, Take_Pill(6): 1,
+		// Kill1(7): 1000, Kill2(8): 2000, Kill3(9): 3000, Kill4(10): 4000, Fly(11): 1
 		byte op = node.operator;
 		int baseCost = 0;
 		switch(op) {////////////////////////       tag
-		case(0): case(1): case(2): case(3): baseCost = 2;break;
-		case(4): baseCost = 2;break; //carry
-		case(5): baseCost = 2;break;//drop
-		case(6): baseCost = 2;break;//pill
-		case(7): baseCost = 150 + (int)Math.floor(0.5);break;//kill // how to check if mutated
-		case(8): baseCost = 2;break;//fly
+		case(0): case(1): case(2): case(3): baseCost = 1;break;
+		case(4): baseCost = 1;break; //carry
+		case(5): baseCost = 1;break;//drop
+		case(6): baseCost = 1;break;//pill
+		case(7): baseCost = 1000;break;//kill1
+		case(8): baseCost = 2000;break;//kill2
+		case(9): baseCost = 3000;break;//kill3
+		case(10): baseCost = 4000;break;//kill4
+		case(11): baseCost = 1;break;//fly
 		}
 		if(node.state.neoHealth>=100) {
 			baseCost+=10000;
@@ -27,8 +29,8 @@ public class SearchProblem {
 		for( int x : node.parent.state.hostagesHealth) if(x>=100) prevHostages++;
 		for( int x : node.state.hostagesHealth) if(x>=100) currHostages++;
 		
-		baseCost+=(currHostages-prevHostages)*1000;
-		return (node.parent != null)? (short)(baseCost + node.parent.pathCost) :(short)0 ;
+		baseCost+=(currHostages-prevHostages)*250000;
+		return (node.parent == null)? baseCost:baseCost + node.parent.pathCost;
 	}
 	
 	public SearchProblem(byte numOfHostages,State initialState) {

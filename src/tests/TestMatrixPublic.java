@@ -185,6 +185,8 @@ public class TestMatrixPublic {
 	public void testc0() throws Exception {
 		String solution = Matrix.solve(grid0, "UC", false);
 		solution = solution.replace(" ", "");
+		System.out.println("UC0");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -192,6 +194,8 @@ public class TestMatrixPublic {
 	public void testc1() throws Exception {
 		String solution = Matrix.solve(grid1, "UC", false);
 		solution = solution.replace(" ", "");
+		System.out.println("UC1");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid1, solution));
 	}
 	
@@ -199,6 +203,8 @@ public class TestMatrixPublic {
 	public void testc2() throws Exception {
 		String solution = Matrix.solve(grid2, "UC", false);
 		solution = solution.replace(" ", "");
+		System.out.println("UC2");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid2, solution));
 	}
 	
@@ -206,6 +212,8 @@ public class TestMatrixPublic {
 	public void testc3() throws Exception {
 		String solution = Matrix.solve(grid3, "UC", false);
 		solution = solution.replace(" ", "");
+		System.out.println("UC3");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid3, solution));
 	}
 	
@@ -220,6 +228,8 @@ public class TestMatrixPublic {
 	public void testc5() throws Exception {
 		String solution = Matrix.solve(grid5, "UC", false);
 		solution = solution.replace(" ", "");
+		System.out.println("UC5");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid5, solution));
 	}
 	
@@ -227,15 +237,17 @@ public class TestMatrixPublic {
 	public void testc6() throws Exception {
 		String solution = Matrix.solve(grid6, "UC", false);
 		solution = solution.replace(" ", "");
+		System.out.println("UC6");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 	
 	@Test(timeout = 400000)
 	public void testc7() throws Exception {
 		String solution = Matrix.solve(grid7, "UC", false);
+		solution = solution.replace(" ", "");
 		System.out.println("UC7");
 		System.out.println(solution);
-		solution = solution.replace(" ", "");
 		assertTrue("The output actions do not lead to a goal state.",  applyPlan(grid7, solution));
 	}
 	
@@ -243,6 +255,8 @@ public class TestMatrixPublic {
 	public void testc8() throws Exception {
 		String solution = Matrix.solve(grid8, "UC", false);
 		solution = solution.replace(" ", "");
+		System.out.println("UC8");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid8, solution));
 	}
 	
@@ -250,6 +264,8 @@ public class TestMatrixPublic {
 	public void testc9() throws Exception {
 		String solution = Matrix.solve(grid9, "UC", false);
 		solution = solution.replace(" ", "");
+		System.out.println("UC9");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid9, solution));
 	}
 	
@@ -439,6 +455,8 @@ public class TestMatrixPublic {
 	public void testg0() throws Exception {
 		String solution = Matrix.solve(grid0, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_0");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -446,6 +464,8 @@ public class TestMatrixPublic {
 	public void testg1() throws Exception {
 		String solution = Matrix.solve(grid1, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_1");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid1, solution));
 	}
 	
@@ -453,6 +473,8 @@ public class TestMatrixPublic {
 	public void testg2() throws Exception {
 		String solution = Matrix.solve(grid2, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_2");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid2, solution));
 	}
 	
@@ -460,6 +482,8 @@ public class TestMatrixPublic {
 	public void testg3() throws Exception {
 		String solution = Matrix.solve(grid3, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_3");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid3, solution));
 	}
 	
@@ -473,6 +497,8 @@ public class TestMatrixPublic {
 	public void testg5() throws Exception {
 		String solution = Matrix.solve(grid5, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_5");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid5, solution));
 	}
 	
@@ -480,6 +506,8 @@ public class TestMatrixPublic {
 	public void testg6() throws Exception {
 		String solution = Matrix.solve(grid6, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_6");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 
@@ -487,6 +515,8 @@ public class TestMatrixPublic {
 	public void testg7() throws Exception {
 		String solution = Matrix.solve(grid7, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_7");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid7, solution));
 	}
 	
@@ -494,6 +524,8 @@ public class TestMatrixPublic {
 	public void testg8() throws Exception {
 		String solution = Matrix.solve(grid8, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_8");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid8, solution));
 	}
 	
@@ -501,6 +533,8 @@ public class TestMatrixPublic {
 	public void testg9() throws Exception {
 		String solution = Matrix.solve(grid9, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_9");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid9, solution));
 	}
 	
@@ -508,6 +542,8 @@ public class TestMatrixPublic {
 	public void testgz10() throws Exception {
 		String solution = Matrix.solve(grid10, "AS1", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS1_10");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid10, solution));
 	}
 
@@ -516,6 +552,8 @@ public class TestMatrixPublic {
 	public void testh0() throws Exception {
 		String solution = Matrix.solve(grid0, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_0");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -523,6 +561,8 @@ public class TestMatrixPublic {
 	public void testh1() throws Exception {
 		String solution = Matrix.solve(grid1, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_1");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid1, solution));
 	}
 	
@@ -530,6 +570,8 @@ public class TestMatrixPublic {
 	public void testh2() throws Exception {
 		String solution = Matrix.solve(grid2, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_2");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid2, solution));
 	}
 	
@@ -537,6 +579,8 @@ public class TestMatrixPublic {
 	public void testh3() throws Exception {
 		String solution = Matrix.solve(grid3, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_3");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid3, solution));
 	}
 	
@@ -550,6 +594,8 @@ public class TestMatrixPublic {
 	public void testh5() throws Exception {
 		String solution = Matrix.solve(grid5, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_5");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid5, solution));
 	}
 	
@@ -557,6 +603,8 @@ public class TestMatrixPublic {
 	public void testh6() throws Exception {
 		String solution = Matrix.solve(grid6, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_6");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 
@@ -564,6 +612,8 @@ public class TestMatrixPublic {
 	public void testh7() throws Exception {
 		String solution = Matrix.solve(grid7, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_7");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid7, solution));
 	}
 	
@@ -571,6 +621,8 @@ public class TestMatrixPublic {
 	public void testh8() throws Exception {
 		String solution = Matrix.solve(grid8, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_8");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid8, solution));
 	}
 	
@@ -578,6 +630,8 @@ public class TestMatrixPublic {
 	public void testh9() throws Exception {
 		String solution = Matrix.solve(grid9, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_9");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid9, solution));
 	}
 	
@@ -585,6 +639,8 @@ public class TestMatrixPublic {
 	public void testhz10() throws Exception {
 		String solution = Matrix.solve(grid10, "AS2", false);
 		solution = solution.replace(" ", "");
+		System.out.println("AS2_10");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid10, solution));
 	}
 
