@@ -44,21 +44,21 @@ The final algorithm we implemented is A* Search. It is the second optimal algori
 A heuristic function H is some function that given a node, it returns an estimate of the cost still required to reach to the nearest goal from this node.
 It also should have the centering property which is H(goalNode) = 0
 
-The heuristic functions are core components for Greedy and A* search algorithms, additionally for the A* algorithm the heuristic function should have the property od being admissible, which is never over-estimating the cost still required from any node to reach the nearest goal.
+The heuristic functions are core components for Greedy and A* search algorithms, additionally for the A* algorithm the heuristic function should have the property of being admissible, which is never over-estimating the cost still required from any node to reach the nearest goal.
 
-A good strategy for comming up with a heuristic function is to think of a more unrestricted version of your problem and try to estimate the cost to reach a goal based on this relaxed version
+A good strategy for coming up with a heuristic function is to think of a more unrestricted version of your problem and try to estimate the cost to reach a goal based on this relaxed version
 
 In our project we introduce two different ideas for implementing a heuristic function for this search problem
 
 ### Heuristic function 1 ###
-The core assumption we made to have a more relaxed version of the problem is that Neo require only two actions for each not yet processed hostage in our state
-(Not yet processed hostage is the alive hostage still not carried by Neo or a dead mutated hostage still not killed by Neo)
-Note: The mutated hostages are treated differently to ensure admissibility (explain in the demonstration of admissibility below)
-Moreover, if Neo is not at the telephone booth nor at a cell with a pill, we count the number of hostages that will die immediately after the next time step (those of damage 98 or 99).
-Let the number of not processed hostages = x, and the number of dying hostages = y
+The core assumption we made to have a more relaxed version of the problem is that Neo require only two actions for each unprocessed hostage in our state
+(An uprocessed hostage is a living hostage not yet carried by Neo or a dead mutated hostage not yet killed by Neo)
+Note: The mutated hostages are treated differently to ensure admissibility (explained in the demonstration of admissibility below)
+Moreover, if Neo is at neither the telephone booth nor at a cell with a pill, we count the number of hostages that will die immediately after the next time step (those of damage 98 or 99).
+Let the number of unprocessed hostages = x, and the number of dying hostages = y
 Therefore, the output of the heuristic function for this node will be 2 * x * costForOneAction  +  y * costForHostageDied
 
-First it is clear that the function has the centering property, because in a goalNode, there will be 0 non-processed hostages and Neo will be at the telephone booth
+First it is clear that the function has the centering property, because in a goalNode, there will be 0 unprocessed hostages and Neo will be at the telephone booth
 
 Secondly, showing that this heuristic is admissible can be achieved by noticing the follows:
 * For every not yet processed hostage, Neo cannot have less than two actions to process this hostage
@@ -73,12 +73,11 @@ Using this assumprtion we can calculate the minimum distance between two points 
 * The Manhattan distance from P1 to the nearest pad to P1 plus the Manhattan distance from P2 to the nearest pad to P2
 
 Now to calculate the heuristic value we do the follwing:
-For each one of the not yet processed hostages we calculate the minimum distance between Neo and this hostage plus the minimum distance between this hostage and the booth
+For each one of the unprocessed hostages we calculate the minimum distance between Neo and this hostage plus the minimum distance between this hostage and the booth
 (This will be the shortest path for Neo to go to the telephone booth and passing by this hostage)
 And among all of these distances we pick the maximum one, Let's call it longestMinDistance   -----------> 1)
 
-We as well have a second part in our heuristic where we try to estimate the count of the hostages that will die for sure.
-which we achieved by checking for each alive and not yet carried hostage,
+We also have a second part in our heuristic where we try to estimate the count of the hostages that will die for sure, which we achieved by checking for each alive and not yet carried hostage,
 if the actions count remained before this hostage dies is less than both the min distance to deliver it to the TB and the min distance between Neo and the nearest pill,
 then this hostage will die for sure.
 Note that we can claculate the actions count for a hostage remained before dying because each action Neo does increases the hostage damage by 2, therefore actionsRemained = (100-hostageHealth+1)/2
@@ -91,8 +90,8 @@ The heuristic output will be longestMinDistance  +  y * costForHostageDied
 The function has the centering property as well, because in a goalNode, there will be 0 non-processed hostages (all the hostages are either deliverd or killed)
 
 The heuristic is also admissible:
-* longestMinDistance is the minimum distance required (using pads freely) to pass by the farthest non-processed hostage then to the telephone booth and for sure Neo has to pass by this hostage and go to the booth in order to reach a goal node
+* longestMinDistance is the minimum distance required (using pads freely) to pass by the farthest unprocessed hostage then to the telephone booth and for sure Neo has to pass by this hostage and go to the booth in order to reach a goal node
 * If the count of action remains before this hostage dies less than both the min distance to deliver it to the TB and the min distance between Neo and the nearest pill,
-  then Noe has no way to save the life for this hostage and it will die for sure.
+  then Neo has no way to save the life for this hostage and it will die for sure.
 
 
