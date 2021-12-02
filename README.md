@@ -2,7 +2,7 @@
 
 
 ## Search tree Node ##
-Information is power that is why feeding Node with information, we solve the matrix based on the knowledge the node contains.
+Information is power that is why feeding Node with information solve the matrix based on the knowledge the node contains.
 That is why in our SearchTreeNode class (Node) we tried to state all the information needed to get the solution of any matrix grid.
 so we create a pointer to the parent Node so we can reach from any node it's parent or ansestors , also used the opString and operator to explain what is the operator done to reach this node from its parent (the parent node and opString pairs can be used to build up the solution for the Matrix Grid).Moreover included the depth for a node and its pathcost so that we can identify which depth the node is right now , this can be useful when interpeting the DFS and BFS algorithms , and the path cost for any algorithm that relies on Cost to reach optimality as (UCS and A*), and lastly the state of the node so that the Neo can understand the enviroment .
 ## State #
