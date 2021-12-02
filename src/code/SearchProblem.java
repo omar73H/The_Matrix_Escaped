@@ -22,7 +22,7 @@ public class SearchProblem {
 		case(11): baseCost = 1;break;//fly
 		}
 		if(node.state.neoHealth>=100) {
-			baseCost+=10000;
+			baseCost+=1000000;
 		}
 		int prevHostages=0;
 		int currHostages=0;

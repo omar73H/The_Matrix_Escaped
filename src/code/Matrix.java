@@ -1611,35 +1611,131 @@ public class Matrix {
 	public static int HeuristicFunction(int idx,Node node, SearchProblem problem){
 		return idx==0?Heuristic0(node, problem):Heuristic00(node, problem);
 	}
-	
+	/**
+	 * 
+	 * @param node the node to predicts its heuristic value (estimate for the cost from it to the nearest goal)
+	 * @param problem
+	 * @return
+	 * Our assumptions for calculating this heuristic:
+	 * willDieForSure => the hostages that will die in the next time step and you cannot save them (you are not at the TB nor you are at a pill)
+	 * minRequiredActionsCount => the min required actions in the best case is that:
+	 * 	we have all the not yet moved hostages on one row and you take them one by one till the TB, you at least need two actions for each one of them
+	 */
 	public static int Heuristic0(Node node, SearchProblem problem){
-		int remainingCount = 0;
+		
+		// To ensure the centering property for the heuristic function (h(goal) = 0)
+		if(problem.goalTest(node.state))
+		{
+			return 0;
+		}
+		int willDieForSure = 0;
+		if((node.state.neoX != telephoneX || node.state.neoY != telephoneY) 
+			&& isTherePill(node.state.neoX, node.state.neoX, node.state.pills) == -1)
+		{
+			// Means that Neo is neither at the telephone booth nor at a cell with a pill
+			// This means that if a hostage will die in one move, he will not be able to save them
+			for(byte i=(byte)0;i<hostagesCount;i++)
+			{
+				// if the hostage was delivered
+				// i.e. in movedHostages but not in currentlyCarriedHostages
+				// then we should not consider it
+				if( ((node.state.movedHostages & (1<<i)) != 0) && ((node.state.currentlyCarriedHostages & (1<<i)) == 0) )
+					continue;
+				// else if the hostage will die the next time step
+				if(node.state.hostagesHealth[i] == 98 || node.state.hostagesHealth[i] == 99)
+					willDieForSure++;
+			}
+		}
+		
+		// In the best grid set up, what will be the minimum actions count required to reach a goal state
+		// Therefore, for every not moved hostage
+		// if not mutated agent, we will need at least two actions
+		// else we can at best kill 3 of them by one kill action
+		int minRequiredActionsCount = 0;
+		int mutatedCount =0;
 		for(byte i=(byte)0;i<hostagesCount;i++)
+		{
 			if((node.state.movedHostages & (1<<i)) == 0)
-				remainingCount+=2; // for each hostage we will at least move one step then carry
-		
-		return remainingCount+2; // 2 added to go to booth (one move then drop)
+			{
+				// Not moved before
+				// if not mutated agent
+				if(node.state.hostagesHealth[i]<100)
+				{
+					minRequiredActionsCount+=2;
+				}
+				else
+				{
+					mutatedCount++;
+				}
+			}
+		}
+		minRequiredActionsCount += (mutatedCount/3);
+		return minRequiredActionsCount + willDieForSure*250000;
 	}
-	
-	public static int Heuristic00(Node node, SearchProblem problem) {
-		int maxBestDistance = 0;
-		// best distance for the furthest hostage that I will deliver to the T booth
+	/**
+	 * @param node
+	 * @param problem
+	 * @return
+	 */
+	public static int Heuristic00(Node node, SearchProblem problem) {		
+		// To ensure the centering property for the heuristic function (h(goal) = 0)
+		if(problem.goalTest(node.state))
+		{
+			return 0;
+		}
 		
-		int remainingCount = 0;
+		int minDistanceToPill = Integer.MAX_VALUE;
+		for(byte i=(byte)0;i<pillsLocation.length;i+=2)
+		{
+			// if this pill already taken then do not consider it
+			if((node.state.pills & (1<<i))!=0)
+			{
+				continue;
+			}
+			minDistanceToPill =
+				Math.min(minDistanceToPill,
+				  bestPath(node.state.neoX, node.state.neoY, pillsLocation[i], pillsLocation[i+1]));
+		}
+		int willDieForSure = 0;
+		for(byte i=(byte)0;i<hostagesCount;i++)
+		{	
+			// if not moved yet and still alive
+			if((node.state.movedHostages & (1<<i)) == 0  && node.state.hostagesHealth[i] < 100)
+			{	
+				// The following is the shortest path to pass by the i-th hostage
+				// (We use the pads freely, which is any pad is connected to all other pads)
+				int currHostageBestDistance =
+						bestPath(node.state.neoX, node.state.neoY, hostagesLocation[2*i], hostagesLocation[2*i+1])
+					   +bestPath(hostagesLocation[2*i], hostagesLocation[2*i+1], telephoneX, telephoneY);
+				
+				int actionsCountToDie = (100-node.state.hostagesHealth[i]+1)/2;
+				
+				int requiredToSave = Math.min(minDistanceToPill, currHostageBestDistance);
+				if(actionsCountToDie < requiredToSave)
+				{
+					willDieForSure++;
+				}
+			}
+		}
+		
+		int maxBestDistance = 0;
+		// best distance for the farthest hostage that I will deliver to the T booth
+		
 		for(byte i=(byte)0;i<hostagesCount;i++)
 			if((node.state.movedHostages & (1<<i)) == 0)
 			{
-				remainingCount++;
-				int currDis = bestPath(node.state.neoX, node.state.neoY, hostagesLocation[2*i], hostagesLocation[2*i+1])
-							  +bestPath(hostagesLocation[2*i], hostagesLocation[2*i+1], telephoneX, telephoneY);
-				maxBestDistance = Math.max(maxBestDistance, currDis);
+
+				int currHostageBestDistance =
+						bestPath(node.state.neoX, node.state.neoY, hostagesLocation[2*i], hostagesLocation[2*i+1])
+					   +bestPath(hostagesLocation[2*i], hostagesLocation[2*i+1], telephoneX, telephoneY);
+				maxBestDistance = Math.max(maxBestDistance, currHostageBestDistance);
 			}
-		return maxBestDistance + remainingCount; 
+		return maxBestDistance + willDieForSure*250000; 
 		// + remainingCount because each other hostage will need at least to carry it
 		
 	}
 	public static int bestPath(int x1, int y1, int x2, int y2) {
-		// Assuming we can talk only one pad to try to shorten the distance from P1 to P2 
+		// Assuming we can talk only one magical pad to try to shorten the distance from P1 to P2 
 		int bestDistance = manhattan(x1, y1, x2, y2);
 		
 		bestDistance = Math.min(bestDistance, distanceUsingPad(x1, y1, x2, y2));
@@ -1669,70 +1765,6 @@ public class Matrix {
 
 	public static int manhattan(int x1, int y1, int x2, int y2) {
 		return Math.abs(x1-x2) + Math.abs(y1-y2); 
-	}
-	
-	public static int Heuristic1(Node node, SearchProblem problem){
-		int H =100;
-		boolean modeOn=false;
-		byte leastDist=100;
-		byte pillLocation=-1;
-		// we need to calculate the distance betwen neo and the nearest pill and store it on leastDistance 
-		for(int i=0;i<pillsLocation.length;i=i+2) {
-			if(((node.parent.state.pills & (1 << i))==0) &&(Math.abs(node.parent.state.neoX-pillsLocation[i]) + Math.abs(node.parent.state.neoY-pillsLocation[i+1])<leastDist)) {
-			leastDist = (byte) (Math.abs(node.parent.state.neoX-pillsLocation[i]) + Math.abs(node.parent.state.neoY-pillsLocation[i+1]));
-			pillLocation=(byte) i;
-			}
-		}
-		
-		if(node.parent.state.neoHealth>=(100-(leastDist)*2+4))
-			modeOn=true;
-		if(modeOn&&(Math.abs(node.parent.state.neoX-pillsLocation[pillLocation]) + Math.abs(node.parent.state.neoY-pillsLocation[pillLocation+1])>(Math.abs(node.state.neoX-pillsLocation[pillLocation]) + Math.abs(node.state.neoY-pillsLocation[pillLocation+1])))) {
-			H=10;
-		}
-		
-		if(modeOn&&node.operator==6)
-			H=1;
-		
-		return H;
-	}
-	
-	public static int Heuristic2(Node node, SearchProblem problem){
-		int H =100;
-		boolean modeOn=false;
-		byte leastDist=100;
-		byte pillLocation=-1;
-		// we need to calculate the distance betwen neo and the nearest pill and store it on leastDistance 
-		for(int i=0;i<pillsLocation.length;i=i+2) {
-			if(((node.parent.state.pills & (1 << i))==0) &&(Math.abs(node.parent.state.neoX-pillsLocation[i]) + Math.abs(node.parent.state.neoY-pillsLocation[i+1])<leastDist)) {
-			leastDist = (byte) (Math.abs(node.parent.state.neoX-pillsLocation[i]) + Math.abs(node.parent.state.neoY-pillsLocation[i+1]));
-			pillLocation=(byte) i;
-			}
-		}
-		
-		// we need to know if theres a hostage is about to die and we want to save him
-		byte minHealthShouldBe = (byte) (leastDist*2 + 4);
-		
-
-		for(int i=0;i<hostagesLocation.length;i+=2) {
-			if(node.parent.state.hostagesHealth[i/2]>(100-minHealthShouldBe)&&node.parent.state.hostagesHealth[i/2]<(100)) {
-				modeOn=true;
-				
-
-			}
-		}
-		// if we found that we have to go to this hostage hence we check if this state will take us to a state where neo is closer to the pill
-		
-		if(modeOn&&(Math.abs(node.parent.state.neoX-pillsLocation[pillLocation]) + Math.abs(node.parent.state.neoY-pillsLocation[pillLocation+1])>(Math.abs(node.state.neoX-pillsLocation[pillLocation]) + Math.abs(node.state.neoY-pillsLocation[pillLocation+1])))) {
-			
-			H=10;
-		}
-		
-		if(modeOn&&node.operator==6)
-			H=1;
-			
-			
-			
-			return H;
 	}
 	
 	private static short sumHealthes(Node node) {
