@@ -164,7 +164,7 @@ The below image shows the process of computing the average CPU utilization for t
 
 
 ### Example 1 ###
-grid0 = "5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62"
+grid0 = "5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62" <br />
  E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; F0 &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E   <br />
  E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; T0 &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; A   <br />
  E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; H91 &nbsp; &nbsp; P &nbsp; &nbsp; &nbsp; &nbsp; H62 <br />
@@ -228,7 +228,7 @@ Therefore, if there is no solution within depth i, it will search the whole tree
 Which will make the IDS search expand a lot of nodes until reaching to a solution becasue as we mentioned the solution is more likely to exist at a high depth.
 
 ### Example 2 ###
-grid1 = "5,5;2;3,0;4,3;2,1,2,2,3,1,0,0,1,1,4,2,3,3,1,3,0,1;2,4,3,2,3,4,0,4;4,4,4,0,4,0,4,4;1,4,57,2,0,46"
+grid1 = "5,5;2;3,0;4,3;2,1,2,2,3,1,0,0,1,1,4,2,3,3,1,3,0,1;2,4,3,2,3,4,0,4;4,4,4,0,4,0,4,4;1,4,57,2,0,46" <br />
  A &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; P  <br /> 
  E &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; H57 <br />
  H46 &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; P   <br />
