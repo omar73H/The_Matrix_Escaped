@@ -1430,9 +1430,26 @@ public class Matrix {
 				Grid[padsEndLocation[i+1]][padsEndLocation[i]]=" E";	
 				
 			}
-			// put agents on place
+			// put all agents on place
+			k=0;
 			for(int i=0;i<agentsLocation.length-1;i+=2) {
-				
+				boolean putAgent=true;
+				int a=(int)k/64;
+				int b=k%64;
+				if(a==0&&!((grid.state.killedNormalAgent0|(0<<b))==0))
+					putAgent=false;
+				if(a==1&&!((grid.state.killedNormalAgent1|(0<<b))==0))
+					putAgent=false;
+
+				if(a==2&&!((grid.state.killedNormalAgent2|(0<<b))==0))
+					putAgent=false;
+				if(a==3&&!((grid.state.killedNormalAgent3|(0<<b))==0))
+					putAgent=false;
+					
+				if(putAgent) {
+				Grid[agentsLocation[i+1]][agentsLocation[i]]=" A";
+				}
+				k++;
 			}
 			
 			// put hostages on place
