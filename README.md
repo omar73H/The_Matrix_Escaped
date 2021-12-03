@@ -9,9 +9,8 @@ so we create a pointer to the parent Node so we can reach from any node it's par
 State is a tredecuple (13 parameters) that consists of Neo's both X ,Y cooordinates and Health , we also include the state of all dynamic objects in grid as Agents,Hostage and pills , also we introduced some parameters that will benefit Neo in some action and understand what was an effect on action for objects in grid.Lets unravel the mystery and understand what are the parameters we used.Let us begin with the hostage health , hostage health is a byte array that contains the health of all hostage ,we decided to declare it as byte for memory optimization purposes as we found that the maxDamage is between 0-100 which are ranges that can presented by Byte.for currentlyCarriedHostages,movedHostages,hostagesToAgents,killedTransHostages and pills were declared as a short because of the growth of these parameters with limit as for any hostage related parameter its max would be 16 hostages , and since pills are less than hostages we decided to give it the same Short as the rest 3 parameters. the last 4 parameters are a bitmask representationfor the Hostages or pills respectively.currentlyCarriedHostages represent that Neo is currently carried hostage X and to know which hostage we are carrying right now, we can just check the bit with the hostage ID (IDs starts from 0-15 "16 hostages at ma") whether it's 1 for carried and 0 for not carried.For the movedHostages we turn the index with hostage ID X into 1 since the time it was carried , but when we deliver hostage to the telephone booth we just make the hostage Dropped index in currentlyCarriedHostages into 0 but nothing changes in movedHostage , this enable us to understand that hostage reached , the same logic applies for hostageToAgents and killedTransHostage but in case of hostageToAgent bit 1 for a specific hostage means that hostage with ID x turned into an Agent and 0 means it does not.killedTransHostage means that if we kill a hostage that turned into an agent we just it's bit crossponding to in the bitmask into 1.pill bitmask is self exploratory , it just highlights that if the pill is taken or not .We found out that the max growth for normal agents in a 15x15 grid is at most 217 agent so to make a bit mask that contains 217 bit is impossible  but we can create 3 Long parameters and 1 int to cover the 217 bits , that is why we created 4 parameters called killedNormalAgent0-3 , these parameters are used to indicate the normal agents that got killed by Neo from start to the current Node that hold this state.
 
 
-
-
-
+## The Matrix Problem ##
+To implement the Matrix Problem we began by implementing a generic abstract class "SearchProblem" to be later extended by class "Matrix" which carries the initial state and requires the implementation of two functions: calculatePathCost and goalTest. "Matrix" overrides calculatePathCost and based on the operator performed, number of dead hostages and number of killed agents, the method determines the cost of the node and adds it to the cost of the previous nodes. As for the implementation of goalTest, we check if Neo has arrived at telephone booth with all hostages either delivered or killed. If so the given state is a goal. Matrix also defines a function called expand which is used by the various search algorithms (discussed later) to apply on a given node the valid operators (discussed in the next section) and generate the resulting nodes
 
 
 ## Main functions implemented ##
@@ -34,6 +33,9 @@ So to be able to save a hostage, Neo needs to carry the hostage and go telephone
 ## Drop Action ##
 Dropping a hostage is only allowed when Neo is in telephone booth location; that is why we check if Neo location is the same as the Telephone booth cell location, so if it comes out to be true, we simply drop all hostage at once, and this can be made by setting the bitmask currentlyCarriedHostages in the state to 0 which means that Neo no longer carries any hostage, then we call the time step to calculate the changes happened to other hostages by performing an action and outputting a state  in currentlyCarriedHostages will be replaced with the newcurrentlyCarriedHostages in and create the new node with the correct form and pass it to Queue
 
+
+## Repeated state handeling ##
+Since multiple nodes can be expanded from just one parent, this means that from these nodes, we can reach the same state but using a different branch. and since this would affect the size and running complexity for any strategy, handling such a repeated state will be handy to optimize the time taken to reach the goal and to decrease the number of nodes in the Queue which in turn decrease Ram usage.In our case, we tried to remove the repeated states by creating a hash map that contains a key and value. The key was a string encoding of all the states parameters except for hostage health and neo health because, in the case of hostage health, we can see that if we included in the encoding, this will result in a new different state every step Neo takes, for example, Neo move down, right, up then left this should be a repeated state because it is useless set of actions, that is why including such a state with hostage health will not make us able to find that this set of actions led us to a repeated state. For Neo's health, we do not need it in our string encoding because based on the killing parameters and pills taken to interpret Neo's health, neo health would not make any difference in repeated states. For the hash map value, we decided to put inside the sum of the hostage damages in the corresponding state encoding, so now when we find a new state with the same encoding as the one in hashmap, we check the summation of hostage's damage, if the hostage summation for the current state is same as or greater than the one stated in the hash map Value section we won't expand this node because it is the same state, but in a condition where the hostage's damage is not good as the one already inside the hash map, so we won't expand such a node. However, if we find out that the hostage's health summation is less than the one inside the hashmap, we change it with the new health summation, which is a better scenario, and then expand this node.
 
 
 ## Search Algorithms ##
@@ -121,5 +123,164 @@ The heuristic is also admissible:
 * longestMinDistance is the minimum distance required (using pads freely) to pass by the farthest unprocessed hostage then to the telephone booth and for sure Neo has to pass by this hostage and go to the booth in order to reach a goal node
 * If the count of action remains before this hostage dies less than both the min distance to deliver it to the TB and the min distance between Neo and the nearest pill,
   then Neo has no way to save the life for this hostage and it will die for sure.
+
+
+## The input/output formats ##
+
+### Input ###
+grid is a string representing the grid to perform the search on. This string should be in the following format:
+M,N;C;NeoX,NeoY;TelephoneX,TelehoneY;AgentX1,AgentY1,...,AgentXk,AgentYk;PillX1,PillY1, ...,PillXg,PillYg;StartPadX1,StartPadY1,FinishPadX1,FinishPadY1,...,StartPadXl,StartPadYl,FinishPadXl,FinishPadYl;
+HostageX1,HostageY1,HostageDamage1, ...,HostageXw,HostageYw,HostageDamagew
+
+where:
+
+∗  M and N represent the width and height of the grid respectively. <br />
+∗  C is the maximum number of members Neo can carry at a time. <br />
+∗  NeoX and NeoY represent the x and y starting positions of Neo. <br />
+∗ TelephoneX and TelephoneY represent the x and y positions of the telephone booth. <br />
+∗ AgentXi,AgentYi represent the x and y position of agent i where 1 ≤ i ≤ k and k is the total number of agents. <br />
+∗ PillXi,PillYi represent the x and y position of pill i where 1 ≤ i ≤ g and g is the total number of pills.<br />
+∗ StartPadXi,StartPadYi represent the x and y position of pad i where 1 ≤i ≤ l and l is the total number of pads. <br />
+Moreover FinishPadXi,FinishPadYi represent the x and y position of the target pad stated by StartPadXi and StartPadYi
+For example, if StartPadX = 1, StartPadY = 2, FinishPadX = 3, and FinishPadY = 4, this means that Neo can fly directly from cell (1, 2) to cell (3, 4). Further, if 1, 2, 3, 4 is in the string, then the string must also contain 3, 4, 1, 2. That is, Neo could fly from cell (3, 4) to cell (1, 2) instantly. <br />
+* HostageXi,HostageYi,HostageDamagei represent the x and y position and current damage of hostage i where 1 ≤ i ≤ w and w is the total number of hostages.
+Note that the string representing the grid does not contain any spaces or new lines. It is just formatted this way to make it more readable. All x and y positions are assuming 0-indexing
+
+### Output ###
+plan;deaths;kills;nodes
+
+* plan is a string representing the operators Neo needs to follow separated by commas. The possible operator names are: up, down, left, right, carry, drop, takePill, kill, and fly.
+* deaths is a number representing the number of dead hostages in the found goal state (whether they turned into agents or not).
+* kills is a number representing the number of killed agents in the found goal state (including the number of agents that were hostages before).
+* nodes is the number of nodes chosen for expansion during the search.
+
+
+(
+In the following to calculate the CPU utilization for a specific search algorithm we used Windows Performance Montior, we run the search algorithm multiple times and obtain the corresponding CPU utilization for each run, then we get the average CPU utilization.
+The below image shows the process of computing the average CPU utilization for the BFS algorithm running on example 1
+)
+
+![5257921b-5744-49c9-b8d1-3b7947c6045b](https://user-images.githubusercontent.com/40579752/144672078-d78bf20e-6cc7-4072-a408-a9de37bb2367.jpg)
+
+
+### Example 1 ###
+grid0 = "5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62" <br />
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; F0 &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E   <br />
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; T0 &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; A   <br />
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; H91 &nbsp; &nbsp; P &nbsp; &nbsp; &nbsp; &nbsp; H62 <br />
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; N0  <br />
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; F0 <br />
+
+
+Output plans for the implemented search algorithms
+
+#### Breadth First Search ####
+up,carry,left,left,up,drop,kill;1;1;405
+Average CPU utitlization: 48%
+Average RAM usage: 629216 bytes
+
+#### Depth First Search ####
+left,left,left,left,down,right,right,right,right,fly,kill,fly,left,left,left,left,up,up,right,kill,right,right,kill,takePill,right,kill,left,left,up;2;4;92
+Average CPU utitlization: 42.5%
+Average RAM usage: 314592 bytes
+
+#### Uniform Cost Search ####
+up,carry,left,takePill,left,carry,up,drop;0;0;171
+Average CPU utitlization: 45.5%
+Average RAM usage: 314592 bytes
+
+#### Iterative Deepening Search ####
+up,carry,left,left,carry,up,drop;1;0;854
+Average CPU utitlization: 38%
+Average RAM usage: 629200 bytes
+
+#### Greedy Search with Heuristic 1 ####
+up,carry,left,takePill,right,kill,down,down,fly,kill,down,down,carry,up,drop;0;2;111
+Average CPU utitlization: 35%
+Average RAM usage: 314592 bytes
+
+#### Greedy Search with Heuristic 2 ####
+up,carry,left,left,carry,up,drop;1;0;30
+Average CPU utitlization: 45%
+Average RAM usage: 314592 bytes
+
+#### A* Search with Heuristic 1 ####
+up,carry,left,takePill,left,carry,up,drop;0;0;97
+Average CPU utitlization: 39.5%
+Average RAM usage: 314592 bytes
+
+
+#### A* Search with Heuristic 2 ####
+up,carry,left,takePill,left,carry,up,drop;0;0;76
+Average CPU utitlization: 38%
+Average RAM usage: 314592 bytes
+
+
+For example 1: 
+The algorithms that expanded low number of nodes are DFS, Greedy, A*
+The A* and greedy algorithms for both heuristic 1 and 2 expanded low number of nodes (97 and 111 nodes for heuristic 1 and 76 and 30 nodes for heuristic 2), also for the measurements of CPU utilization and RAM usage, A* has the minimum values (38% and 0.3 MB for heuristic 1, 39.5% and 0.3 MB for heuristic 2)
+On the other side, The IDS algorithm expanded the highest number of nodes (854 nodes) and the highest RAM usage (0.6 MB). The BFS algorithm has the highest CPU utilization (48%) and expanded 405 nodes.
+The low number for expanded nodes for A* and greedy search algorithms is because they use heuristic functions which work as a guide for the search algorithm to reach the nearest goal and avoid expanding unnecessary nodes.
+The low number of nodes for DFS can be explained by noticing that most probably a solution will exist at a high depth and since the DFS tries to explore the deeper nodes first, this makes it more likely to expand low number of nodes
+Unlike DFS, the BFS algorithm finishes the shallow nodes first before going to deep nodes which make it prone to expanding high number of nodes
+The approach that the IDS algorithm follows makes it expand much more nodes than the BFS, the IDS performs DFS iteratively, i.e. starting from i=0, it performs DFS on the search tree until depth i.
+Therefore, if there is no solution within depth i, it will search the whole tree until depth i, then doing the same after incrementing the depth limit (i) by 1 and so on.
+Which will make the IDS search expand a lot of nodes until reaching to a solution becasue as we mentioned the solution is more likely to exist at a high depth.
+
+### Example 2 ###
+grid1 = "5,5;2;3,0;4,3;2,1,2,2,3,1,0,0,1,1,4,2,3,3,1,3,0,1;2,4,3,2,3,4,0,4;4,4,4,0,4,0,4,4;1,4,57,2,0,46" <br />
+ A &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; P  <br /> 
+ E &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; H57 <br />
+ H46 &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; P   <br />
+ N0 &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; P &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; P   <br />
+ F0 &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; T0 &nbsp; &nbsp; &nbsp; F0  <br />
+
+Output plans for the implemented search algorithms
+
+#### Breadth First Search ####
+up,carry,down,down,fly,up,up,up,carry,down,down,down,left,drop;0;0;27263
+Average CPU utitlization: 37%
+17362752 bytes
+
+#### Depth First Search ####
+kill,right,kill,right,kill,takePill,right,right,takePill,left,left,left,left,up,carry,right,kill,right,right,kill,right,takePill,left,left,left,left,down,down,fly,left,drop,right,fly,right,up,right,up,right,right,up,carry,left,left,left,kill,right,right,right,down,down,left,down,drop;0;8;144
+Average CPU utitlization: 39.5%
+314592 bytes
+
+#### Uniform Cost Search ####
+up,carry,down,down,fly,up,up,up,carry,down,down,down,left,drop;0;0;797
+Average CPU utitlization: 46%
+629184 bytes
+
+#### Iterative Deepening Search ####
+up,carry,down,down,fly,up,up,up,carry,down,down,down,left,drop;0;0;72056
+Average CPU utitlization: 35%
+12648400 bytes
+
+#### Greedy Search with Heuristic 1 ####
+down,right,kill,right,right,right,up,up,up,carry,up,left,left,kill,down,kill,right,right,down,takePill,left,left,down,left,left,up,carry,down,down,fly,left,drop;0;6;273
+Average CPU utitlization: 40%
+314592 bytes
+
+#### Greedy Search with Heuristic 2 ####
+down,fly,up,kill,left,up,kill,right,up,carry,down,down,down,fly,up,up,carry,kill,down,kill,down,fly,left,drop;1;5;3888
+Average CPU utitlization: 43%
+2737152 bytes
+
+#### A* Search with Heuristic 1 ####
+up,carry,down,down,fly,up,up,up,carry,down,down,down,left,drop;0;0;636
+Average CPU utitlization: 38.5%
+629192 bytes
+
+#### A* Search with Heuristic 2 ####
+up,carry,down,down,fly,up,up,up,carry,down,down,down,left,drop;0;0;229
+Average CPU utitlization: 40%
+314592 bytes
+
+For example 2: 
+The algorithms that expanded low number of nodes are DFS, UCS, Greedy with heuristic 1, A* and also they have low RAM usage
+The algorithms that expanded high number of nodes are IDs and BFS, and also they have the highest RAM usage (17 MB and 12 MB respectively)
+Same explanation as above can be considered for these measurement
+The average CPU utilization varies a lot among the search algorithms.
 
 
