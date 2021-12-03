@@ -1399,7 +1399,7 @@ public class Matrix {
 			
 			for(int i=0;i<Grid.length;i++) {
 				for(int j=0;j<Grid[0].length;j++) {
-					Grid[i][j]=" E";
+					Grid[i][j]=" E ";
 				}
 			}
 			int k=0;
@@ -1411,7 +1411,7 @@ public class Matrix {
 
 			for(int i=0;i<pillsLocation.length-1;i+=2) {
 				if((grid.state.pills&(1<<k))==0) { // The pill is not taken
-					Grid[pillsLocation[i]][pillsLocation[i+1]]=" P";	
+					Grid[pillsLocation[i]][pillsLocation[i+1]]=" P ";	
 				}
 				k++;
 			}
@@ -1442,7 +1442,7 @@ public class Matrix {
 					putAgent=false;
 					
 				if(putAgent) { // means this agent not killed
-					Grid[agentsLocation[i]][agentsLocation[i+1]]=" A";
+					Grid[agentsLocation[i]][agentsLocation[i+1]]=" A ";
 				}
 				k++;
 			}
@@ -1468,11 +1468,11 @@ public class Matrix {
 				}
 			}
 			// put telephone on place
-			Grid[telephoneX][telephoneY]=" T";
+			Grid[telephoneX][telephoneY]=" T ";
 			
 			
 			// put neo on place
-			Grid[grid.state.neoX][grid.state.neoY]=" N";
+			Grid[grid.state.neoX][grid.state.neoY]=" N ";
 			
 			
 			
