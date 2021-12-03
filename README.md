@@ -131,17 +131,19 @@ The heuristic is also admissible:
 grid is a string representing the grid to perform the search on. This string should be in the following format:
 M,N;C;NeoX,NeoY;TelephoneX,TelehoneY;AgentX1,AgentY1,...,AgentXk,AgentYk;PillX1,PillY1, ...,PillXg,PillYg;StartPadX1,StartPadY1,FinishPadX1,FinishPadY1,...,StartPadXl,StartPadYl,FinishPadXl,FinishPadYl;
 HostageX1,HostageY1,HostageDamage1, ...,HostageXw,HostageYw,HostageDamagew
+
 where:
-∗ M and N represent the width and height of the grid respectively.
-∗ C is the maximum number of members Neo can carry at a time.
-∗ NeoX and NeoY represent the x and y starting positions of Neo.
-∗ TelephoneX and TelephoneY represent the x and y positions of the telephone booth.
-∗ AgentXi,AgentYi represent the x and y position of agent i where 1 ≤ i ≤ k and k is the total number of agents.
-∗ PillXi,PillYi represent the x and y position of pill i where 1 ≤ i ≤ g and g is the total number of pills.
-∗ StartPadXi,StartPadYi represent the x and y position of pad i where 1 ≤i ≤ l and l is the total number of pads.
+
+∗  M and N represent the width and height of the grid respectively. <br />
+∗  C is the maximum number of members Neo can carry at a time. <br />
+∗  NeoX and NeoY represent the x and y starting positions of Neo. <br />
+∗ TelephoneX and TelephoneY represent the x and y positions of the telephone booth. <br />
+∗ AgentXi,AgentYi represent the x and y position of agent i where 1 ≤ i ≤ k and k is the total number of agents. <br />
+∗ PillXi,PillYi represent the x and y position of pill i where 1 ≤ i ≤ g and g is the total number of pills.<br />
+∗ StartPadXi,StartPadYi represent the x and y position of pad i where 1 ≤i ≤ l and l is the total number of pads. <br />
 Moreover FinishPadXi,FinishPadYi represent the x and y position of the target pad stated by StartPadXi and StartPadYi
-For example, if StartPadX = 1, StartPadY = 2, FinishPadX = 3, and FinishPadY = 4, this means that Neo can fly directly from cell (1, 2) to cell (3, 4). Further, if 1, 2, 3, 4 is in the string, then the string must also contain 3, 4, 1, 2. That is, Neo could fly from cell (3, 4) to cell (1, 2) instantly.
-∗ HostageXi,HostageYi,HostageDamagei represent the x and y position and current damage of hostage i where 1 ≤ i ≤ w and w is the total number of hostages.
+For example, if StartPadX = 1, StartPadY = 2, FinishPadX = 3, and FinishPadY = 4, this means that Neo can fly directly from cell (1, 2) to cell (3, 4). Further, if 1, 2, 3, 4 is in the string, then the string must also contain 3, 4, 1, 2. That is, Neo could fly from cell (3, 4) to cell (1, 2) instantly. <br />
+* HostageXi,HostageYi,HostageDamagei represent the x and y position and current damage of hostage i where 1 ≤ i ≤ w and w is the total number of hostages.
 Note that the string representing the grid does not contain any spaces or new lines. It is just formatted this way to make it more readable. All x and y positions are assuming 0-indexing
 
 ### Output ###
@@ -163,11 +165,11 @@ The below image shows the process of computing the average CPU utilization for t
 
 ### Example 1 ###
 grid0 = "5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62"
- E    E    F0   A    E   
- E    E    T0   E    A   
- E    E    H91  P    H62 
- E    E    E    E    N0  
- E    E    E    E    F0 
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; F0 &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E   <br />
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; T0 &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; A   <br />
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; H91 &nbsp; &nbsp; P &nbsp; &nbsp; &nbsp; &nbsp; H62 <br />
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; N0  <br />
+ E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; F0 <br />
 
 
 Output plans for the implemented search algorithms
@@ -227,11 +229,11 @@ Which will make the IDS search expand a lot of nodes until reaching to a solutio
 
 ### Example 2 ###
 grid1 = "5,5;2;3,0;4,3;2,1,2,2,3,1,0,0,1,1,4,2,3,3,1,3,0,1;2,4,3,2,3,4,0,4;4,4,4,0,4,0,4,4;1,4,57,2,0,46"
- A    A    E    E    P   
- E    A    E    A    H57 
- H46  A    A    E    P   
- N0   A    P    A    P   
- F0   E    A    T0   F0  
+ A &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; P  <br /> 
+ E &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; H57 <br />
+ H46 &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; P   <br />
+ N0 &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; P &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; P   <br />
+ F0 &nbsp; &nbsp; &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; A &nbsp; &nbsp; &nbsp; &nbsp; T0 &nbsp; &nbsp; &nbsp; F0  <br />
 
 Output plans for the implemented search algorithms
 
