@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Stack;
 
 //import javax.jws.soap.InitParam;
 
@@ -1386,10 +1387,93 @@ public class Matrix {
 		return newState;
 	}
 	
+
+	public static Stack<Node> Plan =new Stack<>();
+
+
+	private static void visualize() {
+		String [] [] Grid=new String[n][m];
+		System.out.println("");
+
+		while (!Plan.isEmpty()) {
+			
+			for(int i=0;i<Grid.length;i++) {
+				for(int j=0;j<Grid[0].length;j++) {
+					Grid[i][j]=" E";
+				}
+			}
+			int k=0;
+			
+			
+			Node grid =Plan.pop();
+			
+			// put pills on place
+			for(int i=0;i<pillsLocation.length-1;i+=2) {
+				if((grid.state.pills|(0<<k))==0) {
+					Grid[pillsLocation[i+1]][pillsLocation[i]]=" P";	
+				}
+				k++;
+			}
+			k=0;
+			// put pads on place
+			for(int i=0;i<padsStartLocation.length-1;i+=2) {
+					
+						Grid[padsStartLocation[i+1]][padsStartLocation[i]]=" S";	
+
+					
+				
+				
+			}
+			for(int i=0;i<padsEndLocation.length-1;i+=2) {
+				
+
+				Grid[padsEndLocation[i+1]][padsEndLocation[i]]=" E";	
+				
+			}
+			// put agents on place
+			for(int i=0;i<agentsLocation.length-1;i+=2) {
+				
+			}
+			
+			// put hostages on place
+			for(int i=0;i<hostagesLocation.length-1;i+=2) {
+				if(grid.state.hostagesHealth[i/2]<100&&(grid.state.movedHostages|0<<(i/2))==0) {
+					Grid[hostagesLocation[i+1]][hostagesLocation[i]]=" H"+(i/2 +1);
+				}
+			}
+			// put hostages changed to agents  on place
+			for(int i=0;i<hostagesLocation.length-1;i+=2) {
+				if(grid.state.hostagesHealth[i/2]==100&&(grid.state.killedTransHostages|0<<(i/2))==0) {
+					Grid[hostagesLocation[i+1]][hostagesLocation[i]]=" D"+(i/2 +1);
+				}
+			}
+			// put telephone on place
+			Grid[telephoneY][telephoneX]=" T";
+			
+			
+			// put neo on place
+			Grid[grid.state.neoY][grid.state.neoX]=" N";
+			
+			
+			
+			for(int i=0;i<Grid.length;i++) {
+				for(int j=0;j<Grid[0].length;j++) {
+					System.out.print(Grid[i][j]);
+				}
+				System.out.println("");
+			}
+			System.out.println("---------------------------");
+
+		}
+
+	}
 	private static String buildPath(Node currentNode) {
 
-		if(currentNode.parent ==null)
+		if(currentNode.parent ==null) {
+			Plan.add(currentNode);
+			visualize();
 			return "";
+		}
 		if(leafnode)
 		{
 			killCount(currentNode);
@@ -1398,10 +1482,14 @@ public class Matrix {
 		}
 
 			
-			if(currentNode.parent.parent==null)
+			if(currentNode.parent.parent==null) {
+				Plan.add(currentNode);
 				return buildPath(currentNode.parent)+currentNode.opString;
+
+			}
 			else 
 			{
+				Plan.add(currentNode);
 				return buildPath(currentNode.parent)+","+currentNode.opString;
 			}
 	}
