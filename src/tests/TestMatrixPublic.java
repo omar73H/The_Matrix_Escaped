@@ -49,8 +49,9 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testa2() throws Exception {
-		String solution = Matrix.solve(grid2, "BF", false);
+		String solution = Matrix.solve(grid2, "BF", true);
 		solution = solution.replace(" ", "");
+		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid2, solution));
 	}
 	

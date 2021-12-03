@@ -8,7 +8,62 @@ import java.util.Stack;
 
 //import javax.jws.soap.InitParam;
 
-public class Matrix {
+public class Matrix extends SearchProblem{
+	byte numOfHostages;
+	
+	public Matrix(byte numOfHostages, State initialState, byte numOperators) {
+		super(initialState, numOperators);
+		this.numOfHostages=numOfHostages; 
+	}
+	
+	public int calculatePathCost(Node node) {
+		// OPERATOR: Move(0,1,2,3) : 1, Carry(4) : 1, Drop(5): 1, Take_Pill(6): 1,
+		// Kill1(7): 1000, Kill2(8): 2000, Kill3(9): 3000, Kill4(10): 4000, Fly(11): 1
+		byte op = node.operator;
+		int baseCost = 0;
+		switch(op) {////////////////////////       tag
+		case(0): case(1): case(2): case(3): baseCost = 1;break;
+		case(4): baseCost = 1;break; //carry
+		case(5): baseCost = 1;break;//drop
+		case(6): baseCost = 1;break;//pill
+		case(7): baseCost = 1000;break;//kill1
+		case(8): baseCost = 2000;break;//kill2
+		case(9): baseCost = 3000;break;//kill3
+		case(10): baseCost = 4000;break;//kill4
+		case(11): baseCost = 1;break;//fly
+		}
+		if(node.state.neoHealth>=100) {
+			baseCost+=1000000;
+		}
+		int prevHostages=0;
+		int currHostages=0;
+		for( int x : node.parent.state.hostagesHealth) if(x>=100) prevHostages++;
+		for( int x : node.state.hostagesHealth) if(x>=100) currHostages++;
+		
+		baseCost+=(currHostages-prevHostages)*250000;
+		return (node.parent == null)? baseCost:baseCost + node.parent.pathCost;
+	}
+	
+	public boolean goalTest(State state) {
+		// if Neo is dead, then return false
+		if(state.neoHealth >= 100)
+			return false;
+		
+		if(state.neoX!= Matrix.telephoneX || state.neoY!=Matrix.telephoneY)
+			return false;
+		// Check all hostages are either delivered or died, All converted hostages are killed		
+		// No one in the currently carried
+		if(state.currentlyCarriedHostages!=0)
+			return false;
+		
+		// hostages in movedHostages + killed hostagesAgent == no. of all hostages
+		          
+		if( (state.movedHostages |state.killedTransHostages) != (1<<numOfHostages)-1 )
+			return false;
+		
+		return true;
+	}
+
 	// For eliminating repeated states
 	private static HashMap<String,Short> encodedNodes = new HashMap<String,Short>();
 	
@@ -320,8 +375,8 @@ public class Matrix {
 		
 		gridSplicer(grid);
 		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0,(short)0);
-		SearchProblem X = new SearchProblem(hostagesCount, initState);
-		String plan = generalSearch(X, strategy,visualize);
+		Matrix matrix = new Matrix(hostagesCount, initState, (byte)8);
+		String plan = generalSearch(matrix, strategy,visualize);
 		if(plan.equals("Fail"))	
 			return "No Solution";
 		else
@@ -330,7 +385,7 @@ public class Matrix {
 	
 
 	
-	public static String generalSearch(SearchProblem problem, String strategy,boolean visualize) {
+	public static String generalSearch(Matrix problem, String strategy,boolean visualize) {
 		Node initNode = new Node(problem.initialState, null, (byte)-1, (short)0, 0);
 		encodedNodes.put(encode(initNode),sumHealthes(initNode));
 		if(strategy.equals("BF")) {
@@ -363,7 +418,7 @@ public class Matrix {
 		return "failure";
 	}
 	
-	public static String bfs(Node initNode, SearchProblem problem,boolean visualize){
+	public static String bfs(Node initNode, Matrix problem,boolean visualize){
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth==y.depth? (y.operator-x.operator):(x.depth-y.depth)));// BFS
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
@@ -374,7 +429,7 @@ public class Matrix {
 			if(isGoal)
 				return buildPath(currentNode,visualize);
 			
-			LinkedList<Node> nodes = expand(currentNode);
+			LinkedList<Node> nodes = expand(problem, currentNode);
 
 			for(Node node: nodes) {
 				pq.add(node);
@@ -385,12 +440,12 @@ public class Matrix {
 		return "Fail";
 	}
 	
-	public static String dfs(Node initNode, SearchProblem problem,boolean visualize) {
+	public static String dfs(Node initNode, Matrix problem,boolean visualize) {
 		String sol =  dfs_up_to_level(initNode, problem, -1, visualize);
 		return sol.split(" ")[0];
 	}
 	
-	public static String dfs_up_to_level(Node initNode, SearchProblem problem, int maxDepth,boolean visualize) {
+	public static String dfs_up_to_level(Node initNode, Matrix problem, int maxDepth,boolean visualize) {
 		int maxSofar = 0;
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth==y.depth? (y.operator-x.operator):(y.depth-x.depth)));// DFS
 		pq.add(initNode);
@@ -404,7 +459,7 @@ public class Matrix {
 			
 			if(maxDepth == -1 || currentNode.depth < maxDepth) {
 				
-				LinkedList<Node> nodes = expand(currentNode);
+				LinkedList<Node> nodes = expand(problem, currentNode);
 				
 				for(Node node: nodes) {
 					pq.add(node);
@@ -415,7 +470,7 @@ public class Matrix {
 		
 	}
 
-	private static LinkedList<Node> expand(Node currentNode) {
+	private static LinkedList<Node> expand(Matrix problem, Node currentNode) {
 	    
 		//up, down, left, right, carry, drop, takePill, kill , and fly
 		//0    1      2     3     4      5        6      7          8
@@ -432,7 +487,7 @@ public class Matrix {
 	    String encodedNode="";
 	    
 	    // Try carry
-	    triedNode = pickUpAgent(currentNode);
+	    triedNode = pickUpAgent(problem, currentNode);
 	    if(triedNode!=null)
 	    {	
 	    	encodedNode=encode(triedNode);
@@ -453,7 +508,7 @@ public class Matrix {
 	    	}
 	    }
 	    // Try drop
-	    triedNode = dropAllHostages(currentNode);
+	    triedNode = dropAllHostages(problem, currentNode);
 	    
 	    if(triedNode!=null)
 	    {	
@@ -475,7 +530,7 @@ public class Matrix {
 	    	}
 	    }
 	    // Try takepill
-	    triedNode = takePill(currentNode);
+	    triedNode = takePill(problem, currentNode);
 	    if(triedNode!=null)
 	    {	
 	    	encodedNode=encode(triedNode);
@@ -497,7 +552,7 @@ public class Matrix {
 	    }
 
 	    // Try kill Around
-	    triedNode = kill(currentNode);
+	    triedNode = kill(problem, currentNode);
  		//if the node is not null we check if it's repeated state or not
 	    if(triedNode!=null)
 	    {	
@@ -523,7 +578,7 @@ public class Matrix {
 		//Try fly if parent was not fly
 	    if(currentNode.operator!=8)
 	    {
-	    	triedNode = fly(currentNode);
+	    	triedNode = fly(problem, currentNode);
 	 		//if the node is not null we check if it's repeated state or not
 	    	if(triedNode!=null)
 		    {	
@@ -551,7 +606,7 @@ public class Matrix {
 	  //Try move up if parent was not move down
 	    if(currentNode.operator!=1)
 	    {
-	    	triedNode=move(0, currentNode);
+	    	triedNode=move(problem, 0, currentNode);
 	    	//if the node is not null we check if it's repeated state or not
 	    	if(triedNode!=null)
 		    {	
@@ -576,7 +631,7 @@ public class Matrix {
 	    //Try move down if parent was not move up 
 	    if(currentNode.operator!=0)
 	    {
-	    	triedNode=move(1, currentNode);
+	    	triedNode=move(problem, 1, currentNode);
 	    	//if the node is not null we check if it's repeated state or not
 	    	if(triedNode!=null)
 		    {	
@@ -601,7 +656,7 @@ public class Matrix {
 	    // Try move left if parent was not move right
 	    if(currentNode.operator!=3)
 	    {
-	    	triedNode=move(2, currentNode);
+	    	triedNode=move(problem, 2, currentNode);
 		    //if the node is not null we check if it's repeated state or not
 	    	if(triedNode!=null)
 		    {	
@@ -626,7 +681,7 @@ public class Matrix {
 	    // Try move right if parent was not move left
 	    if(currentNode.operator!=2)
 	    {
-	    	triedNode=move(3, currentNode);
+	    	triedNode=move(problem, 3, currentNode);
 	    	//if the node is not null we check if it's repeated state or not
 	    	if(triedNode!=null)
 		    {	
@@ -653,7 +708,7 @@ public class Matrix {
 		return expandedNodes;
 	}
 	
-	public static Node move(int actionId, Node currentNode)
+	public static Node move(Matrix problem, int actionId, Node currentNode)
 	{
 		byte neoX =currentNode.state.neoX;
 	    byte neoY =currentNode.state.neoY;
@@ -674,7 +729,7 @@ public class Matrix {
 		    	State newState = timeStep(currentNode.state);
 		    	newState.neoX=(byte) (neoX-1);
 		    	Node newNode = new Node(newState, currentNode, (byte)0, (short)(currentNode.depth+1), 0);
-		    	newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+		    	newNode.pathCost = problem.calculatePathCost(newNode);
 		    	return newNode;
 		    	
 		    }
@@ -697,7 +752,7 @@ public class Matrix {
 				State newState = timeStep(currentNode.state);
 				newState.neoX=(byte) (neoX+1);
 				Node newNode = new Node(newState, currentNode, (byte)1, (short)(currentNode.depth+1), 0);
-				newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+				newNode.pathCost = problem.calculatePathCost(newNode);
 				return newNode;
 			}
 		}
@@ -718,7 +773,7 @@ public class Matrix {
 				State newState = timeStep(currentNode.state);
 				newState.neoY=(byte) (neoY-1);
 				Node newNode = new Node(newState, currentNode, (byte)2, (short)(currentNode.depth+1), 0);
-				newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+				newNode.pathCost = problem.calculatePathCost(newNode);
 				return newNode;
 			}
 		}
@@ -739,14 +794,14 @@ public class Matrix {
 				State newState = timeStep(currentNode.state);
 				newState.neoY=(byte) (neoY+1);
 				Node newNode = new Node(newState, currentNode, (byte)3, (short)(currentNode.depth+1), 0);
-				newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+				newNode.pathCost = problem.calculatePathCost(newNode);
 				return newNode;
 			}
 		}
 		return null;
 	}
 	
-	public static Node kill(Node currentNode)
+	public static Node kill(Matrix problem, Node currentNode)
 	{
 		
 		byte neoX =currentNode.state.neoX;
@@ -990,7 +1045,7 @@ public class Matrix {
 		if(didkill)
 		{
 		    Node newNode = new Node(newState, currentNode, (byte)(6+count), (short)(currentNode.depth+1), 0);
-			newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+			newNode.pathCost = problem.calculatePathCost(newNode);
 
 			return newNode;
 		}
@@ -999,7 +1054,7 @@ public class Matrix {
 	
 	//  
 	
-	public static Node fly(Node node) {
+	public static Node fly(Matrix problem, Node node) {
 		
 		short[] t=isTherePad(node.state.neoX, node.state.neoY);
 		
@@ -1011,7 +1066,7 @@ public class Matrix {
 					tempNode.neoX=padsEndLocation[t[2]];
 					tempNode.neoY=padsEndLocation[t[2]+1];
 					Node sNode=new Node(tempNode,node,(byte) 11,(short)(node.depth+1),0);
-					sNode.pathCost=SearchProblem.calculatePathCost(sNode);
+					sNode.pathCost=problem.calculatePathCost(sNode);
 					return sNode;
 				}
 				else
@@ -1020,7 +1075,7 @@ public class Matrix {
 					tempNode.neoX=padsStartLocation[t[2]];
 					tempNode.neoY=padsStartLocation[t[2]+1];
 					Node sNode=new Node(tempNode,node,(byte) 11,(short)(node.depth+1),0);
-					sNode.pathCost=SearchProblem.calculatePathCost(sNode);
+					sNode.pathCost=problem.calculatePathCost(sNode);
 
 					return sNode;
 				}
@@ -1031,7 +1086,7 @@ public class Matrix {
 			}
 			
 		}
-		public static Node takePill(Node node) {
+		public static Node takePill(Matrix problem, Node node) {
 			
 			byte idx=isTherePill(node.state.neoX, node.state.neoY,node.state.pills);
 			if(idx!=-1)
@@ -1072,7 +1127,7 @@ public class Matrix {
 				newState.neoHealth = (byte)Math.max(0, newState.neoHealth-20);
 				
 				Node sNode=new Node(newState,node,(byte)6,(short)(node.depth+1),0);
-				sNode.pathCost=SearchProblem.calculatePathCost(sNode);
+				sNode.pathCost=problem.calculatePathCost(sNode);
 				return sNode;	
 			}
 			else
@@ -1124,7 +1179,7 @@ public class Matrix {
 		
 		
 		///////////////////////////////////////////////////////////////////////////////
-	private static Node dropAllHostages(Node currentNode) {
+	private static Node dropAllHostages(Matrix problem, Node currentNode) {
 		if(telephoneX != currentNode.state.neoX)
 			return null;
 		if(telephoneY != currentNode.state.neoY)
@@ -1153,12 +1208,12 @@ public class Matrix {
 		
 		State newState = timeStep(intermediateState);
 		Node newNode = new Node(newState, currentNode, (byte)5, (short)(currentNode.depth+1), 0);
-		newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+		newNode.pathCost = problem.calculatePathCost(newNode);
 		
 		return newNode;
 		
 	}
-	public static Node pickUpAgent(Node currentNode) {
+	public static Node pickUpAgent(Matrix problem, Node currentNode) {
 		
 		// check if carrying max, if so return null
 		int carriedNow = 0;
@@ -1194,7 +1249,7 @@ public class Matrix {
 				
 		State newState = timeStep(intermediateState);
 		Node newNode = new Node(newState, currentNode, (byte)4, (short)(currentNode.depth+1), 0);
-		newNode.pathCost = SearchProblem.calculatePathCost(newNode);
+		newNode.pathCost = problem.calculatePathCost(newNode);
 //		expandedNodes.add(newNode);
 		
 		return newNode;
@@ -1401,7 +1456,7 @@ public class Matrix {
 			
 			for(int i=0;i<Grid.length;i++) {
 				for(int j=0;j<Grid[0].length;j++) {
-					Grid[i][j]=" E ";
+					Grid[i][j]=" E   ";
 				}
 			}
 			int k=0;
@@ -1413,13 +1468,14 @@ public class Matrix {
 
 			for(int i=0;i<pillsLocation.length-1;i+=2) {
 				if((grid.state.pills&(1<<k))==0) { // The pill is not taken
-					Grid[pillsLocation[i]][pillsLocation[i+1]]=" P ";	
+					Grid[pillsLocation[i]][pillsLocation[i+1]]=" P   ";	
 				}
 				k++;
 			}
 			k=0;
 			// put pads on place
 			for(int i=0;i<padsStartLocation.length-1;i+=2) {
+				
 				Grid[padsStartLocation[i]][padsStartLocation[i+1]]=" F"+k;
 				k++;
 			}
@@ -1622,7 +1678,7 @@ public class Matrix {
 	
 	
 	
-	public static String AStarSearch(int idx,Node initNode, SearchProblem problem,boolean visualize){
+	public static String AStarSearch(int idx,Node initNode, Matrix problem,boolean visualize){
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->( (HeuristicFunction(idx,x, problem)+x.pathCost)-(HeuristicFunction(idx,y, problem)+y.pathCost) ));// A*
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
@@ -1639,7 +1695,7 @@ public class Matrix {
 			if(isGoal)
 				return buildPath(currentNode,visualize);
 			
-			LinkedList<Node> nodes = expand(currentNode);
+			LinkedList<Node> nodes = expand(problem, currentNode);
 
 			for(Node node: nodes) {
 				pq.add(node);
@@ -1651,7 +1707,7 @@ public class Matrix {
 	}	
 	
 	
-	public static String UniformCostSearch(Node initNode, SearchProblem problem,boolean visualize){
+	public static String UniformCostSearch(Node initNode, Matrix problem,boolean visualize){
 		
 		
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.pathCost-y.pathCost));// UCS
@@ -1665,7 +1721,7 @@ public class Matrix {
 			if(isGoal)
 				return buildPath(currentNode,visualize);
 			
-			LinkedList<Node> nodes = expand(currentNode);
+			LinkedList<Node> nodes = expand(problem, currentNode);
 
 			for(Node node: nodes) {
 				pq.add(node);
@@ -1678,7 +1734,7 @@ public class Matrix {
 	
 	
 	
-	public static String IterativeSearch(Node initNode, SearchProblem problem, boolean visualize){
+	public static String IterativeSearch(Node initNode, Matrix problem, boolean visualize){
 		int currDepth = 0;
 		int totNodesExpanded = 0;
 		do {
@@ -1702,7 +1758,7 @@ public class Matrix {
 			encodedNodes = new HashMap<String, Short>();
 		}while(true);
 	}	
-	public static String HeuristicSearch(int idx,Node initNode, SearchProblem problem,boolean visualize){
+	public static String HeuristicSearch(int idx,Node initNode, Matrix problem,boolean visualize){
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->( HeuristicFunction(idx,x, problem)-HeuristicFunction(idx,y, problem) ));// A*
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
@@ -1719,7 +1775,7 @@ public class Matrix {
 			if(isGoal)
 				return buildPath(currentNode,visualize);
 			
-			LinkedList<Node> nodes = expand(currentNode);
+			LinkedList<Node> nodes = expand(problem, currentNode);
 
 			for(Node node: nodes) {
 				pq.add(node);
