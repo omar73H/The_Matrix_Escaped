@@ -1485,7 +1485,6 @@ public class Matrix {
 
 	}
 	private static String buildPath(Node currentNode ,boolean visualize) {
-		visualize=true;
 		if(currentNode.parent ==null) {
 			Plan.add(currentNode);
 			if(visualize) {
