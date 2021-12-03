@@ -11,13 +11,14 @@ import java.util.Stack;
 public class Matrix {
 	// For eliminating repeated states
 	private static HashMap<String,Short> encodedNodes = new HashMap<String,Short>();
-	private static int nodesExpanded = 0;
+	
 	//For genGrid
 	private static ArrayList<Integer> availableCells;
 	
 	// For printing the solution
 	private static short DeathCounter=0;
 	private static short KillCounter=0;
+	private static int nodesExpanded = 0;
 	
 	// Used in buildPath to know that we are in the start node for building the path
 	public static  boolean leafnode;
@@ -315,16 +316,16 @@ public class Matrix {
 		DeathCounter=0;
 		leafnode=true;
 		KillCounter=0;
+		nodesExpanded = 0;
+		
 		gridSplicer(grid);
 		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0,(short)0);
 		SearchProblem X = new SearchProblem(hostagesCount, initState);
 		String plan = generalSearch(X, strategy,visualize);
 		if(plan.equals("Fail"))	
 			return "No Solution";
-		else if(strategy.equals("ID"))
-			return plan+";"+DeathCounter+";"+KillCounter+";"+nodesExpanded;
 		else
-			return plan+";"+DeathCounter+";"+KillCounter+";"+encodedNodes.size();
+			return plan+";"+DeathCounter+";"+KillCounter+";"+(nodesExpanded+1);
 	}
 	
 
@@ -648,6 +649,7 @@ public class Matrix {
 		    }
 	    }
 	    
+	    nodesExpanded += expandedNodes.size();
 		return expandedNodes;
 	}
 	
@@ -1677,19 +1679,26 @@ public class Matrix {
 	
 	
 	public static String IterativeSearch(Node initNode, SearchProblem problem, boolean visualize){
-		nodesExpanded = 0;
 		int currDepth = 0;
+		int totNodesExpanded = 0;
 		do {
 			String[] solPair =  dfs_up_to_level(initNode, problem, currDepth,visualize).split(" ");
 			String answer = solPair[0];
 			if(!answer.equals("Fail"))
+			{
+				nodesExpanded += totNodesExpanded;
 				return answer;
+			}
 			
 			if(currDepth > Integer.parseInt(solPair[1]))
+			{
+				nodesExpanded = totNodesExpanded;
 				return "Fail";
+			}
 			
 			currDepth++;
-			nodesExpanded+= encodedNodes.size();
+			totNodesExpanded += nodesExpanded;
+			nodesExpanded = 0;
 			encodedNodes = new HashMap<String, Short>();
 		}while(true);
 	}	
