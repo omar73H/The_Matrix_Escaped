@@ -29,10 +29,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testa0() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid0, "BF", false);
 		solution = solution.replace(" ", "");
 		System.out.println("BF0");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -72,10 +76,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testa6() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid6, "BF", false);
 		solution = solution.replace(" ", "");
 		System.out.println("BF6");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 	
@@ -109,10 +117,14 @@ public class TestMatrixPublic {
 
 	@Test(timeout = 2000)
 	public void testb0() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid0, "DF", false);
 		solution = solution.replace(" ", "");
 		System.out.println("DF0");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -152,10 +164,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testb6() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid6, "DF", false);
 		solution = solution.replace(" ", "");
 		System.out.println("DF6");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 	
@@ -189,10 +205,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testc0() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid0, "UC", false);
 		solution = solution.replace(" ", "");
 		System.out.println("UC0");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -233,10 +253,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testc6() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid6, "UC", false);
 		solution = solution.replace(" ", "");
 		System.out.println("UC6");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 	
@@ -269,10 +293,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testd0() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid0, "ID", false);
 		solution = solution.replace(" ", "");
 		System.out.println("ID0");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -306,10 +334,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testd6() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid6, "ID", false);
 		solution = solution.replace(" ", "");
 		System.out.println("ID0");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 	
@@ -342,10 +374,14 @@ public class TestMatrixPublic {
 
 	@Test(timeout = 2000)
 	public void teste0() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid0, "GR1", false);
 		solution = solution.replace(" ", "");
 		System.out.println("GR1-0");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -385,10 +421,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void teste6() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid6, "GR1", false);
 		solution = solution.replace(" ", "");
 		System.out.println("GR1-6");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 	
@@ -421,10 +461,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testf0() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid0, "GR2", false);
 		solution = solution.replace(" ", "");
 		System.out.println("GR2-0");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -464,10 +508,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testf6() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid6, "GR2", false);
 		solution = solution.replace(" ", "");
 		System.out.println("GR2-6");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 	
@@ -500,10 +548,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testg0() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid0, "AS1", false);
 		solution = solution.replace(" ", "");
 		System.out.println("AS1-0");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -543,10 +595,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testg6() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid6, "AS1", false);
 		solution = solution.replace(" ", "");
 		System.out.println("AS1-6");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 
@@ -581,10 +637,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testh0() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid0, "AS2", false);
 		solution = solution.replace(" ", "");
 		System.out.println("AS2-0");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
@@ -624,10 +684,14 @@ public class TestMatrixPublic {
 	
 	@Test(timeout = 2000)
 	public void testh6() throws Exception {
+		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		String solution = Matrix.solve(grid6, "AS2", false);
 		solution = solution.replace(" ", "");
 		System.out.println("AS2-6");
 		System.out.println(solution);
+		long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long actualMemUsed=afterUsedMem-beforeUsedMem;
+		System.out.println(actualMemUsed);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 
