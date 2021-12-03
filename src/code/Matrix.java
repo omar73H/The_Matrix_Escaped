@@ -96,12 +96,6 @@ public class Matrix extends SearchProblem{
 	
 	
 	public static void main(String[] args) {
-		
-		// Create a Priority Queue
-				// 7.4.5.6
-		
-	
-		
 		String grid = genGrid();
 		System.out.println(grid);
 	}
@@ -126,7 +120,6 @@ public class Matrix extends SearchProblem{
 		initNeoY = (byte)(neoPos%n);
 		
 		
-		//########
 		grid[initNeoX][initNeoY] = "N";
 		
 		//Position of the Telephone booth
@@ -134,7 +127,6 @@ public class Matrix extends SearchProblem{
 		telephoneX = (byte)(telephonePos/n);
 		telephoneY = (byte)(telephonePos%n);
 		
-		//########
 		grid[telephoneX][telephoneY] = "T";
 		
 		//The number of hostages
@@ -152,7 +144,7 @@ public class Matrix extends SearchProblem{
 			
 			
 			byte hostageDamage = (byte)random(1,99);
-			//########
+			
 			grid[hostageX][hostageY] = "H"+i+" "+hostageDamage;
 			
 			if(i>0)
@@ -175,7 +167,7 @@ public class Matrix extends SearchProblem{
 			byte pillX = (byte)(pillPos/n);
 			byte pillY = (byte)(pillPos%n);
 			
-			//########
+			
 			grid[pillX][pillY] = "P";
 			
 			if(i>0)
@@ -202,14 +194,12 @@ public class Matrix extends SearchProblem{
 			byte startPadX = (byte)(startPadPos/n);
 			byte startPadY = (byte)(startPadPos%n);
 			
-			//########
 			grid[startPadX][startPadY] = "F"+i;
 			
 			int endPadPos = randomCell();
 			byte endPadX = (byte)(endPadPos/n);
 			byte endPadY = (byte)(endPadPos%n);
 			
-			//########
 			grid[endPadX][endPadY] = "D"+i;
 			
 			if(i>0)
@@ -240,7 +230,6 @@ public class Matrix extends SearchProblem{
 			byte agentX = (byte)(agentPos/n);
 			byte agentY = (byte)(agentPos%n);
 			
-			//########
 			grid[agentX][agentY] = "A"+i;
 			
 			if(i>0)
@@ -288,26 +277,7 @@ public class Matrix extends SearchProblem{
 	}
 	
 
-//	public static byte m,n,c;
-//	public static byte initNeoX, initNeoY, telephoneX, telephoneY;
-//	public static byte hostagesCount;
-//	public static byte[] hostagesHealth;
-//	
-//	// location of hostage i is saves at cells 2*i and 2*i+1
-//	public static byte[] hostagesLocation;
-//	
-//	public static byte[] pillsLocation;
-//	
-//	public static byte[] padsStartLocation;
-//	public static byte[] padsEndLocation;
-//	
-//	public static byte[] agentsLocation;
-	//"5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62";
-	 //  m,n;c;neox,neoy;telx,tely;AgentX,AgentY;PillX,PillY;PadStartX,PadStartY,FinishX,FinishY,HostageX,HostageY,Damage
-	
-	
-	
-	//";0,3,1,4;2,3;4,4,0,2,0,2,4,4";
+
 	public static void gridSplicer(String grid)
 	{
 		String[] gridArray= grid.split(";");
@@ -326,7 +296,7 @@ public class Matrix extends SearchProblem{
 		hostagesHealth=new byte[hostagesCount];
 		hostagesLocation= new byte [hostagesCount*2];		
 		
-		for(byte i =0; i<hostagesCount;i++)
+		for(int i =0; i<hostagesCount;i++)
 		{
 			hostagesLocation[2*i]=Byte.parseByte(Info[(i*3)]);
 			hostagesLocation[(2*i)+1]=Byte.parseByte(Info[(i*3)+1]);
@@ -335,7 +305,7 @@ public class Matrix extends SearchProblem{
 		
 		Info=(gridArray[5].split(","));
 		pillsLocation= new byte [Info.length];		
-		for(byte i =0; i<Info.length;i+=2)
+		for(int i =0; i<Info.length;i+=2)
 		{
 			pillsLocation[i]=Byte.parseByte(Info[(i)]);
 			pillsLocation[(i)+1]=Byte.parseByte(Info[i+1]);
@@ -344,7 +314,7 @@ public class Matrix extends SearchProblem{
 		Info=(gridArray[6].split(","));
 		padsStartLocation= new byte [Info.length/4];		
 		padsEndLocation=new byte[Info.length/4];
-		for(byte i =0; i<Info.length;i+=8)
+		for(int i =0; i<Info.length;i+=8)
 		{
 			padsStartLocation[i/4]=Byte.parseByte(Info[(i)]);
 			padsStartLocation[(i/4)+1]=Byte.parseByte(Info[i+1]);
@@ -355,7 +325,7 @@ public class Matrix extends SearchProblem{
 		
 		Info=(gridArray[4].split(","));
 		agentsLocation= new byte [Info.length];		
-		for(byte i =0; i<Info.length;i+=2)
+		for(int i =0; i<Info.length;i+=2)
 		{
 			agentsLocation[i]=(byte)Integer.parseInt(Info[(i)]);
 			agentsLocation[(i)+1]=(byte)Integer.parseInt(Info[i+1]);
@@ -1174,11 +1144,6 @@ public class Matrix extends SearchProblem{
 			return s;
 		}
 		
-		
-		
-		
-		
-		///////////////////////////////////////////////////////////////////////////////
 	private static Node dropAllHostages(Matrix problem, Node currentNode) {
 		if(telephoneX != currentNode.state.neoX)
 			return null;
@@ -1449,7 +1414,7 @@ public class Matrix extends SearchProblem{
 
 
 	private static void visualize() {
-		String [] [] Grid=new String[n][m];
+		String [] [] Grid=new String[m][n];
 		System.out.println("");
 
 		while (!Plan.isEmpty()) {
@@ -1475,13 +1440,23 @@ public class Matrix extends SearchProblem{
 			k=0;
 			// put pads on place
 			for(int i=0;i<padsStartLocation.length-1;i+=2) {
+				if(k<10)
+					Grid[padsStartLocation[i]][padsStartLocation[i+1]]=" F"+k+"  ";
+				else if(k<100)
+					Grid[padsStartLocation[i]][padsStartLocation[i+1]]=" F"+k+" ";
+				else
+					Grid[padsStartLocation[i]][padsStartLocation[i+1]]=" F"+k;
 				
-				Grid[padsStartLocation[i]][padsStartLocation[i+1]]=" F"+k;
 				k++;
 			}
 			k=0;
 			for(int i=0;i<padsEndLocation.length-1;i+=2) {
-				Grid[padsEndLocation[i]][padsEndLocation[i+1]]=" F"+k;
+				if(k<10)
+					Grid[padsEndLocation[i]][padsEndLocation[i+1]]=" F"+k+"  ";
+				else if(k<100)
+					Grid[padsEndLocation[i]][padsEndLocation[i+1]]=" F"+k+" ";
+				else
+					Grid[padsEndLocation[i]][padsEndLocation[i+1]]=" F"+k;
 				k++;
 			}
 			// put all agents on place
@@ -1490,17 +1465,17 @@ public class Matrix extends SearchProblem{
 				boolean putAgent=true;
 				int a=(int)k/64;
 				int b=k%64;
-				if(a==0&&!((grid.state.killedNormalAgent0&(1L<<b))!=0)) // if it was killed
+				if(a==0&&((grid.state.killedNormalAgent0&(1L<<b))!=0)) // if it was killed
 					putAgent=false;
-				if(a==1&&!((grid.state.killedNormalAgent1&(1L<<b))!=0))
+				if(a==1&&((grid.state.killedNormalAgent1&(1L<<b))!=0))
 					putAgent=false;
-				if(a==2&&!((grid.state.killedNormalAgent2&(1L<<b))!=0))
+				if(a==2&&((grid.state.killedNormalAgent2&(1L<<b))!=0))
 					putAgent=false;
-				if(a==3&&!((grid.state.killedNormalAgent3&(1<<b))!=0))
+				if(a==3&&((grid.state.killedNormalAgent3&(1<<b))!=0))
 					putAgent=false;
 					
 				if(putAgent) { // means this agent not killed
-					Grid[agentsLocation[i]][agentsLocation[i+1]]=" A ";
+					Grid[agentsLocation[i]][agentsLocation[i+1]]=" A   ";
 				}
 				k++;
 			}
@@ -1508,8 +1483,12 @@ public class Matrix extends SearchProblem{
 			k=0;
 			// put hostages on place
 			for(int i=0;i<hostagesLocation.length-1;i+=2) {
-				if(grid.state.hostagesHealth[i/2]<100&&(grid.state.movedHostages&1<<(i/2))==0) {
-					Grid[hostagesLocation[i]][hostagesLocation[i+1]]=" H"+(i/2);
+				if(grid.state.hostagesHealth[i/2]<100&&(grid.state.movedHostages&1<<(i/2))==0) 
+				{
+					if(grid.state.hostagesHealth[i/2]<10)
+						Grid[hostagesLocation[i]][hostagesLocation[i+1]]=" H"+grid.state.hostagesHealth[i/2]+"  ";
+					else
+						Grid[hostagesLocation[i]][hostagesLocation[i+1]]=" H"+grid.state.hostagesHealth[i/2]+" ";
 				}
 			}
 			// put hostages changed to agents  on place
@@ -1522,17 +1501,27 @@ public class Matrix extends SearchProblem{
 				
 				)
 				{
-					Grid[hostagesLocation[i]][hostagesLocation[i+1]]=" M"+(i/2);
+					Grid[hostagesLocation[i]][hostagesLocation[i+1]]=" M   ";
 				}
 			}
-			// put telephone on place
-			Grid[telephoneX][telephoneY]=" T ";
 			
+
 			
 			// put neo on place
-			Grid[grid.state.neoX][grid.state.neoY]=" N ";
+			if(grid.state.neoHealth < 10)	
+				Grid[grid.state.neoX][grid.state.neoY]=" N"+grid.state.neoHealth+"  ";
+			else
+				Grid[grid.state.neoX][grid.state.neoY]=" N"+grid.state.neoHealth+" ";
 			
-			
+			int deliverdCount = 0;
+			for(int i=0;i<hostagesCount;i++)
+				if((grid.state.movedHostages & (1<<i)) != 0 &&  (grid.state.currentlyCarriedHostages & (1<<i)) == 0)
+					deliverdCount++;
+			// put telephone on place
+			if(deliverdCount<10)
+				Grid[telephoneX][telephoneY]=" T"+deliverdCount+"  ";
+			else
+				Grid[telephoneX][telephoneY]=" T"+deliverdCount+" ";
 			
 			for(int i=0;i<Grid.length;i++) {
 				for(int j=0;j<Grid[0].length;j++) {

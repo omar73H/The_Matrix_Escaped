@@ -30,7 +30,7 @@ public class TestMatrixPublic {
 	@Test(timeout = 2000)
 	public void testa0() throws Exception {
 		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
-		String solution = Matrix.solve(grid0, "BF", false);
+		String solution = Matrix.solve(grid0, "BF", true);
 		solution = solution.replace(" ", "");
 		System.out.println("BF0");
 		System.out.println(solution);
@@ -78,7 +78,7 @@ public class TestMatrixPublic {
 	@Test(timeout = 2000)
 	public void testa6() throws Exception {
 		long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
-		String solution = Matrix.solve(grid6, "BF", false);
+		String solution = Matrix.solve(grid6, "BF", true);
 		solution = solution.replace(" ", "");
 		System.out.println("BF6");
 		System.out.println(solution);

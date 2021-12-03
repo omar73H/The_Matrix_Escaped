@@ -11,5 +11,5 @@ public abstract class SearchProblem {
 	
 	abstract public int calculatePathCost(Node node);	
 	abstract public boolean goalTest(State state);	
-	
+
 }
