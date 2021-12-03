@@ -318,7 +318,7 @@ public class Matrix {
 		gridSplicer(grid);
 		State initState = new State(initNeoX, initNeoY, (short)0, (short)0, (short)0, (short)0, 0l, 0l, 0l, 0, hostagesHealth, (byte)0,(short)0);
 		SearchProblem X = new SearchProblem(hostagesCount, initState);
-		String plan = generalSearch(X, strategy);
+		String plan = generalSearch(X, strategy,visualize);
 		if(plan.equals("Fail"))	
 			return "No Solution";
 		else if(strategy.equals("ID"))
@@ -329,40 +329,40 @@ public class Matrix {
 	
 
 	
-	public static String generalSearch(SearchProblem problem, String strategy) {
+	public static String generalSearch(SearchProblem problem, String strategy,boolean visualize) {
 		Node initNode = new Node(problem.initialState, null, (byte)-1, (short)0, 0);
 		encodedNodes.put(encode(initNode),sumHealthes(initNode));
 		if(strategy.equals("BF")) {
-			return bfs(initNode, problem);
+			return bfs(initNode, problem,visualize);
 		}
 		if(strategy.equals("DF")) {
-			return dfs(initNode, problem);
+			return dfs(initNode, problem,visualize);
 		}
 		
 		if(strategy.equals("UC")) {
-			return UniformCostSearch(initNode, problem);
+			return UniformCostSearch(initNode, problem,visualize);
 		}
 		
 		if(strategy.equals("ID")) {
-			return IterativeSearch(initNode, problem);
+			return IterativeSearch(initNode, problem,visualize);
 		}
 		if(strategy.equals("GR1")) {
-			return HeuristicSearch(0,initNode, problem);
+			return HeuristicSearch(0,initNode, problem,visualize);
 		}
 		if(strategy.equals("GR2")) {
-			return HeuristicSearch(1,initNode, problem);
+			return HeuristicSearch(1,initNode, problem,visualize);
 		}
 		if(strategy.equals("AS1")) {
-			return AStarSearch(0,initNode, problem);
+			return AStarSearch(0,initNode, problem,visualize);
 		}
 		
 		if(strategy.equals("AS2")) {
-			return AStarSearch(1,initNode, problem);
+			return AStarSearch(1,initNode, problem,visualize);
 		}
 		return "failure";
 	}
 	
-	public static String bfs(Node initNode, SearchProblem problem){
+	public static String bfs(Node initNode, SearchProblem problem,boolean visualize){
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth==y.depth? (y.operator-x.operator):(x.depth-y.depth)));// BFS
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
@@ -371,7 +371,7 @@ public class Matrix {
 			
 			boolean isGoal = problem.goalTest(currentNode.state);
 			if(isGoal)
-				return buildPath(currentNode);
+				return buildPath(currentNode,visualize);
 			
 			LinkedList<Node> nodes = expand(currentNode);
 
@@ -384,12 +384,12 @@ public class Matrix {
 		return "Fail";
 	}
 	
-	public static String dfs(Node initNode, SearchProblem problem) {
-		String sol =  dfs_up_to_level(initNode, problem, -1);
+	public static String dfs(Node initNode, SearchProblem problem,boolean visualize) {
+		String sol =  dfs_up_to_level(initNode, problem, -1, visualize);
 		return sol.split(" ")[0];
 	}
 	
-	public static String dfs_up_to_level(Node initNode, SearchProblem problem, int maxDepth) {
+	public static String dfs_up_to_level(Node initNode, SearchProblem problem, int maxDepth,boolean visualize) {
 		int maxSofar = 0;
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.depth==y.depth? (y.operator-x.operator):(y.depth-x.depth)));// DFS
 		pq.add(initNode);
@@ -399,7 +399,7 @@ public class Matrix {
 			maxSofar = Math.max(maxSofar, currentNode.depth);
 			boolean isGoal = problem.goalTest(currentNode.state);
 			if(isGoal)
-				return buildPath(currentNode) +" "+maxSofar;
+				return buildPath(currentNode,visualize) +" "+maxSofar;
 			
 			if(maxDepth == -1 || currentNode.depth < maxDepth) {
 				
@@ -1467,7 +1467,7 @@ public class Matrix {
 		}
 
 	}
-	private static String buildPath(Node currentNode) {
+	private static String buildPath(Node currentNode ,boolean visualize) {
 
 		if(currentNode.parent ==null) {
 			Plan.add(currentNode);
@@ -1484,13 +1484,13 @@ public class Matrix {
 			
 			if(currentNode.parent.parent==null) {
 				Plan.add(currentNode);
-				return buildPath(currentNode.parent)+currentNode.opString;
+				return buildPath(currentNode.parent,visualize)+currentNode.opString;
 
 			}
 			else 
 			{
 				Plan.add(currentNode);
-				return buildPath(currentNode.parent)+","+currentNode.opString;
+				return buildPath(currentNode.parent,visualize)+","+currentNode.opString;
 			}
 	}
 	
@@ -1595,7 +1595,7 @@ public class Matrix {
 	
 	
 	
-	public static String AStarSearch(int idx,Node initNode, SearchProblem problem){
+	public static String AStarSearch(int idx,Node initNode, SearchProblem problem,boolean visualize){
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->( (HeuristicFunction(idx,x, problem)+x.pathCost)-(HeuristicFunction(idx,y, problem)+y.pathCost) ));// A*
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
@@ -1610,7 +1610,7 @@ public class Matrix {
 			}
 			boolean isGoal = problem.goalTest(currentNode.state);
 			if(isGoal)
-				return buildPath(currentNode);
+				return buildPath(currentNode,visualize);
 			
 			LinkedList<Node> nodes = expand(currentNode);
 
@@ -1624,7 +1624,7 @@ public class Matrix {
 	}	
 	
 	
-	public static String UniformCostSearch(Node initNode, SearchProblem problem){
+	public static String UniformCostSearch(Node initNode, SearchProblem problem,boolean visualize){
 		
 		
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.pathCost-y.pathCost));// UCS
@@ -1636,7 +1636,7 @@ public class Matrix {
 			
 			boolean isGoal = problem.goalTest(currentNode.state);
 			if(isGoal)
-				return buildPath(currentNode);
+				return buildPath(currentNode,visualize);
 			
 			LinkedList<Node> nodes = expand(currentNode);
 
@@ -1651,11 +1651,11 @@ public class Matrix {
 	
 	
 	
-	public static String IterativeSearch(Node initNode, SearchProblem problem){
+	public static String IterativeSearch(Node initNode, SearchProblem problem, boolean visualize){
 		nodesExpanded = 0;
 		int currDepth = 0;
 		do {
-			String[] solPair =  dfs_up_to_level(initNode, problem, currDepth).split(" ");
+			String[] solPair =  dfs_up_to_level(initNode, problem, currDepth,visualize).split(" ");
 			String answer = solPair[0];
 			if(!answer.equals("Fail"))
 				return answer;
@@ -1668,7 +1668,7 @@ public class Matrix {
 			encodedNodes = new HashMap<String, Short>();
 		}while(true);
 	}	
-	public static String HeuristicSearch(int idx,Node initNode, SearchProblem problem){
+	public static String HeuristicSearch(int idx,Node initNode, SearchProblem problem,boolean visualize){
 		PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->( HeuristicFunction(idx,x, problem)-HeuristicFunction(idx,y, problem) ));// A*
 		pq.add(initNode);
 		while(!pq.isEmpty()) 
@@ -1683,7 +1683,7 @@ public class Matrix {
 			}
 			boolean isGoal = problem.goalTest(currentNode.state);
 			if(isGoal)
-				return buildPath(currentNode);
+				return buildPath(currentNode,visualize);
 			
 			LinkedList<Node> nodes = expand(currentNode);
 
