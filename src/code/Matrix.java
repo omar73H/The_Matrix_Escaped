@@ -1468,10 +1468,16 @@ public class Matrix {
 
 	}
 	private static String buildPath(Node currentNode ,boolean visualize) {
-
+		visualize=true;
 		if(currentNode.parent ==null) {
 			Plan.add(currentNode);
-			visualize();
+			if(visualize) {
+				visualize();
+
+			}
+			else {
+				Plan.clear();
+			}
 			return "";
 		}
 		if(leafnode)
