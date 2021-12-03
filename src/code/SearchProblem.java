@@ -40,6 +40,9 @@ public class SearchProblem {
 	}
 	
 	public boolean goalTest(State state) {
+		// if Neo is dead, then return false
+		if(state.neoHealth >= 100)
+			return false;
 		
 		if(state.neoX!= Matrix.telephoneX || state.neoY!=Matrix.telephoneY)
 			return false;
