@@ -1408,27 +1408,23 @@ public class Matrix {
 			Node grid =Plan.pop();
 			
 			// put pills on place
+
 			for(int i=0;i<pillsLocation.length-1;i+=2) {
-				if((grid.state.pills|(0<<k))==0) {
-					Grid[pillsLocation[i+1]][pillsLocation[i]]=" P";	
+				if((grid.state.pills&(1<<k))==0) { // The pill is not taken
+					Grid[pillsLocation[i]][pillsLocation[i+1]]=" P";	
 				}
 				k++;
 			}
 			k=0;
 			// put pads on place
 			for(int i=0;i<padsStartLocation.length-1;i+=2) {
-					
-						Grid[padsStartLocation[i+1]][padsStartLocation[i]]=" S";	
-
-					
-				
-				
+				Grid[padsStartLocation[i]][padsStartLocation[i+1]]=" F"+k;
+				k++;
 			}
+			k=0;
 			for(int i=0;i<padsEndLocation.length-1;i+=2) {
-				
-
-				Grid[padsEndLocation[i+1]][padsEndLocation[i]]=" E";	
-				
+				Grid[padsEndLocation[i]][padsEndLocation[i+1]]=" F"+k;
+				k++;
 			}
 			// put all agents on place
 			k=0;
@@ -1436,40 +1432,47 @@ public class Matrix {
 				boolean putAgent=true;
 				int a=(int)k/64;
 				int b=k%64;
-				if(a==0&&!((grid.state.killedNormalAgent0|(0<<b))==0))
+				if(a==0&&!((grid.state.killedNormalAgent0&(1L<<b))!=0)) // if it was killed
 					putAgent=false;
-				if(a==1&&!((grid.state.killedNormalAgent1|(0<<b))==0))
+				if(a==1&&!((grid.state.killedNormalAgent1&(1L<<b))!=0))
 					putAgent=false;
-
-				if(a==2&&!((grid.state.killedNormalAgent2|(0<<b))==0))
+				if(a==2&&!((grid.state.killedNormalAgent2&(1L<<b))!=0))
 					putAgent=false;
-				if(a==3&&!((grid.state.killedNormalAgent3|(0<<b))==0))
+				if(a==3&&!((grid.state.killedNormalAgent3&(1<<b))!=0))
 					putAgent=false;
 					
-				if(putAgent) {
-				Grid[agentsLocation[i+1]][agentsLocation[i]]=" A";
+				if(putAgent) { // means this agent not killed
+					Grid[agentsLocation[i]][agentsLocation[i+1]]=" A";
 				}
 				k++;
 			}
 			
+			k=0;
 			// put hostages on place
 			for(int i=0;i<hostagesLocation.length-1;i+=2) {
-				if(grid.state.hostagesHealth[i/2]<100&&(grid.state.movedHostages|0<<(i/2))==0) {
-					Grid[hostagesLocation[i+1]][hostagesLocation[i]]=" H"+(i/2 +1);
+				if(grid.state.hostagesHealth[i/2]<100&&(grid.state.movedHostages&1<<(i/2))==0) {
+					Grid[hostagesLocation[i]][hostagesLocation[i+1]]=" H"+(i/2);
 				}
 			}
 			// put hostages changed to agents  on place
 			for(int i=0;i<hostagesLocation.length-1;i+=2) {
-				if(grid.state.hostagesHealth[i/2]==100&&(grid.state.killedTransHostages|0<<(i/2))==0) {
-					Grid[hostagesLocation[i+1]][hostagesLocation[i]]=" D"+(i/2 +1);
+				if(grid.state.hostagesHealth[i/2]==100  // if it is dead
+						&&
+				(grid.state.movedHostages&1<<(i/2))==0 // and not moved
+						&&
+				(grid.state.killedTransHostages&1<<(i/2))==0 // and not killed
+				
+				)
+				{
+					Grid[hostagesLocation[i]][hostagesLocation[i+1]]=" M"+(i/2);
 				}
 			}
 			// put telephone on place
-			Grid[telephoneY][telephoneX]=" T";
+			Grid[telephoneX][telephoneY]=" T";
 			
 			
 			// put neo on place
-			Grid[grid.state.neoY][grid.state.neoX]=" N";
+			Grid[grid.state.neoX][grid.state.neoY]=" N";
 			
 			
 			
